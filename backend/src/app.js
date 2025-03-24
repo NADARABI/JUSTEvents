@@ -1,5 +1,7 @@
-const express = require('express');
-const cors = require('cors');
+// src/app.js
+import express from 'express';
+import cors from 'cors';
+
 const app = express();
 
 app.use(express.json());
@@ -10,4 +12,4 @@ app.get('/', (req, res) => {
   res.json({ message: 'Backend setup clearly successful!' });
 });
 
-module.exports = app;
+export default app;
