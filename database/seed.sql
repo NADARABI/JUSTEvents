@@ -81,7 +81,15 @@ UNLOCK TABLES;
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Ahmed Alattar','ahmed.alattar@example.com','hashedpassword1','System Admin','2025-03-18 07:18:53'),(2,'Khaled Salem','khaled.salem@example.com','hashedpassword2','Campus Admin','2025-03-18 07:18:53'),(3,'Marwa Khatib','marwa.khatib@example.com','hashedpassword3','Organizer','2025-03-18 07:18:53'),(4,'Noor Hassan','noor.hassan@example.com','hashedpassword4','Student','2025-03-18 07:18:53'),(5,'Sara Jundi','sara.jundi@example.com','hashedpassword5','Student','2025-03-18 07:18:53'),(6,'Omar Rashed','omar.rashed@example.com','hashedpassword6','Visitor','2025-03-18 07:18:53');
+INSERT INTO `users` 
+(`name`, `email`, `password_hash`, `role`, `requested_role`, `is_verified`, `verification_code`, `provider`, `attachment`, `created_at`) 
+VALUES 
+('Ahmed Alattar', 'ahmed.alattar@example.com', 'hashedpassword1', 'System Admin', NULL, TRUE, NULL, 'Local', NULL, NOW()),
+('Khaled Salem', 'khaled.salem@example.com', 'hashedpassword2', 'Campus Admin', NULL, TRUE, NULL, 'Local', NULL, NOW()),
+('Marwa Khatib', 'marwa.khatib@example.com', 'hashedpassword3', 'Organizer', NULL, TRUE, NULL, 'Local', 'uploads/club-proof.pdf', NOW()),
+('Noor Hassan', 'noor.hassan@example.com', 'hashedpassword4', 'Student', NULL, TRUE, NULL, 'Local', NULL, NOW()),
+('Sara Jundi', 'sara.jundi@example.com', 'hashedpassword5', 'Student', NULL, TRUE, NULL, 'Local', NULL, NOW()),
+('Omar Rashed', 'omar.rashed@example.com', 'hashedpassword6', 'Visitor', NULL, TRUE, NULL, 'Google', NULL, NOW());
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
