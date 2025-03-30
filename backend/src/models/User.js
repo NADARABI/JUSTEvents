@@ -2,6 +2,12 @@
 import db from '../utils/db.js';
 
 class User {
+  // Utility function to handle database errors
+  static handleDBError(error, action) {
+    console.error(`Error during ${action}:`, error.message);
+    return null;
+  }
+
   // Register user (form or SSO)
   static async create(userData) {
     try {
@@ -36,8 +42,7 @@ class User {
 
       return result.insertId;
     } catch (error) {
-      console.error("Error creating user:", error.message);
-      return null;
+      return this.handleDBError(error, 'user creation');
     }
   }
 
@@ -47,8 +52,7 @@ class User {
       const [rows] = await db.execute(`SELECT * FROM users WHERE email = ?`, [email]);
       return rows[0] || null;
     } catch (error) {
-      console.error("Error finding user by email:", error.message);
-      return null;
+      return this.handleDBError(error, 'finding user by email');
     }
   }
 
@@ -58,8 +62,29 @@ class User {
       const [rows] = await db.execute(`SELECT * FROM users WHERE id = ?`, [id]);
       return rows[0] || null;
     } catch (error) {
-      console.error("Error finding user by ID:", error.message);
-      return null;
+      return this.handleDBError(error, 'finding user by ID');
+    }
+  }
+
+  // Get all users
+  static async getAllUsers() {
+    try {
+      const [rows] = await db.execute(`SELECT * FROM users`);
+      return rows;
+    } catch (error) {
+      return this.handleDBError(error, 'fetching all users');
+    }
+  }
+
+  // Check if email is verified
+  static async isEmailVerified(email) {
+    try {
+      const [rows] = await db.execute(
+        `SELECT is_verified FROM users WHERE email = ?`, [email]
+      );
+      return rows[0]?.is_verified || false;
+    } catch (error) {
+      return this.handleDBError(error, 'checking email verification');
     }
   }
 
@@ -72,8 +97,7 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error verifying email:", error.message);
-      return 0;
+      return this.handleDBError(error, 'verifying email');
     }
   }
 
@@ -86,8 +110,7 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error updating verification code:", error.message);
-      return 0;
+      return this.handleDBError(error, 'updating verification code');
     }
   }
 
@@ -100,8 +123,7 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error resetting password:", error.message);
-      return 0;
+      return this.handleDBError(error, 'resetting password');
     }
   }
 
@@ -114,8 +136,20 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error updating password by ID:", error.message);
-      return 0;
+      return this.handleDBError(error, 'updating password by ID');
+    }
+  }
+
+  // Update user profile
+  static async updateUserProfile(id, name, email) {
+    try {
+      const [result] = await db.execute(
+        `UPDATE users SET name = ?, email = ? WHERE id = ?`,
+        [name, email, id]
+      );
+      return result.affectedRows;
+    } catch (error) {
+      return this.handleDBError(error, 'updating user profile');
     }
   }
 
@@ -128,12 +162,11 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error updating role:", error.message);
-      return 0;
+      return this.handleDBError(error, 'updating user role');
     }
   }
 
-  // Store role request (Organizer/Admin)
+  // Store role request
   static async storeRoleRequest(userId, role, attachment = null) {
     try {
       const [result] = await db.execute(
@@ -142,30 +175,40 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error storing role request:", error.message);
-      return 0;
+      return this.handleDBError(error, 'storing role request');
     }
   }
 
-  // Get list of pending users (for admin approval)
+  // Get users by role
+  static async getUsersByRole(role) {
+    try {
+      const [rows] = await db.execute(`SELECT * FROM users WHERE role = ?`, [role]);
+      return rows;
+    } catch (error) {
+      return this.handleDBError(error, 'fetching users by role');
+    }
+  }
+
+  // Get list of pending users
   static async getPendingUsers() {
     try {
       const [rows] = await db.execute(`SELECT * FROM users WHERE role = 'Pending'`);
       return rows;
     } catch (error) {
-      console.error("Error fetching pending users:", error.message);
-      return [];
+      return this.handleDBError(error, 'fetching pending users');
     }
   }
 
-  // Soft delete or completely remove user by ID
-  static async deleteUser(id) {
+  // Soft delete user
+  static async softDeleteUser(id) {
     try {
-      const [result] = await db.execute(`DELETE FROM users WHERE id = ?`, [id]);
+      const [result] = await db.execute(
+        `UPDATE users SET role = 'Deleted' WHERE id = ?`,
+        [id]
+      );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error deleting user:", error.message);
-      return 0;
+      return this.handleDBError(error, 'soft deleting user');
     }
   }
 }
