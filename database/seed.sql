@@ -21,7 +21,10 @@
 
 LOCK TABLES `approvals` WRITE;
 /*!40000 ALTER TABLE `approvals` DISABLE KEYS */;
-INSERT INTO `approvals` VALUES (1,2,'Event',1,'Approved','Meets all criteria',NULL),(2,2,'Room Booking',2,'Pending','Awaiting confirmation',NULL);
+INSERT INTO approvals (admin_id, entity_type, entity_id, status, decision_reason, reviewed_at)
+VALUES
+(2, 'Event', 1, 'Approved', 'Meets all criteria', NOW()),
+(2, 'Room Booking', 2, 'Pending', 'Awaiting confirmation', NOW());
 /*!40000 ALTER TABLE `approvals` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -31,7 +34,11 @@ UNLOCK TABLES;
 
 LOCK TABLES `event_rsvps` WRITE;
 /*!40000 ALTER TABLE `event_rsvps` DISABLE KEYS */;
-INSERT INTO `event_rsvps` VALUES (1,4,1,'Going','2025-03-18 07:19:44'),(2,5,2,'Not Going','2025-03-18 07:19:44'),(3,6,3,'Going','2025-03-18 07:19:44');
+INSERT INTO event_rsvps (event_id, user_id, status, created_at)
+VALUES
+(4, 1, 'Going', NOW()),
+(5, 2, 'Not Going', NOW()),
+(6, 3, 'Going', NOW());
 /*!40000 ALTER TABLE `event_rsvps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -41,7 +48,11 @@ UNLOCK TABLES;
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
-INSERT INTO `events` VALUES (1,'Tech Meetup','A discussion about AI advancements.','2025-05-10','14:00:00',3,1,'Approved'),(2,'Business Seminar','How to start a successful business.','2025-06-15','10:30:00',3,2,'Pending'),(3,'Science Fair','A showcase of university research projects.','2025-07-10','11:00:00',3,3,'Approved');
+INSERT INTO events (title, description, date, time, organizer_id, venue_id, status)
+VALUES
+('Tech Meetup', 'A discussion about AI advancements.', '2025-05-10', '14:00:00', 3, 1, 'Approved'),
+('Business Seminar', 'How to start a successful business.', '2025-06-15', '10:30:00', 3, 2, 'Pending'),
+('Science Fair', 'A showcase of university research projects.', '2025-07-10', '11:00:00', 3, 3, 'Approved');
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -51,7 +62,11 @@ UNLOCK TABLES;
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (1,1,'Your event booking has been approved.',0,'2025-03-18 07:19:51'),(2,2,'Reminder: Science Fair starts at 10 AM tomorrow.',0,'2025-03-18 07:19:51'),(3,3,'Your event registration was successful.',1,'2025-03-18 07:19:51');
+INSERT INTO notifications (user_id, message, is_read, created_at)
+VALUES
+(1, 'Your event booking has been approved.', 0, NOW()),
+(2, 'Reminder: Science Fair starts at 10 AM tomorrow.', 0, NOW()),
+(3, 'Your event registration was successful.', 1, NOW());
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -61,7 +76,11 @@ UNLOCK TABLES;
 
 LOCK TABLES `room_bookings` WRITE;
 /*!40000 ALTER TABLE `room_bookings` DISABLE KEYS */;
-INSERT INTO `room_bookings` VALUES (1,2,1,'2025-04-01 08:00:00','2025-04-01 10:00:00','Approved'),(2,4,2,'2025-04-02 14:00:00','2025-04-02 16:00:00','Pending'),(3,5,3,'2025-04-03 09:30:00','2025-04-03 11:30:00','Rejected');
+INSERT INTO room_bookings (user_id, room_id, start_time, end_time, status)
+VALUES
+(2, 1, '2025-04-01 08:00:00', '2025-04-01 10:00:00', 'Approved'),
+(4, 2, '2025-04-02 14:00:00', '2025-04-02 16:00:00', 'Pending'),
+(5, 3, '2025-04-03 09:30:00', '2025-04-03 11:30:00', 'Rejected');
 /*!40000 ALTER TABLE `room_bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -71,7 +90,11 @@ UNLOCK TABLES;
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'Main Auditorium','Main Building',200,'Available'),(2,'Meeting Room A','Admin Building',50,'Booked'),(3,'Science Lab','Science Faculty',30,'Available');
+INSERT INTO rooms (name, building, capacity, status)
+VALUES
+('Main Auditorium', 'Main Building', 200, 'Available'),
+('Meeting Room A', 'Admin Building', 50, 'Booked'),
+('Science Lab', 'Science Faculty', 30, 'Available');
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,10 +104,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-
-INSERT INTO `users` 
-(`name`, `email`, `password_hash`, `role`, `requested_role`, `is_verified`, `verification_code`, `provider`, `attachment`, `created_at`) 
-VALUES 
+INSERT INTO users (name, email, password_hash, role, requested_role, is_verified, verification_code, provider, attachment, created_at)
+VALUES
 -- Verified Users
 ('Ahmed Alattar', 'ahmed.alattar@example.com', 'hashedpassword1', 'System Admin', NULL, TRUE, NULL, 'Local', NULL, NOW()),
 ('Khaled Salem', 'khaled.salem@example.com', 'hashedpassword2', 'Campus Admin', NULL, TRUE, NULL, 'Local', NULL, NOW()),
@@ -94,17 +115,9 @@ VALUES
 ('Omar Rashed', 'omar.rashed@example.com', 'hashedpassword6', 'Visitor', NULL, TRUE, NULL, 'Google', NULL, NOW()),
 
 -- New Users for Testing
-
--- 1. Unverified user (for email verification test)
 ('Leen Said', 'leen.said@example.com', 'hashedpassword7', 'Pending', 'Student', FALSE, '123456', 'Local', NULL, NOW()),
-
--- 2. Pending user with role request + attachment (for admin approval)
 ('Rami Odeh', 'rami.odeh@example.com', 'hashedpassword8', 'Pending', 'Organizer', TRUE, NULL, 'Local', 'uploads/organizer-proof.pdf', NOW()),
-
--- 3. Microsoft SSO auto-student user
 ('Bayan Qasem', 'bayan.qasem@college.just.edu.jo', NULL, 'Student', NULL, TRUE, NULL, 'Microsoft', NULL, NOW());
-
-('Omar Rashed', 'omar.rashed@example.com', 'hashedpassword6', 'Visitor', NULL, TRUE, NULL, 'Google', NULL, NOW());
 
 UPDATE users
 SET reset_token = 'test-token-123',
