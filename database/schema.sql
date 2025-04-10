@@ -156,6 +156,8 @@ CREATE TABLE `users` (
   `provider` ENUM('Local', 'Google', 'Microsoft') DEFAULT 'Local',
   `attachment` VARCHAR(255),
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `reset_token` VARCHAR(255),
+  `reset_token_expiry` DATETIME,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

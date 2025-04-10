@@ -90,6 +90,11 @@ VALUES
 ('Noor Hassan', 'noor.hassan@example.com', 'hashedpassword4', 'Student', NULL, TRUE, NULL, 'Local', NULL, NOW()),
 ('Sara Jundi', 'sara.jundi@example.com', 'hashedpassword5', 'Student', NULL, TRUE, NULL, 'Local', NULL, NOW()),
 ('Omar Rashed', 'omar.rashed@example.com', 'hashedpassword6', 'Visitor', NULL, TRUE, NULL, 'Google', NULL, NOW());
+
+UPDATE users
+SET reset_token = 'test-token-123',
+    reset_token_expiry = NOW() + INTERVAL 1 HOUR
+WHERE email = 'test.user@example.com';
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
