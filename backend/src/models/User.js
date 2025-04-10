@@ -211,6 +211,58 @@ class User {
       return this.handleDBError(error, 'soft deleting user');
     }
   }
+
+  // Update profile fields (name, email, etc.)
+  static async updateUserProfile(id, fields) {
+    try {
+      const updates = [];
+      const values = [];
+
+      for (const [key, value] of Object.entries(fields)) {
+        updates.push(`${key} = ?`);
+        values.push(value);
+      }
+
+      values.push(id); // for WHERE clause
+
+      const [result] = await db.execute(
+        `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
+        values
+      );
+      return result.affectedRows;
+    } catch (error) {
+      console.error("Error updating user profile:", error.message);
+      return 0;
+    }
+  }
+
+  // Search users by email fragment (for admin)
+  static async searchByEmailFragment(keyword) {
+    try {
+      const [rows] = await db.execute(
+        `SELECT * FROM users WHERE email LIKE ? AND role = 'Pending'`,
+        [`%${keyword}%`]
+      );
+      return rows;
+    } catch (error) {
+      console.error("Error searching users by email:", error.message);
+      return [];
+    }
+  }
+
+  // Track last login timestamp
+  static async updateLastLogin(id) {
+    try {
+      const [result] = await db.execute(
+        `UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?`,
+        [id]
+      );
+      return result.affectedRows;
+    } catch (error) {
+      console.error("Error updating last login:", error.message);
+      return 0;
+    }
+  }
 }
 
 export default User;
