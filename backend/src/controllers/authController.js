@@ -28,6 +28,12 @@ export const register = async (req, res) => {
       return sendResponse(res, 400, 'Invalid email format');
     }
 
+    // Allowlist role validation
+    const allowedRoles = ['Student', 'Organizer', 'Campus Admin', 'Visitor'];
+    if (!allowedRoles.includes(role)) {
+      return sendResponse(res, 400, 'Invalid role selection');
+    }
+
     // Check if the email is already registered
     const existing = await User.findByEmail(email);
     if (existing) {
@@ -103,6 +109,9 @@ export const login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return sendResponse(res, 401, 'Incorrect password');
 
+    // Update last login
+    await User.updateLastLogin(user.id);
+
     // Generate JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, name: user.name },
@@ -114,5 +123,31 @@ export const login = async (req, res) => {
   } catch (err) {
     console.error('Login error:', err);
     sendResponse(res, 500, 'Login failed');
+  }
+};
+
+//  resend verfication code
+export const resendVerificationCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Basic validation
+    if (!email) return sendResponse(res, 400, 'Email is required');
+
+    const user = await User.findByEmail(email);
+    if (!user) return sendResponse(res, 404, 'User not found');
+    if (user.is_verified) return sendResponse(res, 400, 'Email already verified');
+
+    // Generate new code and update
+    const newCode = crypto.randomInt(100000, 999999).toString();
+    await User.updateVerificationCode(email, newCode);
+
+    // Send new code via email
+    await sendEmail(email, `Your new verification code: ${newCode}`);
+
+    sendResponse(res, 200, 'New verification code sent to your email');
+  } catch (err) {
+    console.error('Resend verification error:', err);
+    sendResponse(res, 500, 'Failed to resend verification code');
   }
 };
