@@ -81,14 +81,29 @@ UNLOCK TABLES;
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+
 INSERT INTO `users` 
 (`name`, `email`, `password_hash`, `role`, `requested_role`, `is_verified`, `verification_code`, `provider`, `attachment`, `created_at`) 
 VALUES 
+-- Verified Users
 ('Ahmed Alattar', 'ahmed.alattar@example.com', 'hashedpassword1', 'System Admin', NULL, TRUE, NULL, 'Local', NULL, NOW()),
 ('Khaled Salem', 'khaled.salem@example.com', 'hashedpassword2', 'Campus Admin', NULL, TRUE, NULL, 'Local', NULL, NOW()),
 ('Marwa Khatib', 'marwa.khatib@example.com', 'hashedpassword3', 'Organizer', NULL, TRUE, NULL, 'Local', 'uploads/club-proof.pdf', NOW()),
 ('Noor Hassan', 'noor.hassan@example.com', 'hashedpassword4', 'Student', NULL, TRUE, NULL, 'Local', NULL, NOW()),
 ('Sara Jundi', 'sara.jundi@example.com', 'hashedpassword5', 'Student', NULL, TRUE, NULL, 'Local', NULL, NOW()),
+('Omar Rashed', 'omar.rashed@example.com', 'hashedpassword6', 'Visitor', NULL, TRUE, NULL, 'Google', NULL, NOW()),
+
+-- New Users for Testing
+
+-- 1. Unverified user (for email verification test)
+('Leen Said', 'leen.said@example.com', 'hashedpassword7', 'Pending', 'Student', FALSE, '123456', 'Local', NULL, NOW()),
+
+-- 2. Pending user with role request + attachment (for admin approval)
+('Rami Odeh', 'rami.odeh@example.com', 'hashedpassword8', 'Pending', 'Organizer', TRUE, NULL, 'Local', 'uploads/organizer-proof.pdf', NOW()),
+
+-- 3. Microsoft SSO auto-student user
+('Bayan Qasem', 'bayan.qasem@college.just.edu.jo', NULL, 'Student', NULL, TRUE, NULL, 'Microsoft', NULL, NOW());
+
 ('Omar Rashed', 'omar.rashed@example.com', 'hashedpassword6', 'Visitor', NULL, TRUE, NULL, 'Google', NULL, NOW());
 
 UPDATE users
@@ -98,6 +113,7 @@ WHERE email = 'test.user@example.com';
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
