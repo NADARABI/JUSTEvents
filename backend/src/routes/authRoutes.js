@@ -8,8 +8,8 @@ import {
   resendVerificationCode,
 } from '../controllers/authController.js';
 
-import { verifyToken } from '../middleware/authMiddleware.js';
-import { authorizeRole } from '../middleware/roleMiddleware.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
+import { authorizeRole } from '../middlewares/roleMiddleware.js';
 
 // Public Routes
 router.post('/register', register);

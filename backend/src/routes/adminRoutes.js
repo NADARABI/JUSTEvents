@@ -6,8 +6,8 @@ import {
   rejectUser,
 } from '../controllers/adminController.js';
 
-import { verifyToken } from '../middleware/authMiddleware.js';
-import { authorizeRole } from '../middleware/roleMiddleware.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
+import { authorizeRole } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
