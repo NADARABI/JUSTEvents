@@ -263,6 +263,62 @@ class User {
       return 0;
     }
   }
+
+  // Store both reset tocken and expiry in database
+  static async storeResetToken(email, token, expiry) {
+    try {
+      const [result] = await db.execute(
+        `UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?`,
+        [token, expiry, email]
+      );
+      return result.affectedRows > 0; // Returns true if a row was affected
+    } catch (error) {
+      console.error('Error storing reset token:', error.message);
+      return false;
+    }
+  }
+
+  // find user by reset token
+  static async findByResetToken(token) {
+    try {
+      const [rows] = await db.execute(
+        `SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()`,
+        [token]
+      );
+      return rows[0] || null; // Return user if token is valid, else null
+    } catch (error) {
+      console.error('Error finding user by reset token:', error.message);
+      return null;
+    }
+  }
+
+  //clear reset token and expiry
+  static async clearResetToken(email) {
+    try {
+      const [result] = await db.execute(
+        `UPDATE users SET reset_token = NULL, reset_token_expiry = NULL WHERE email = ?`,
+        [email]
+      );
+      return result.affectedRows > 0; // Returns true if the token was cleared
+    } catch (error) {
+      console.error('Error clearing reset token:', error.message);
+      return false;
+    }
+  }
+
+  //update the password after validation of the reset token
+  static async setResetPassword(email, hash) {
+    try {
+      const [result] = await db.execute(
+        `UPDATE users SET password_hash = ? WHERE email = ?`,
+        [hash, email]
+      );
+      return result.affectedRows > 0; // Returns true if the password is updated
+    } catch (error) {
+      console.error('Error updating password:', error.message);
+      return false;
+    }
+  }
 }
 
 export default User;

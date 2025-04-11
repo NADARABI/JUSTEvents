@@ -151,3 +151,59 @@ export const resendVerificationCode = async (req, res) => {
     sendResponse(res, 500, 'Failed to resend verification code');
   }
 };
+
+//generate a reset token -> store it in the database -> and send the reset link via email
+export const requestPasswordReset = async (req, res) => {
+  const { email } = req.body;
+  try {
+    // Validate email
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+
+    // Generate reset token (use crypto.randomBytes or any secure method)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour expiry
+
+    // Store token and expiry in DB
+    const tokenStored = await User.storeResetToken(email, resetToken, resetTokenExpiry);
+    if (!tokenStored) return res.status(500).json({ message: 'Failed to store reset token' });
+
+    // Send the reset email
+    const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+    const message = `Click here to reset your password: ${resetLink}`;
+    await sendEmail(email, 'Password Reset Request', message);
+
+    return res.status(200).json({ message: 'Password reset link sent to your email' });
+  } catch (error) {
+    console.error('Error in password reset request:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+//password reset submission (verify token -> update password -> clear token)
+export const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    // Validate inputs
+    if (!token || !newPassword) return res.status(400).json({ message: 'Token and new password are required' });
+
+    // Find user by reset token
+    const user = await User.findByResetToken(token);
+    if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password and clear reset token
+    const passwordUpdated = await User.setResetPassword(user.email, hashedPassword);
+    if (!passwordUpdated) return res.status(500).json({ message: 'Failed to update password' });
+
+    // Clear reset token from DB
+    await User.clearResetToken(user.email);
+
+    return res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Error in password reset submission:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
