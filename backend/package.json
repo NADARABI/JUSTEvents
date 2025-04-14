@@ -27,6 +27,7 @@
     "passport-microsoft": "^2.1.0"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.3"
   }
