@@ -1,7 +1,10 @@
 import Event from '../models/Event.js';
-import db from '../utils/db.js';
 import EventRsvp from '../models/EventRsvp.js';
 import Approval from '../models/Approval.js';
+
+const sendResponse = (res, status, message, data = null) => {
+  res.status(status).json({ success: status < 400, message, data });
+};
 
 // Create new event
 export const createEvent = async (req, res) => {
@@ -10,15 +13,16 @@ export const createEvent = async (req, res) => {
     const organizer_id = req.user.id;
 
     if (!title || !description || !date || !time || !venue_id) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return sendResponse(res, 400, 'All fields are required');
     }
 
     const eventId = await Event.create({ title, description, date, time, organizer_id, venue_id });
+    await Approval.create('Event', eventId);
 
-    res.status(201).json({ message: 'Event created and pending approval', eventId });
+    sendResponse(res, 201, 'Event created and pending approval', { eventId });
   } catch (err) {
     console.error('createEvent:', err);
-    res.status(500).json({ message: 'Server error while creating event' });
+    sendResponse(res, 500, 'Server error while creating event');
   }
 };
 
@@ -29,14 +33,14 @@ export const editEvent = async (req, res) => {
     const updates = req.body;
 
     const existing = await Event.findById(id);
-    if (!existing) return res.status(404).json({ message: 'Event not found' });
-    if (existing.organizer_id !== req.user.id) return res.status(403).json({ message: 'Unauthorized' });
+    if (!existing) return sendResponse(res, 404, 'Event not found');
+    if (existing.organizer_id !== req.user.id) return sendResponse(res, 403, 'Unauthorized');
 
     await Event.update(id, updates);
-    res.json({ message: 'Event updated successfully' });
+    sendResponse(res, 200, 'Event updated successfully');
   } catch (err) {
     console.error('editEvent:', err);
-    res.status(500).json({ message: 'Server error while editing event' });
+    sendResponse(res, 500, 'Server error while editing event');
   }
 };
 
@@ -46,13 +50,14 @@ export const deleteEvent = async (req, res) => {
     const { id } = req.params;
 
     const existing = await Event.findById(id);
-    if (!existing) return res.status(404).json({ message: 'Event not found' });
-    if (existing.organizer_id !== req.user.id) return res.status(403).json({ message: 'Unauthorized' });
+    if (!existing) return sendResponse(res, 404, 'Event not found');
+    if (existing.organizer_id !== req.user.id) return sendResponse(res, 403, 'Unauthorized');
 
     await Event.delete(id);
-    res.json({ message: 'Event deleted successfully' });
+    sendResponse(res, 200, 'Event deleted successfully');
   } catch (err) {
-    res.status(500).json({ message: 'Server error while deleting event' });
+    console.error('deleteEvent:', err);
+    sendResponse(res, 500, 'Server error while deleting event');
   }
 };
 
@@ -61,9 +66,10 @@ export const getAllEvents = async (req, res) => {
   try {
     const { status, search } = req.query;
     const events = await Event.findAll({ status, search });
-    res.json(events);
+    sendResponse(res, 200, 'Events fetched successfully', events);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch events' });
+    console.error('getAllEvents:', err);
+    sendResponse(res, 500, 'Failed to fetch events');
   }
 };
 
@@ -72,10 +78,11 @@ export const getEventById = async (req, res) => {
   try {
     const { id } = req.params;
     const event = await Event.findById(id);
-    if (!event) return res.status(404).json({ message: 'Event not found' });
-    res.json(event);
+    if (!event) return sendResponse(res, 404, 'Event not found');
+    sendResponse(res, 200, 'Event fetched successfully', event);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch event' });
+    console.error('getEventById:', err);
+    sendResponse(res, 500, 'Failed to fetch event');
   }
 };
 
@@ -86,11 +93,12 @@ export const rsvpEvent = async (req, res) => {
     const user_id = req.user.id;
 
     const success = await EventRsvp.add(user_id, event_id);
-    if (!success) return res.status(409).json({ message: 'Already RSVPed' });
+    if (!success) return sendResponse(res, 409, 'Already RSVPed');
 
-    res.status(201).json({ message: 'RSVP successful' });
+    sendResponse(res, 201, 'RSVP successful');
   } catch (err) {
-    res.status(500).json({ message: 'RSVP failed' });
+    console.error('rsvpEvent:', err);
+    sendResponse(res, 500, 'RSVP failed');
   }
 };
 
@@ -101,23 +109,22 @@ export const cancelRsvp = async (req, res) => {
     const user_id = req.user.id;
 
     await EventRsvp.remove(user_id, event_id);
-
-    res.json({ message: 'RSVP cancelled' });
+    sendResponse(res, 200, 'RSVP cancelled');
   } catch (err) {
-    res.status(500).json({ message: 'Failed to cancel RSVP' });
+    console.error('cancelRsvp:', err);
+    sendResponse(res, 500, 'Failed to cancel RSVP');
   }
 };
 
-// Get RSVPs list for an event (Organizer only)
+// Get RSVPs list for an event
 export const getRsvps = async (req, res) => {
   try {
     const { id: event_id } = req.params;
-
     const rsvps = await EventRsvp.getByEvent(event_id);
-
-    res.json(rsvps);
+    sendResponse(res, 200, 'RSVP list fetched', rsvps);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch RSVPs' });
+    console.error('getRsvps:', err);
+    sendResponse(res, 500, 'Failed to fetch RSVPs');
   }
 };
 
@@ -125,15 +132,10 @@ export const getRsvps = async (req, res) => {
 export const getStats = async (req, res) => {
   try {
     const { id: event_id } = req.params;
-
     const stats = await EventRsvp.getStats(event_id);
-    res.json(stats);
-
-    res.json({
-      total_rsvps: totalRsvps[0].total,
-      going_count: going[0].going
-    });
+    sendResponse(res, 200, 'Event stats fetched', stats);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch stats' });
+    console.error('getStats:', err);
+    sendResponse(res, 500, 'Failed to fetch stats');
   }
 };
