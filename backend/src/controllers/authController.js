@@ -39,7 +39,7 @@ export const register = async (req, res) => {
       email,
       password_hash: hashed,
       role: 'Pending',
-      requested_role: role,
+      requested_role: ['Campus Admin', 'Organizer', 'Visitor'].includes(role) ? role : null,
       is_verified: false,
       verification_code: verificationCode,
       provider: 'Local',

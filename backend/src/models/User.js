@@ -42,7 +42,9 @@ class User {
 
       return result.insertId;
     } catch (error) {
-      return this.handleDBError(error, 'user creation');
+      //return this.handleDBError(error, 'user creation');
+      console.error('Error in User.create():', error); 
+      throw error; 
     }
   }
 
