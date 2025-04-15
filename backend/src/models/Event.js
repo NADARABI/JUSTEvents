@@ -13,14 +13,11 @@ class Event {
 
   // Get event by ID
   static async findById(id) {
-    const [rows] = await db.execute(
-      `SELECT * FROM events WHERE id = ?`,
-      [id]
-    );
+    const [rows] = await db.execute(`SELECT * FROM events WHERE id = ?`, [id]);
     return rows[0];
   }
 
-  // Get all events (optionally filter by status, date, search)
+  // Get all events (with optional filters)
   static async findAll({ status = null, search = null } = {}) {
     let query = `SELECT * FROM events WHERE 1=1`;
     const params = [];
@@ -41,7 +38,7 @@ class Event {
     return rows;
   }
 
-  // Get events created by a specific organizer
+  // Get events by organizer
   static async findByOrganizer(organizer_id) {
     const [rows] = await db.execute(
       `SELECT * FROM events WHERE organizer_id = ?`,
@@ -50,13 +47,13 @@ class Event {
     return rows;
   }
 
-  // Update event (title, description, etc.)
+  // Update event by ID with fields
   static async update(id, fields) {
     const keys = Object.keys(fields);
     const values = Object.values(fields);
 
     const setClause = keys.map(key => `${key} = ?`).join(', ');
-    values.push(id);
+    values.push(id); // push id for WHERE clause
 
     const [result] = await db.execute(
       `UPDATE events SET ${setClause} WHERE id = ?`,
@@ -71,7 +68,7 @@ class Event {
     return result.affectedRows;
   }
 
-  // Change event status manually (optional)
+  // Update event approval status
   static async updateStatus(id, status) {
     const [result] = await db.execute(
       `UPDATE events SET status = ? WHERE id = ?`,
