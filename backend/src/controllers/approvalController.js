@@ -1,16 +1,22 @@
 import Approval from '../models/Approval.js';
 import Event from '../models/Event.js';
 
+const sendResponse = (res, status, message, data = null) => {
+  res.status(status).json({ success: status < 400, message, data });
+};
+
+// Get all pending event approvals
 export const getPendingEvents = async (req, res) => {
   try {
     const approvals = await Approval.getPending('Event');
-    res.json(approvals);
+    sendResponse(res, 200, 'Pending event approvals fetched', approvals);
   } catch (err) {
-    console.error('getPendingEvents:', err);
-    res.status(500).json({ message: 'Failed to fetch pending approvals' });
+    console.error('getPendingEvents error:', err);
+    sendResponse(res, 500, 'Failed to fetch pending approvals');
   }
 };
 
+// Review (approve/reject) a specific event
 export const reviewEvent = async (req, res) => {
   try {
     const { event_id } = req.params;
@@ -18,7 +24,7 @@ export const reviewEvent = async (req, res) => {
     const admin_id = req.user.id;
 
     if (!['Approved', 'Rejected'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid approval status' });
+      return sendResponse(res, 400, 'Invalid approval status');
     }
 
     const affected = await Approval.updateStatus({
@@ -26,18 +32,18 @@ export const reviewEvent = async (req, res) => {
       entity_id: event_id,
       admin_id,
       status,
-      reason,
+      reason
     });
 
     if (!affected) {
-      return res.status(404).json({ message: 'Approval record not found' });
+      return sendResponse(res, 404, 'Approval record not found');
     }
 
     await Event.updateStatus(event_id, status);
 
-    res.json({ message: `Event ${status.toLowerCase()} successfully` });
+    sendResponse(res, 200, `Event ${status.toLowerCase()} successfully`);
   } catch (err) {
-    console.error('reviewEvent:', err);
-    res.status(500).json({ message: 'Failed to process event approval' });
+    console.error('reviewEvent error:', err);
+    sendResponse(res, 500, 'Failed to process event approval');
   }
 };
