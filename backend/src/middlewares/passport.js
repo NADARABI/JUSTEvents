@@ -1,6 +1,7 @@
 // src/middlewares/passport.js
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 import User from '../models/User.js';
 
 passport.use(new GoogleStrategy({
@@ -25,6 +26,42 @@ passport.use(new GoogleStrategy({
     done(err);
   }
 }));
+
+// MICROSOFT STRATEGY
+passport.use(new MicrosoftStrategy({
+    clientID: process.env.MICROSOFT_CLIENT_ID,
+    clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+    callbackURL: process.env.MICROSOFT_CALLBACK_URL,
+    scope: ['user.read'],
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const email = profile.emails[0].value;
+      const name = profile.displayName;
+  
+      let user = await User.findByEmail(email);
+      if (!user) {
+        let autoRole = 'Pending';
+  
+        // Auto-assign student if @college.just.edu.jo
+        if (email.endsWith('@college.just.edu.jo')) {
+          autoRole = 'Student';
+        }
+  
+        user = await User.create({
+          name,
+          email,
+          provider: 'Microsoft',
+          is_verified: true,
+          role: autoRole,
+        });
+      }
+  
+      return done(null, user);
+    } catch (err) {
+      return done(err);
+    }
+  }));
 
 //serialization and deserialization to manage user sessions
 passport.serializeUser((user, done) => {

@@ -31,6 +31,17 @@ router.get('/google/callback',
   }
 );
 
+// Microsoft SSO Routes
+router.get('/microsoft', passport.authenticate('microsoft'));
+
+//Microsoft OAuth callback route
+router.get('/microsoft/callback',
+  passport.authenticate('microsoft', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.redirect('/'); // change this to CLIENT_URL + token if issuing JWT
+  }
+);
+
 // Example of a protected route
 router.get('/admin', verifyToken, authorizeRole(['System Admin']), (req, res) => {
   res.json({ message: 'Welcome, Admin!' });
