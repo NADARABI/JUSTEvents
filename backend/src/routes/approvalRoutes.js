@@ -4,19 +4,19 @@ import {
   reviewEvent
 } from '../controllers/approvalController.js';
 
-import authMiddleware from '../middleware/authMiddleware.js';
-import requireRole from '../middleware/requireRole.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
+import { authorizeRole } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
-// All routes require: Campus Admin
+// All routes below require Campus Admin access
 router.use(authMiddleware);
-router.use(requireRole('Campus Admin'));
+router.use(authorizeRole(['Campus Admin']));
 
-// GET all pending event approvals
+// GET /approve/events → List all pending event approvals
 router.get('/approve/events', getPendingEvents);
 
-// POST approval or rejection for a specific event
+// POST /approve/event/:event_id → Approve or reject a specific event
 router.post('/approve/event/:event_id', reviewEvent);
 
 export default router;
