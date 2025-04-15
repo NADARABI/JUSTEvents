@@ -35,6 +35,10 @@ router.get('/microsoft/callback',
   (req, res) => res.redirect('/')
 );
 
+// Protected Routes (come after public)
+router.use(authMiddleware);
+router.use(authorizeRole(['System Admin']));
+
 // Protected Admin Route
 router.get('/admin', authMiddleware, authorizeRole(['System Admin']), (req, res) => {
   res.json({ message: 'Welcome, Admin!' });
