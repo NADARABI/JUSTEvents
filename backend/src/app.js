@@ -6,6 +6,8 @@ import session from 'express-session';
 import adminRoutes from './routes/adminRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
+import approvalRoutes from './routes/approvalRoutes.js';
+
 
 import './middlewares/passport.js'; 
 
@@ -14,6 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use('/api', eventRoutes);
+app.use('/api', approvalRoutes);
 
 // Use express-session to handle user sessions
 app.use(session({
