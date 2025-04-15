@@ -11,24 +11,24 @@ import {
   getStats
 } from '../controllers/eventController.js';
 
-import authMiddleware from '../middleware/authMiddleware.js';
-import requireRole from '../middleware/requireRole.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
+import { authorizeRole } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
-// Public Access
-router.get('/events', getAllEvents); // browse events
+// Public
+router.get('/events', getAllEvents);
 router.get('/events/:id', getEventById);
 
-// Organizer Only
-router.post('/events', authMiddleware, requireRole('Organizer'), createEvent);
-router.put('/events/:id', authMiddleware, requireRole('Organizer'), editEvent);
-router.delete('/events/:id', authMiddleware, requireRole('Organizer'), deleteEvent);
-router.get('/events/:id/stats', authMiddleware, requireRole('Organizer'), getStats);
-router.get('/events/:id/rsvps', authMiddleware, requireRole('Organizer'), getRsvps);
+// Organizer Routes
+router.post('/events', authMiddleware, authorizeRole(['Organizer']), createEvent);
+router.put('/events/:id', authMiddleware, authorizeRole(['Organizer']), editEvent);
+router.delete('/events/:id', authMiddleware, authorizeRole(['Organizer']), deleteEvent);
+router.get('/events/:id/stats', authMiddleware, authorizeRole(['Organizer']), getStats);
+router.get('/events/:id/rsvps', authMiddleware, authorizeRole(['Organizer']), getRsvps);
 
-// Students & Visitors (RSVP)
-router.post('/events/:id/rsvp', authMiddleware, requireRole(['Student', 'Visitor']), rsvpEvent);
-router.delete('/events/:id/rsvp', authMiddleware, requireRole(['Student', 'Visitor']), cancelRsvp);
+// RSVP Routes (Student & Visitor)
+router.post('/events/:id/rsvp', authMiddleware, authorizeRole(['Student', 'Visitor']), rsvpEvent);
+router.delete('/events/:id/rsvp', authMiddleware, authorizeRole(['Student', 'Visitor']), cancelRsvp);
 
 export default router;
