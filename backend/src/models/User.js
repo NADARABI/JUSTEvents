@@ -140,19 +140,6 @@ class User {
     }
   }
 
-  // Update user profile
-  static async updateUserProfile(id, name, email) {
-    try {
-      const [result] = await db.execute(
-        `UPDATE users SET name = ?, email = ? WHERE id = ?`,
-        [name, email, id]
-      );
-      return result.affectedRows;
-    } catch (error) {
-      return this.handleDBError(error, 'updating user profile');
-    }
-  }
-
   // Update role after admin approval
   static async updateRole(userId, newRole) {
     try {
