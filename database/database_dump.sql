@@ -64,7 +64,7 @@ CREATE TABLE `event_rsvps` (
   KEY `event_id` (`event_id`),
   CONSTRAINT `event_rsvps_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `event_rsvps_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +73,7 @@ CREATE TABLE `event_rsvps` (
 
 LOCK TABLES `event_rsvps` WRITE;
 /*!40000 ALTER TABLE `event_rsvps` DISABLE KEYS */;
-INSERT INTO `event_rsvps` VALUES (4,1,4,'Going','2025-04-10 22:11:48'),(5,2,5,'Not Going','2025-04-10 22:11:48'),(6,3,6,'Going','2025-04-10 22:11:48');
+INSERT INTO `event_rsvps` VALUES (10,1,4,'Going','2025-04-15 21:24:21'),(11,2,5,'Not Going','2025-04-15 21:24:21'),(12,3,6,'Going','2025-04-15 21:24:21');
 /*!40000 ALTER TABLE `event_rsvps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -220,7 +220,7 @@ CREATE TABLE `users` (
   `reset_token_expiry` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,7 +229,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Ahmed Alattar','ahmed.alattar@example.com','hashedpassword1','System Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(2,'Khaled Salem','khaled.salem@example.com','hashedpassword2','Campus Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(3,'Marwa Khatib','marwa.khatib@example.com','hashedpassword3','Organizer',NULL,1,NULL,'Local','uploads/club-proof.pdf','2025-04-10 22:11:48',NULL,NULL),(4,'Noor Hassan','noor.hassan@example.com','hashedpassword4','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(5,'Sara Jundi','sara.jundi@example.com','hashedpassword5','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(6,'Omar Rashed','omar.rashed@example.com','hashedpassword6','Visitor',NULL,1,NULL,'Google',NULL,'2025-04-10 22:11:48',NULL,NULL),(7,'Leen Said','leen.said@example.com','hashedpassword7','Pending','',0,'123456','Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(8,'Rami Odeh','rami.odeh@example.com','hashedpassword8','Pending','Organizer',1,NULL,'Local','uploads/organizer-proof.pdf','2025-04-10 22:11:48',NULL,NULL),(9,'Bayan Qasem','bayan.qasem@college.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-10 22:11:48',NULL,NULL);
+INSERT INTO `users` VALUES (1,'Ahmed Alattar','ahmed.alattar@example.com','hashedpassword1','System Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(2,'Khaled Salem','khaled.salem@example.com','hashedpassword2','Campus Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(3,'Marwa Khatib','marwa.khatib@example.com','hashedpassword3','Organizer',NULL,1,NULL,'Local','uploads/club-proof.pdf','2025-04-10 22:11:48',NULL,NULL),(4,'Noor Hassan','noor.hassan@example.com','hashedpassword4','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(5,'Sara Jundi','sara.jundi@example.com','hashedpassword5','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(6,'Omar Rashed','omar.rashed@example.com','hashedpassword6','Visitor',NULL,1,NULL,'Google',NULL,'2025-04-10 22:11:48',NULL,NULL),(7,'Leen Said','leen.said@example.com','$2b$10$enJWqhrTotIsBGrh90QigOTAm5ngyxAIeVAWkTdPu1FGvz.Yo1H4G','Pending','',0,'123456','Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(8,'Rami Odeh','rami.odeh@example.com','hashedpassword8','Pending','Organizer',1,NULL,'Local','uploads/organizer-proof.pdf','2025-04-10 22:11:48',NULL,NULL),(9,'Bayan Qasem','bayan.qasem@college.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-10 22:11:48',NULL,NULL),(10,'Test User','test.user@example.com','$2b$10$ntAfCaTgaOt3MvSs1z2U6.iueC50qg7wA9aQwwL.lVfvHPwZKXKcW','Pending',NULL,1,NULL,'Local',NULL,'2025-04-15 15:49:14',NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -242,4 +242,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-11  1:12:56
+-- Dump completed on 2025-04-16  0:33:42
