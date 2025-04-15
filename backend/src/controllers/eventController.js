@@ -1,6 +1,7 @@
 import Event from '../models/Event.js';
 import db from '../utils/db.js';
 import EventRsvp from '../models/EventRsvp.js';
+import Approval from '../models/Approval.js';
 
 // Create new event
 export const createEvent = async (req, res) => {
