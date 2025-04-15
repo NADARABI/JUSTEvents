@@ -1,5 +1,6 @@
 import Event from '../models/Event.js';
 import db from '../utils/db.js';
+import EventRsvp from '../models/EventRsvp.js';
 
 // Create new event
 export const createEvent = async (req, res) => {
@@ -83,16 +84,9 @@ export const rsvpEvent = async (req, res) => {
     const { id: event_id } = req.params;
     const user_id = req.user.id;
 
-    const [existing] = await db.execute(
-      `SELECT * FROM event_rsvps WHERE user_id = ? AND event_id = ?`,
-      [user_id, event_id]
-    );
-    if (existing.length > 0) return res.status(409).json({ message: 'Already RSVPed' });
+    const success = await EventRsvp.add(user_id, event_id);
+    if (!success) return res.status(409).json({ message: 'Already RSVPed' });
 
-    await db.execute(
-      `INSERT INTO event_rsvps (user_id, event_id, status) VALUES (?, ?, 'Going')`,
-      [user_id, event_id]
-    );
     res.status(201).json({ message: 'RSVP successful' });
   } catch (err) {
     res.status(500).json({ message: 'RSVP failed' });
@@ -105,10 +99,8 @@ export const cancelRsvp = async (req, res) => {
     const { id: event_id } = req.params;
     const user_id = req.user.id;
 
-    await db.execute(
-      `DELETE FROM event_rsvps WHERE user_id = ? AND event_id = ?`,
-      [user_id, event_id]
-    );
+    await EventRsvp.remove(user_id, event_id);
+
     res.json({ message: 'RSVP cancelled' });
   } catch (err) {
     res.status(500).json({ message: 'Failed to cancel RSVP' });
@@ -120,13 +112,7 @@ export const getRsvps = async (req, res) => {
   try {
     const { id: event_id } = req.params;
 
-    const [rsvps] = await db.execute(
-      `SELECT u.id, u.name, u.email, r.status
-       FROM event_rsvps r
-       JOIN users u ON u.id = r.user_id
-       WHERE r.event_id = ?`,
-      [event_id]
-    );
+    const rsvps = await EventRsvp.getByEvent(event_id);
 
     res.json(rsvps);
   } catch (err) {
@@ -139,15 +125,8 @@ export const getStats = async (req, res) => {
   try {
     const { id: event_id } = req.params;
 
-    const [totalRsvps] = await db.execute(
-      `SELECT COUNT(*) as total FROM event_rsvps WHERE event_id = ?`,
-      [event_id]
-    );
-
-    const [going] = await db.execute(
-      `SELECT COUNT(*) as going FROM event_rsvps WHERE event_id = ? AND status = 'Going'`,
-      [event_id]
-    );
+    const stats = await EventRsvp.getStats(event_id);
+    res.json(stats);
 
     res.json({
       total_rsvps: totalRsvps[0].total,
