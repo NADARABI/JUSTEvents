@@ -33,7 +33,7 @@ CREATE TABLE `approvals` (
   PRIMARY KEY (`id`),
   KEY `admin_id` (`admin_id`),
   CONSTRAINT `approvals_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,6 +42,7 @@ CREATE TABLE `approvals` (
 
 LOCK TABLES `approvals` WRITE;
 /*!40000 ALTER TABLE `approvals` DISABLE KEYS */;
+INSERT INTO `approvals` VALUES (3,2,'Event',1,'Approved','Meets all criteria','2025-04-10 22:11:48'),(4,2,'Room Booking',2,'Pending','Awaiting confirmation','2025-04-10 22:11:48');
 /*!40000 ALTER TABLE `approvals` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -63,7 +64,7 @@ CREATE TABLE `event_rsvps` (
   KEY `event_id` (`event_id`),
   CONSTRAINT `event_rsvps_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `event_rsvps_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -72,6 +73,7 @@ CREATE TABLE `event_rsvps` (
 
 LOCK TABLES `event_rsvps` WRITE;
 /*!40000 ALTER TABLE `event_rsvps` DISABLE KEYS */;
+INSERT INTO `event_rsvps` VALUES (4,1,4,'Going','2025-04-10 22:11:48'),(5,2,5,'Not Going','2025-04-10 22:11:48'),(6,3,6,'Going','2025-04-10 22:11:48');
 /*!40000 ALTER TABLE `event_rsvps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,7 +96,7 @@ CREATE TABLE `events` (
   PRIMARY KEY (`id`),
   KEY `organizer_id` (`organizer_id`),
   CONSTRAINT `events_ibfk_1` FOREIGN KEY (`organizer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,6 +105,7 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
+INSERT INTO `events` VALUES (4,'Tech Meetup','A discussion about AI advancements.','2025-05-10','14:00:00',3,1,'Approved'),(5,'Business Seminar','How to start a successful business.','2025-06-15','10:30:00',3,2,'Pending'),(6,'Science Fair','A showcase of university research projects.','2025-07-10','11:00:00',3,3,'Approved');
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -122,7 +125,7 @@ CREATE TABLE `notifications` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,6 +134,7 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
+INSERT INTO `notifications` VALUES (4,1,'Your event booking has been approved.',0,'2025-04-10 22:11:48'),(5,2,'Reminder: Science Fair starts at 10 AM tomorrow.',0,'2025-04-10 22:11:48'),(6,3,'Your event registration was successful.',1,'2025-04-10 22:11:48');
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -153,7 +157,7 @@ CREATE TABLE `room_bookings` (
   KEY `room_id` (`room_id`),
   CONSTRAINT `room_bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `room_bookings_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,6 +166,7 @@ CREATE TABLE `room_bookings` (
 
 LOCK TABLES `room_bookings` WRITE;
 /*!40000 ALTER TABLE `room_bookings` DISABLE KEYS */;
+INSERT INTO `room_bookings` VALUES (4,2,1,'2025-04-01 08:00:00','2025-04-01 10:00:00','Approved'),(5,4,2,'2025-04-02 14:00:00','2025-04-02 16:00:00','Pending'),(6,5,3,'2025-04-03 09:30:00','2025-04-03 11:30:00','Rejected');
 /*!40000 ALTER TABLE `room_bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -179,7 +184,7 @@ CREATE TABLE `rooms` (
   `capacity` int NOT NULL,
   `status` enum('Available','Booked') DEFAULT 'Available',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,7 +193,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'Main Auditorium','Main Building',200,'Available'),(2,'Meeting Room A','Admin Building',50,'Booked'),(3,'Science Lab','Science Faculty',30,'Available');
+INSERT INTO `rooms` VALUES (4,'Main Auditorium','Main Building',200,'Available'),(5,'Meeting Room A','Admin Building',50,'Booked'),(6,'Science Lab','Science Faculty',30,'Available');
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -203,17 +208,19 @@ CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `password_hash` varchar(255) NOT NULL,
-  `role` enum('System Admin','Campus Admin','Organizer','Student','Visitor') NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `password_hash` varchar(255) DEFAULT NULL,
+  `role` enum('System Admin','Campus Admin','Organizer','Student','Visitor','Pending') NOT NULL DEFAULT 'Pending',
   `requested_role` enum('Campus Admin','Organizer','Visitor') DEFAULT NULL,
   `is_verified` tinyint(1) DEFAULT '0',
   `verification_code` varchar(10) DEFAULT NULL,
   `provider` enum('Local','Google','Microsoft') DEFAULT 'Local',
   `attachment` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_token_expiry` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -222,7 +229,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Ahmed Alattar','ahmed.alattar@example.com','hashedpassword1','System Admin','2025-03-24 20:08:37',NULL,1,NULL,'Local',NULL),(2,'Khaled Salem','khaled.salem@example.com','hashedpassword2','Campus Admin','2025-03-24 20:08:37',NULL,1,NULL,'Local',NULL),(3,'Marwa Khatib','marwa.khatib@example.com','hashedpassword3','Organizer','2025-03-24 20:08:37',NULL,1,NULL,'Local','uploads/club-proof.pdf'),(4,'Noor Hassan','noor.hassan@example.com','hashedpassword4','Student','2025-03-24 20:08:37',NULL,1,NULL,'Local',NULL),(5,'Sara Jundi','sara.jundi@example.com','hashedpassword5','Student','2025-03-24 20:08:37',NULL,1,NULL,'Local',NULL),(6,'Omar Rashed','omar.rashed@example.com','hashedpassword6','Visitor','2025-03-24 20:08:37',NULL,1,NULL,'Google',NULL);
+INSERT INTO `users` VALUES (1,'Ahmed Alattar','ahmed.alattar@example.com','hashedpassword1','System Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(2,'Khaled Salem','khaled.salem@example.com','hashedpassword2','Campus Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(3,'Marwa Khatib','marwa.khatib@example.com','hashedpassword3','Organizer',NULL,1,NULL,'Local','uploads/club-proof.pdf','2025-04-10 22:11:48',NULL,NULL),(4,'Noor Hassan','noor.hassan@example.com','hashedpassword4','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(5,'Sara Jundi','sara.jundi@example.com','hashedpassword5','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(6,'Omar Rashed','omar.rashed@example.com','hashedpassword6','Visitor',NULL,1,NULL,'Google',NULL,'2025-04-10 22:11:48',NULL,NULL),(7,'Leen Said','leen.said@example.com','hashedpassword7','Pending','',0,'123456','Local',NULL,'2025-04-10 22:11:48',NULL,NULL),(8,'Rami Odeh','rami.odeh@example.com','hashedpassword8','Pending','Organizer',1,NULL,'Local','uploads/organizer-proof.pdf','2025-04-10 22:11:48',NULL,NULL),(9,'Bayan Qasem','bayan.qasem@college.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-10 22:11:48',NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -235,4 +242,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-24 23:10:32
+-- Dump completed on 2025-04-11  1:12:56

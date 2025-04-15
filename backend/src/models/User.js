@@ -2,6 +2,12 @@
 import db from '../utils/db.js';
 
 class User {
+  // Utility function to handle database errors
+  static handleDBError(error, action) {
+    console.error(`Error during ${action}:`, error.message);
+    return null;
+  }
+
   // Register user (form or SSO)
   static async create(userData) {
     try {
@@ -36,8 +42,9 @@ class User {
 
       return result.insertId;
     } catch (error) {
-      console.error("Error creating user:", error.message);
-      return null;
+      //return this.handleDBError(error, 'user creation');
+      console.error('Error in User.create():', error); 
+      throw error; 
     }
   }
 
@@ -47,8 +54,7 @@ class User {
       const [rows] = await db.execute(`SELECT * FROM users WHERE email = ?`, [email]);
       return rows[0] || null;
     } catch (error) {
-      console.error("Error finding user by email:", error.message);
-      return null;
+      return this.handleDBError(error, 'finding user by email');
     }
   }
 
@@ -58,8 +64,29 @@ class User {
       const [rows] = await db.execute(`SELECT * FROM users WHERE id = ?`, [id]);
       return rows[0] || null;
     } catch (error) {
-      console.error("Error finding user by ID:", error.message);
-      return null;
+      return this.handleDBError(error, 'finding user by ID');
+    }
+  }
+
+  // Get all users
+  static async getAllUsers() {
+    try {
+      const [rows] = await db.execute(`SELECT * FROM users`);
+      return rows;
+    } catch (error) {
+      return this.handleDBError(error, 'fetching all users');
+    }
+  }
+
+  // Check if email is verified
+  static async isEmailVerified(email) {
+    try {
+      const [rows] = await db.execute(
+        `SELECT is_verified FROM users WHERE email = ?`, [email]
+      );
+      return rows[0]?.is_verified || false;
+    } catch (error) {
+      return this.handleDBError(error, 'checking email verification');
     }
   }
 
@@ -72,8 +99,7 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error verifying email:", error.message);
-      return 0;
+      return this.handleDBError(error, 'verifying email');
     }
   }
 
@@ -86,8 +112,7 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error updating verification code:", error.message);
-      return 0;
+      return this.handleDBError(error, 'updating verification code');
     }
   }
 
@@ -100,8 +125,7 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error resetting password:", error.message);
-      return 0;
+      return this.handleDBError(error, 'resetting password');
     }
   }
 
@@ -114,8 +138,7 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error updating password by ID:", error.message);
-      return 0;
+      return this.handleDBError(error, 'updating password by ID');
     }
   }
 
@@ -128,12 +151,11 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error updating role:", error.message);
-      return 0;
+      return this.handleDBError(error, 'updating user role');
     }
   }
 
-  // Store role request (Organizer/Admin)
+  // Store role request
   static async storeRoleRequest(userId, role, attachment = null) {
     try {
       const [result] = await db.execute(
@@ -142,30 +164,148 @@ class User {
       );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error storing role request:", error.message);
-      return 0;
+      return this.handleDBError(error, 'storing role request');
     }
   }
 
-  // Get list of pending users (for admin approval)
+  // Get users by role
+  static async getUsersByRole(role) {
+    try {
+      const [rows] = await db.execute(`SELECT * FROM users WHERE role = ?`, [role]);
+      return rows;
+    } catch (error) {
+      return this.handleDBError(error, 'fetching users by role');
+    }
+  }
+
+  // Get list of pending users
   static async getPendingUsers() {
     try {
       const [rows] = await db.execute(`SELECT * FROM users WHERE role = 'Pending'`);
       return rows;
     } catch (error) {
-      console.error("Error fetching pending users:", error.message);
+      return this.handleDBError(error, 'fetching pending users');
+    }
+  }
+
+  // Soft delete user
+  static async softDeleteUser(id) {
+    try {
+      const [result] = await db.execute(
+        `UPDATE users SET role = 'Deleted' WHERE id = ?`,
+        [id]
+      );
+      return result.affectedRows;
+    } catch (error) {
+      return this.handleDBError(error, 'soft deleting user');
+    }
+  }
+
+  // Update profile fields (name, email, etc.)
+  static async updateUserProfile(id, fields) {
+    try {
+      const updates = [];
+      const values = [];
+
+      for (const [key, value] of Object.entries(fields)) {
+        updates.push(`${key} = ?`);
+        values.push(value);
+      }
+
+      values.push(id); // for WHERE clause
+
+      const [result] = await db.execute(
+        `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
+        values
+      );
+      return result.affectedRows;
+    } catch (error) {
+      console.error("Error updating user profile:", error.message);
+      return 0;
+    }
+  }
+
+  // Search users by email fragment (for admin)
+  static async searchByEmailFragment(keyword) {
+    try {
+      const [rows] = await db.execute(
+        `SELECT * FROM users WHERE email LIKE ? AND role = 'Pending'`,
+        [`%${keyword}%`]
+      );
+      return rows;
+    } catch (error) {
+      console.error("Error searching users by email:", error.message);
       return [];
     }
   }
 
-  // Soft delete or completely remove user by ID
-  static async deleteUser(id) {
+  // Track last login timestamp
+  static async updateLastLogin(id) {
     try {
-      const [result] = await db.execute(`DELETE FROM users WHERE id = ?`, [id]);
+      const [result] = await db.execute(
+        `UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?`,
+        [id]
+      );
       return result.affectedRows;
     } catch (error) {
-      console.error("Error deleting user:", error.message);
+      console.error("Error updating last login:", error.message);
       return 0;
+    }
+  }
+
+  // Store both reset tocken and expiry in database
+  static async storeResetToken(email, token, expiry) {
+    try {
+      const [result] = await db.execute(
+        `UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?`,
+        [token, expiry, email]
+      );
+      return result.affectedRows > 0; // Returns true if a row was affected
+    } catch (error) {
+      console.error('Error storing reset token:', error.message);
+      return false;
+    }
+  }
+
+  // find user by reset token
+  static async findByResetToken(token) {
+    try {
+      const [rows] = await db.execute(
+        `SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()`,
+        [token]
+      );
+      return rows[0] || null; // Return user if token is valid, else null
+    } catch (error) {
+      console.error('Error finding user by reset token:', error.message);
+      return null;
+    }
+  }
+
+  //clear reset token and expiry
+  static async clearResetToken(email) {
+    try {
+      const [result] = await db.execute(
+        `UPDATE users SET reset_token = NULL, reset_token_expiry = NULL WHERE email = ?`,
+        [email]
+      );
+      return result.affectedRows > 0; // Returns true if the token was cleared
+    } catch (error) {
+      console.error('Error clearing reset token:', error.message);
+      return false;
+    }
+  }
+
+  //update the password after validation of the reset token
+  static async setResetPassword(email, hash) {
+    try {
+      const [result] = await db.execute(
+        `UPDATE users SET password_hash = ? WHERE email = ?`,
+        [hash, email]
+      );
+      return result.affectedRows > 0; // Returns true if the password is updated
+    } catch (error) {
+      console.error('Error updating password:', error.message);
+      return false;
     }
   }
 }
