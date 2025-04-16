@@ -1,5 +1,7 @@
 // src/middlewares/authMiddleware.js
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'justevents-secret';
 
@@ -13,6 +15,8 @@ const authMiddleware = (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      console.log("Verifying with secret:", JWT_SECRET);
+
       if (err) {
         return res.status(401).json({ message: 'Unauthorized: Invalid or expired token' });
       }

@@ -1,40 +1,39 @@
-// src/app.js
 import express from 'express';
 import cors from 'cors';
 import passport from 'passport';
 import session from 'express-session';
-import adminRoutes from './routes/adminRoutes.js';
+
 import authRoutes from './routes/authRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import approvalRoutes from './routes/approvalRoutes.js';
 
-
-import './middlewares/passport.js'; 
+import './middlewares/passport.js';
 
 const app = express();
 
+// Core Middleware
 app.use(express.json());
 app.use(cors());
-app.use('/api', eventRoutes);
-app.use('/api', approvalRoutes);
 
-// Use express-session to handle user sessions
+// Session (for Passport SSO)
 app.use(session({
   secret: 'your_secret_key',
-  resave: false,              // Don't save session if it's not modified
-  saveUninitialized: true     // Save an uninitialized session (not modified)
+  resave: false,
+  saveUninitialized: true
 }));
-
-// Initialize Passport.js
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/admin', adminRoutes); // Final route: /admin/pending-users etc.
-
-// Routes for Google OAuth
+// PUBLIC Routes
 app.use('/auth', authRoutes);
 
-// Initial test route to confirm setup clearly
+// Protected API Routes
+app.use('/api', eventRoutes);
+app.use('/api', approvalRoutes);
+app.use('/admin', adminRoutes);
+
+// Root Health Check
 app.get('/', (req, res) => {
   res.json({ message: 'Backend setup clearly successful!' });
 });

@@ -2,14 +2,15 @@ import db from '../utils/db.js';
 
 class Event {
   // Create new event
-  static async create({ title, description, date, time, organizer_id, venue_id }) {
+  static async create({ title, description, date, time, organizer_id, venue_id, image_url }) {
     const [result] = await db.execute(
-      `INSERT INTO events (title, description, date, time, organizer_id, venue_id, status)
-       VALUES (?, ?, ?, ?, ?, ?, 'Pending')`,
-      [title, description, date, time, organizer_id, venue_id]
+      `INSERT INTO events (title, description, date, time, organizer_id, venue_id, status, image_url)
+       VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?)`,
+      [title, description, date, time, organizer_id, venue_id, image_url]
     );
     return result.insertId;
   }
+  
 
   // Get event by ID
   static async findById(id) {

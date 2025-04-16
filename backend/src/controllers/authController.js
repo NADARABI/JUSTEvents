@@ -85,6 +85,8 @@ export const login = async (req, res) => {
     const user = await User.findByEmail(email);
     if (!user) return sendResponse(res, 404, 'User not found');
     if (!user.is_verified) return sendResponse(res, 401, 'Please verify your email first');
+   
+    console.log("Signing with secret:", JWT_SECRET);
 
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return sendResponse(res, 401, 'Incorrect password');

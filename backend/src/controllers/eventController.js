@@ -11,6 +11,7 @@ export const createEvent = async (req, res) => {
   try {
     const { title, description, date, time, venue_id } = req.body;
     const organizer_id = req.user.id;
+    const image_url = req.file?.filename || null;
 
     if (!title || !description || !date || !time || !venue_id) {
       return sendResponse(res, 400, 'All fields are required');
