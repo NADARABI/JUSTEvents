@@ -17,8 +17,14 @@ passport.use(new GoogleStrategy({
       user = await User.create({
         name: profile.displayName,
         email: profile.emails[0].value,
+        password_hash: null,
         provider: 'Google',  // Store the provider as Google
         is_verified: true,   // Automatically verified
+        role: 'Pending',
+        requested_role: null,
+        verification_code: null,
+        provider: 'Google',
+        attachment: null,
       });
     }
     done(null, user);  // Proceed with user info
