@@ -44,10 +44,11 @@ passport.use(new MicrosoftStrategy({
         let autoRole = 'Pending';
   
         // Auto-assign student if @college.just.edu.jo
-        if (email.endsWith('@college.just.edu.jo')) {
+        const justStudentRegex = /@([a-z]+\.)*just\.edu\.jo$/i;
+        if (justStudentRegex.test(email)) {
           autoRole = 'Student';
         }
-  
+        
         user = await User.create({
           name,
           email,
