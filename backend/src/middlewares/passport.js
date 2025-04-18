@@ -17,8 +17,14 @@ passport.use(new GoogleStrategy({
       user = await User.create({
         name: profile.displayName,
         email: profile.emails[0].value,
+        password_hash: null,
         provider: 'Google',  // Store the provider as Google
         is_verified: true,   // Automatically verified
+        role: 'Pending',
+        requested_role: null,
+        verification_code: null,
+        provider: 'Google',
+        attachment: null,
       });
     }
     done(null, user);  // Proceed with user info
@@ -44,10 +50,11 @@ passport.use(new MicrosoftStrategy({
         let autoRole = 'Pending';
   
         // Auto-assign student if @college.just.edu.jo
-        if (email.endsWith('@college.just.edu.jo')) {
+        const justStudentRegex = /@([a-z]+\.)*just\.edu\.jo$/i;
+        if (justStudentRegex.test(email)) {
           autoRole = 'Student';
         }
-  
+        
         user = await User.create({
           name,
           email,
