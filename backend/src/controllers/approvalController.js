@@ -1,5 +1,6 @@
 import Approval from '../models/Approval.js';
 import Event from '../models/Event.js';
+import Notification from '../models/Notification.js';
 
 const sendResponse = (res, status, message, data = null) => {
   res.status(status).json({ success: status < 400, message, data });
@@ -40,6 +41,8 @@ export const reviewEvent = async (req, res) => {
     }
 
     await Event.updateStatus(event_id, status);
+    const event = await Event.findById(event_id);
+    await Notification.create(event.organizer_id, `Your event "${event.title}" was ${status.toLowerCase()}.`);
 
     sendResponse(res, 200, `Event ${status.toLowerCase()} successfully`);
   } catch (err) {

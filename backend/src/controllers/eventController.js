@@ -1,6 +1,7 @@
 import Event from '../models/Event.js';
 import EventRsvp from '../models/EventRsvp.js';
 import Approval from '../models/Approval.js';
+import Notification from '../models/Notification.js';
 
 const sendResponse = (res, status, message, data = null) => {
   res.status(status).json({ success: status < 400, message, data });
@@ -17,7 +18,7 @@ export const createEvent = async (req, res) => {
       return sendResponse(res, 400, 'All fields are required');
     }
 
-    const eventId = await Event.create({ title, description, date, time, organizer_id, venue_id });
+    const eventId = await Event.create({ title, description, date, time, organizer_id, venue_id, image_url });
     await Approval.create('Event', eventId);
 
     sendResponse(res, 201, 'Event created and pending approval', { eventId });
@@ -96,6 +97,7 @@ export const rsvpEvent = async (req, res) => {
     const success = await EventRsvp.add(user_id, event_id);
     if (!success) return sendResponse(res, 409, 'Already RSVPed');
 
+    await Notification.create(user_id, `You successfully RSVPed to Event #${event_id}`);
     sendResponse(res, 201, 'RSVP successful');
   } catch (err) {
     console.error('rsvpEvent:', err);
