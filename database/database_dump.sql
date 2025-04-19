@@ -88,6 +88,7 @@ CREATE TABLE `events` (
   `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
+  `category` varchar(100) DEFAULT 'General',
   `date` date NOT NULL,
   `time` time NOT NULL,
   `organizer_id` int NOT NULL,
@@ -106,7 +107,7 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
-INSERT INTO `events` VALUES (4,'Tech Meetup','A discussion about AI advancements.','2025-05-10','14:00:00',3,1,'Approved',NULL),(5,'Business Seminar','How to start a successful business.','2025-06-15','10:30:00',3,2,'Pending',NULL),(6,'Science Fair','A showcase of university research projects.','2025-07-10','11:00:00',3,3,'Approved',NULL),(7,'Tech Meetup','Discussion on AI tools','2025-07-20','14:00:00',11,1,'Pending',NULL),(8,'Tech Meetup','Discussion on AI tools','2025-07-20','14:00:00',11,1,'Pending',NULL),(10,'Tech Meetup','Discussion on AI tools','2025-07-20','14:00:00',11,1,'Rejected',NULL),(11,'JUST Career Fair','Meet top employers','2025-07-25','12:00:00',11,1,'Rejected',NULL),(12,'JUST Career Fair','Meet top employers','2025-07-25','12:00:00',11,1,'Rejected','event-1745074913432.jpeg');
+INSERT INTO `events` VALUES (4,'Tech Meetup','A discussion about AI advancements.','Tech','2025-05-10','14:00:00',3,1,'Approved',NULL),(5,'Business Seminar','How to start a successful business.','Sports','2025-06-15','10:30:00',3,2,'Pending',NULL),(6,'Science Fair','A showcase of university research projects.','General','2025-07-10','11:00:00',3,3,'Approved',NULL),(7,'Tech Meetup','Discussion on AI tools','General','2025-07-20','14:00:00',11,1,'Pending',NULL),(8,'Tech Meetup','Discussion on AI tools','General','2025-07-20','14:00:00',11,1,'Pending',NULL),(10,'Tech Meetup','Discussion on AI tools','General','2025-07-20','14:00:00',11,1,'Rejected',NULL),(11,'JUST Career Fair','Meet top employers','General','2025-07-25','12:00:00',11,1,'Rejected',NULL),(12,'JUST Career Fair','Meet top employers','General','2025-07-25','12:00:00',11,1,'Rejected','event-1745074913432.jpeg');
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -130,7 +131,7 @@ CREATE TABLE `feedback` (
   CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE,
   CONSTRAINT `feedback_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `feedback_chk_1` CHECK ((`rating` between 1 and 5))
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -139,7 +140,7 @@ CREATE TABLE `feedback` (
 
 LOCK TABLES `feedback` WRITE;
 /*!40000 ALTER TABLE `feedback` DISABLE KEYS */;
-INSERT INTO `feedback` VALUES (4,12,14,'Great content, loved the speakers!',5,'2025-04-19 15:22:23'),(5,12,5,'Could use more time for Q&A.',4,'2025-04-19 15:23:17'),(8,8,14,'Room was crowded but well organized.',3,'2025-04-19 15:24:38');
+INSERT INTO `feedback` VALUES (4,12,14,'Great content, loved the speakers!',5,'2025-04-19 15:22:23'),(5,12,5,'Could use more time for Q&A.',4,'2025-04-19 15:23:17'),(8,8,14,'Room was crowded but well organized.',3,'2025-04-19 15:24:38'),(9,7,14,'Loved the discussion and panel!',5,'2025-04-19 16:41:23');
 /*!40000 ALTER TABLE `feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -277,4 +278,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-19 18:25:34
+-- Dump completed on 2025-04-19 20:08:53

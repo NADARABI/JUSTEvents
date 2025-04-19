@@ -66,8 +66,8 @@ export const deleteEvent = async (req, res) => {
 // Get all events (with optional filters)
 export const getAllEvents = async (req, res) => {
   try {
-    const { status, search } = req.query;
-    const events = await Event.findAll({ status, search });
+    const { status, search, date, upcoming, category } = req.query;
+    const events = await Event.findAll({ status, search, date, upcoming, category });
     sendResponse(res, 200, 'Events fetched successfully', events);
   } catch (err) {
     console.error('getAllEvents:', err);

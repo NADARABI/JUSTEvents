@@ -3,7 +3,7 @@ import db from '../utils/db.js';
 class Event {
   // Create new event
   static async create({ title, description, date, time, organizer_id, venue_id, image_url }) {
-    
+
     if (image_url === undefined) image_url = null;
     const [result] = await db.execute(
       `INSERT INTO events (title, description, date, time, organizer_id, venue_id, status, image_url)
@@ -21,7 +21,7 @@ class Event {
   }
 
   // Get all events (with optional filters)
-  static async findAll({ status = null, search = null } = {}) {
+  static async findAll({ status = null, search = null, date = null, upcoming = false, category = null } = {}) {
     let query = `SELECT * FROM events WHERE 1=1`;
     const params = [];
 
@@ -33,6 +33,20 @@ class Event {
     if (search) {
       query += ` AND (title LIKE ? OR description LIKE ?)`;
       params.push(`%${search}%`, `%${search}%`);
+    }
+
+    if (date) {
+      query += ` AND date = ?`;
+      params.push(date);
+    }
+  
+    if (upcoming) {
+      query += ` AND date >= CURDATE()`;
+    }
+  
+    if (category) {
+      query += ` AND category = ?`;
+      params.push(category);
     }
 
     query += ` ORDER BY date ASC, time ASC`;
