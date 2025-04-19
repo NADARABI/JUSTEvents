@@ -9,6 +9,7 @@ class Approval {
       [null, entity_type, entity_id]
     );
   }
+  
 
   // Update approval status (approve or reject)
   static async updateStatus({ entity_type, entity_id, admin_id, status, reason }) {

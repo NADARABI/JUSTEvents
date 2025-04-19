@@ -30,7 +30,7 @@ app.use('/auth', authRoutes);
 
 // Protected API Routes
 app.use('/api', eventRoutes);
-app.use('/api', approvalRoutes);
+app.use('/approve', approvalRoutes);
 app.use('/admin', adminRoutes);
 
 // Root Health Check

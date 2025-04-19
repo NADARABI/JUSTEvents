@@ -3,6 +3,8 @@ import db from '../utils/db.js';
 class Event {
   // Create new event
   static async create({ title, description, date, time, organizer_id, venue_id, image_url }) {
+    
+    if (image_url === undefined) image_url = null;
     const [result] = await db.execute(
       `INSERT INTO events (title, description, date, time, organizer_id, venue_id, status, image_url)
        VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?)`,

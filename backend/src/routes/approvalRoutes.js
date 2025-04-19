@@ -14,7 +14,7 @@ router.use(authMiddleware);
 router.use(authorizeRole(['Campus Admin']));
 
 // GET /approve/events → List all pending event approvals
-router.get('/approve/events', getPendingEvents);
+router.get('/events', getPendingEvents);
 
 // POST /approve/event/:event_id → Approve or reject a specific event
 router.post('/approve/event/:event_id', reviewEvent);
