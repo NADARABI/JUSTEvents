@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `approvals`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `approvals` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `admin_id` int NOT NULL,
+  `admin_id` int DEFAULT NULL,
   `entity_type` enum('Event','Room Booking') NOT NULL,
   `entity_id` int NOT NULL,
   `status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
@@ -33,7 +33,7 @@ CREATE TABLE `approvals` (
   PRIMARY KEY (`id`),
   KEY `admin_id` (`admin_id`),
   CONSTRAINT `approvals_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `approvals` (
 
 LOCK TABLES `approvals` WRITE;
 /*!40000 ALTER TABLE `approvals` DISABLE KEYS */;
-INSERT INTO `approvals` VALUES (3,2,'Event',1,'Approved','Meets all criteria','2025-04-10 22:11:48'),(4,2,'Room Booking',2,'Pending','Awaiting confirmation','2025-04-10 22:11:48');
+INSERT INTO `approvals` VALUES (3,2,'Event',1,'Approved','Meets all criteria','2025-04-10 22:11:48'),(4,2,'Room Booking',2,'Pending','Awaiting confirmation','2025-04-10 22:11:48'),(5,NULL,'Event',9,'Pending',NULL,NULL);
 /*!40000 ALTER TABLE `approvals` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -97,7 +97,7 @@ CREATE TABLE `events` (
   PRIMARY KEY (`id`),
   KEY `organizer_id` (`organizer_id`),
   CONSTRAINT `events_ibfk_1` FOREIGN KEY (`organizer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,7 +106,7 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
-INSERT INTO `events` VALUES (4,'Tech Meetup','A discussion about AI advancements.','2025-05-10','14:00:00',3,1,'Approved',NULL),(5,'Business Seminar','How to start a successful business.','2025-06-15','10:30:00',3,2,'Pending',NULL),(6,'Science Fair','A showcase of university research projects.','2025-07-10','11:00:00',3,3,'Approved',NULL);
+INSERT INTO `events` VALUES (4,'Tech Meetup','A discussion about AI advancements.','2025-05-10','14:00:00',3,1,'Approved',NULL),(5,'Business Seminar','How to start a successful business.','2025-06-15','10:30:00',3,2,'Pending',NULL),(6,'Science Fair','A showcase of university research projects.','2025-07-10','11:00:00',3,3,'Approved',NULL),(7,'Tech Meetup','Discussion on AI tools','2025-07-20','14:00:00',11,1,'Pending',NULL),(8,'Tech Meetup','Discussion on AI tools','2025-07-20','14:00:00',11,1,'Pending',NULL),(9,'Tech Meetup','Discussion on AI tools','2025-07-20','14:00:00',11,1,'Pending',NULL);
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -222,7 +222,7 @@ CREATE TABLE `users` (
   `last_login` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -231,7 +231,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Ahmed Alattar','ahmed.alattar@example.com','hashedpassword1','System Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(2,'Khaled Salem','khaled.salem@example.com','hashedpassword2','Campus Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(3,'Marwa Khatib','marwa.khatib@example.com','hashedpassword3','Organizer',NULL,1,NULL,'Local','uploads/club-proof.pdf','2025-04-10 22:11:48',NULL,NULL,NULL),(4,'Noor Hassan','noor.hassan@example.com','hashedpassword4','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(5,'Sara Jundi','sara.jundi@example.com','hashedpassword5','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(6,'Omar Rashed','omar.rashed@example.com','hashedpassword6','Visitor',NULL,1,NULL,'Google',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(7,'Leen Said','leen.said@example.com','$2b$10$enJWqhrTotIsBGrh90QigOTAm5ngyxAIeVAWkTdPu1FGvz.Yo1H4G','Pending','',0,'123456','Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(8,'Rami Odeh','rami.odeh@example.com','hashedpassword8','Pending','Organizer',1,NULL,'Local','uploads/organizer-proof.pdf','2025-04-10 22:11:48',NULL,NULL,NULL),(9,'Bayan Qasem','bayan.qasem@college.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(10,'Test User','test.user@example.com','$2b$10$ntAfCaTgaOt3MvSs1z2U6.iueC50qg7wA9aQwwL.lVfvHPwZKXKcW','Pending',NULL,1,NULL,'Local',NULL,'2025-04-15 15:49:14',NULL,NULL,NULL),(11,'Event Organizer','organizer1@example.com','$2b$10$8KvSEHEUKe7gE/SRLrI6COBuIAexqNiOojT0ITrgiU4t0x0fxzC4K','Organizer',NULL,1,NULL,'Local',NULL,'2025-04-16 15:22:48',NULL,NULL,NULL);
+INSERT INTO `users` VALUES (1,'Ahmed Alattar','ahmed.alattar@example.com','hashedpassword1','System Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(2,'Khaled Salem','khaled.salem@example.com','hashedpassword2','Campus Admin',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(3,'Marwa Khatib','marwa.khatib@example.com','hashedpassword3','Organizer',NULL,1,NULL,'Local','uploads/club-proof.pdf','2025-04-10 22:11:48',NULL,NULL,NULL),(4,'Noor Hassan','noor.hassan@example.com','hashedpassword4','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(5,'Sara Jundi','sara.jundi@example.com','hashedpassword5','Student',NULL,1,NULL,'Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(6,'Omar Rashed','omar.rashed@example.com','hashedpassword6','Visitor',NULL,1,NULL,'Google',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(7,'Leen Said','leen.said@example.com','$2b$10$enJWqhrTotIsBGrh90QigOTAm5ngyxAIeVAWkTdPu1FGvz.Yo1H4G','Pending','',0,'123456','Local',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(8,'Rami Odeh','rami.odeh@example.com','hashedpassword8','Pending','Organizer',1,NULL,'Local','uploads/organizer-proof.pdf','2025-04-10 22:11:48',NULL,NULL,NULL),(9,'Bayan Qasem','bayan.qasem@college.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-10 22:11:48',NULL,NULL,NULL),(10,'Test User','test.user@example.com','$2b$10$ntAfCaTgaOt3MvSs1z2U6.iueC50qg7wA9aQwwL.lVfvHPwZKXKcW','Pending',NULL,1,NULL,'Local',NULL,'2025-04-15 15:49:14',NULL,NULL,NULL),(11,'Event Organizer','organizer1@example.com','$2b$10$8KvSEHEUKe7gE/SRLrI6COBuIAexqNiOojT0ITrgiU4t0x0fxzC4K','Organizer',NULL,1,NULL,'Local',NULL,'2025-04-16 15:22:48',NULL,NULL,'2025-04-19 11:46:57'),(12,'Test User','testuser@example.com','$2b$10$il/qN.obgCIfZXDJ265Vx.StWds9mpGI3Nca0aLAvsEEvPVe1L99q','Pending',NULL,1,NULL,'Local',NULL,'2025-04-18 19:57:53',NULL,NULL,'2025-04-18 20:02:14'),(13,'Nada Samara','nrsamara20@gmail.com',NULL,'Pending',NULL,1,NULL,'Google',NULL,'2025-04-18 20:14:52',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -244,4 +244,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-16 18:41:53
+-- Dump completed on 2025-04-19 15:37:37
