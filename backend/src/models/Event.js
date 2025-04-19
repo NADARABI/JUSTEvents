@@ -21,7 +21,7 @@ class Event {
   }
 
   // Get all events (with optional filters)
-  static async findAll({ status = null, search = null, date = null, upcoming = false, category = null } = {}) {
+  static async findAll({ status = null, search = null, date = null, upcoming = false, category = null, sort = null } = {}) {
     let query = `SELECT * FROM events WHERE 1=1`;
     const params = [];
 
@@ -49,7 +49,40 @@ class Event {
       params.push(category);
     }
 
-    query += ` ORDER BY date ASC, time ASC`;
+    if (sort === 'latest') {
+      query += ` ORDER BY date DESC, time DESC`;
+    } else if (sort === 'popular') {
+      query = `
+        SELECT e.*, COUNT(r.id) AS rsvp_count
+        FROM events e
+        LEFT JOIN event_rsvps r ON e.id = r.event_id
+        WHERE 1=1
+        ${status ? ' AND e.status = ?' : ''}
+        ${search ? ' AND (e.title LIKE ? OR e.description LIKE ?)' : ''}
+        ${date ? ' AND e.date = ?' : ''}
+        ${upcoming ? ' AND e.date >= CURDATE()' : ''}
+        ${category ? ' AND e.category = ?' : ''}
+        GROUP BY e.id
+        ORDER BY rsvp_count DESC
+      `;
+    } else if (sort === 'rating') {
+      query = `
+        SELECT e.*, AVG(f.rating) AS avg_rating
+        FROM events e
+        LEFT JOIN feedback f ON e.id = f.event_id
+        WHERE 1=1
+        ${status ? ' AND e.status = ?' : ''}
+        ${search ? ' AND (e.title LIKE ? OR e.description LIKE ?)' : ''}
+        ${date ? ' AND e.date = ?' : ''}
+        ${upcoming ? ' AND e.date >= CURDATE()' : ''}
+        ${category ? ' AND e.category = ?' : ''}
+        GROUP BY e.id
+        ORDER BY avg_rating DESC
+      `;
+    } else {
+      query += ` ORDER BY date ASC, time ASC`; // default
+    }
+    
 
     const [rows] = await db.execute(query, params);
     return rows;
