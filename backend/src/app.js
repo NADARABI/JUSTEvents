@@ -8,6 +8,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import approvalRoutes from './routes/approvalRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import feedbackRoutes from './routes/feedbackRoutes.js';
 
 import './middlewares/passport.js';
 
@@ -34,6 +35,7 @@ app.use('/api', eventRoutes);
 app.use('/approve', approvalRoutes);
 app.use('/admin', adminRoutes);
 app.use('/notifications', notificationRoutes);
+app.use('/api', feedbackRoutes);
 
 // Root Health Check
 app.get('/', (req, res) => {
