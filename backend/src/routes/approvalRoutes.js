@@ -17,6 +17,6 @@ router.use(authorizeRole(['Campus Admin']));
 router.get('/events', getPendingEvents);
 
 // POST /approve/event/:event_id → Approve or reject a specific event
-router.post('/approve/event/:event_id', reviewEvent);
+router.post('/event/:event_id', reviewEvent);
 
 export default router;
