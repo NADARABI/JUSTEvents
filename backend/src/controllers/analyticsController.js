@@ -1,4 +1,5 @@
 import db from '../utils/db.js';
+import Event from '../models/Event.js';
 
 export const getTotalEvents = async (req, res) => {
   const [[{ count }]] = await db.execute(`SELECT COUNT(*) AS count FROM events`);
@@ -64,3 +65,14 @@ export const getCategoryStats = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch category stats' });
   }
 };
+
+export const getExpiryStats = async (req, res) => {
+  try {
+    const stats = await Event.getExpiryStats();
+    res.status(200).json({ success: true, data: stats });
+  } catch (error) {
+    console.error("getExpiryStats error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch event expiry stats" });
+  }
+};
+

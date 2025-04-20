@@ -126,6 +126,17 @@ class Event {
     );
     return result.affectedRows;
   }
+
+  static async getExpiryStats() {
+    const [rows] = await db.query(`
+      SELECT
+        SUM(CASE WHEN date >= CURDATE() THEN 1 ELSE 0 END) AS upcoming_events,
+        SUM(CASE WHEN date < CURDATE() THEN 1 ELSE 0 END) AS past_events
+      FROM events
+    `);
+    return rows[0];
+  }
+  
 }
 
 export default Event;
