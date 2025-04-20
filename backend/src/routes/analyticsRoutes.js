@@ -2,6 +2,7 @@ import express from 'express';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import { authorizeRole } from '../middlewares/roleMiddleware.js';
 import { getRsvpTrend } from '../controllers/analyticsController.js';
+import { getCategoryStats } from '../controllers/analyticsController.js';
 
 import {
   getTotalEvents,
@@ -21,5 +22,6 @@ router.get('/total-rsvps', getTotalRSVPs);
 router.get('/event/:id/rsvps', getRSVPsForEvent);
 router.get('/popular-events', getTopEvents);
 router.get('/rsvp-trend', getRsvpTrend);
+router.get('/category-stats', getCategoryStats);
 
 export default router;

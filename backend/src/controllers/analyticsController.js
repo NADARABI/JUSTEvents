@@ -42,3 +42,25 @@ export const getRsvpTrend = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch RSVP trend' });
   }
 };
+
+export const getCategoryStats = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        e.category,
+        COUNT(e.id) AS total_events,
+        COUNT(r.id) AS total_rsvps,
+        ROUND(AVG(f.rating), 2) AS avg_rating
+      FROM events e
+      LEFT JOIN event_rsvps r ON e.id = r.event_id
+      LEFT JOIN feedback f ON e.id = f.event_id
+      GROUP BY e.category
+      ORDER BY total_events DESC
+    `);
+
+    res.status(200).json({ success: true, data: rows });
+  } catch (err) {
+    console.error('Category stats error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch category stats' });
+  }
+};
