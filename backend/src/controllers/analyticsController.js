@@ -27,3 +27,18 @@ export const getTopEvents = async (req, res) => {
   `);
   res.json({ success: true, data: rows });
 };
+
+export const getRsvpTrend = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT DATE(created_at) AS date, COUNT(*) AS count
+      FROM event_rsvps
+      GROUP BY DATE(created_at)
+      ORDER BY date ASC
+    `);
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    console.error('RSVP trend error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch RSVP trend' });
+  }
+};
