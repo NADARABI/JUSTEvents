@@ -127,3 +127,17 @@ export const getEventOfTheWeek = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch event of the week' });
   }
 };
+
+export const autoCloseExpired = async (req, res) => {
+  try {
+    const affected = await Event.autoCloseExpiredEvents();
+    res.status(200).json({
+      success: true,
+      message: `${affected} events marked as expired`
+    });
+  } catch (err) {
+    console.error('Auto-close error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to close expired events' });
+  }
+};
+

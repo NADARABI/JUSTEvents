@@ -6,6 +6,7 @@ import { getCategoryStats } from '../controllers/analyticsController.js';
 import { getExpiryStats } from '../controllers/analyticsController.js';
 import { getTopEngagedUsers } from '../controllers/analyticsController.js';
 import { getEventOfTheWeek } from '../controllers/analyticsController.js';
+import { autoCloseExpired } from '../controllers/analyticsController.js';
 
 import {
   getTotalEvents,
@@ -29,5 +30,6 @@ router.get('/category-stats', getCategoryStats);
 router.get('/events/expiry-status', getExpiryStats);
 router.get('/users/most-engaged', getTopEngagedUsers);
 router.get('/events/event-of-the-week', getEventOfTheWeek);
+router.patch('/events/auto-close-expired', autoCloseExpired);
 
 export default router;

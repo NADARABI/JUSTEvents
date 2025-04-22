@@ -136,6 +136,16 @@ class Event {
     `);
     return rows[0];
   }
+
+  static async autoCloseExpiredEvents() {
+    const [result] = await db.execute(`
+      UPDATE events
+      SET status = 'Expired'
+      WHERE date < CURDATE() AND status = 'Approved'
+    `);
+    return result.affectedRows;
+  }
+  
   
 }
 
