@@ -5,6 +5,7 @@ import { getRsvpTrend } from '../controllers/analyticsController.js';
 import { getCategoryStats } from '../controllers/analyticsController.js';
 import { getExpiryStats } from '../controllers/analyticsController.js';
 import { getTopEngagedUsers } from '../controllers/analyticsController.js';
+import { getEventOfTheWeek } from '../controllers/analyticsController.js';
 
 import {
   getTotalEvents,
@@ -27,5 +28,6 @@ router.get('/rsvp-trend', getRsvpTrend);
 router.get('/category-stats', getCategoryStats);
 router.get('/events/expiry-status', getExpiryStats);
 router.get('/users/most-engaged', getTopEngagedUsers);
+router.get('/events/event-of-the-week', getEventOfTheWeek);
 
 export default router;

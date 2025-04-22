@@ -102,3 +102,28 @@ export const getTopEngagedUsers = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch top engaged users' });
   }
 };
+
+export const getEventOfTheWeek = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        e.id,
+        e.title,
+        e.category,
+        COUNT(r.id) AS rsvp_count,
+        ROUND(AVG(f.rating), 2) AS avg_rating
+      FROM events e
+      LEFT JOIN event_rsvps r ON e.id = r.event_id
+      LEFT JOIN feedback f ON e.id = f.event_id
+      WHERE e.date >= CURDATE() - INTERVAL 7 DAY
+      GROUP BY e.id
+      ORDER BY rsvp_count DESC, avg_rating DESC
+      LIMIT 1
+    `);
+
+    res.status(200).json({ success: true, data: rows[0] || null });
+  } catch (err) {
+    console.error('Event of the week error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch event of the week' });
+  }
+};
