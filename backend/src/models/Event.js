@@ -145,6 +145,16 @@ class Event {
     `);
     return result.affectedRows;
   }
+
+  static async getEventsByDateRange(startDate, endDate) {
+    const [rows] = await db.execute(`
+      SELECT id, title, date, time, category, status
+      FROM events
+      WHERE date BETWEEN ? AND ?
+      ORDER BY date ASC, time ASC
+    `, [startDate, endDate]);
+    return rows;
+  }
   
   
 }

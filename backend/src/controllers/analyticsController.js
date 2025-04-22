@@ -141,3 +141,28 @@ export const autoCloseExpired = async (req, res) => {
   }
 };
 
+export const getEventsInRange = async (req, res) => {
+  try {
+    const { range } = req.query;
+    const today = new Date();
+    let startDate = new Date(today);
+    let endDate = new Date(today);
+
+    if (range === 'week') {
+      endDate.setDate(today.getDate() + 7);
+    } else {
+      // default to 'month'
+      endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    }
+
+    const formattedStart = startDate.toISOString().split('T')[0];
+    const formattedEnd = endDate.toISOString().split('T')[0];
+
+    const events = await Event.getEventsByDateRange(formattedStart, formattedEnd);
+    res.status(200).json({ success: true, data: events });
+  } catch (err) {
+    console.error('Calendar API error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch events' });
+  }
+};
+
