@@ -32,6 +32,12 @@ router.get('/events/expiry-status', getExpiryStats);
 router.get('/users/most-engaged', getTopEngagedUsers);
 router.get('/events/event-of-the-week', getEventOfTheWeek);
 router.patch('/events/auto-close-expired', autoCloseExpired);
-router.get('/events/calendar', getEventsInRange);
+router.get(
+  '/events/calendar',
+  authMiddleware,
+  authorizeRole(['Organizer', 'Campus Admin']),
+  getEventsInRange
+);
+
 
 export default router;
