@@ -76,3 +76,29 @@ export const getExpiryStats = async (req, res) => {
   }
 };
 
+export const getTopEngagedUsers = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        u.id,
+        u.name,
+        u.email,
+        COUNT(DISTINCT r.id) AS rsvp_count,
+        COUNT(DISTINCT f.id) AS feedback_count,
+        COUNT(DISTINCT s.id) AS saved_count,
+        ((COUNT(DISTINCT r.id) * 2) + (COUNT(DISTINCT f.id) * 2) + (COUNT(DISTINCT s.id))) AS engagement_score
+      FROM users u
+      LEFT JOIN event_rsvps r ON u.id = r.user_id
+      LEFT JOIN feedback f ON u.id = f.user_id
+      LEFT JOIN saved_events s ON u.id = s.user_id
+      GROUP BY u.id
+      ORDER BY engagement_score DESC
+      LIMIT 3
+    `);
+
+    res.status(200).json({ success: true, data: rows });
+  } catch (err) {
+    console.error('Top engaged users error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch top engaged users' });
+  }
+};

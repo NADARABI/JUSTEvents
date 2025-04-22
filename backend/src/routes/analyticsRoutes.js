@@ -4,6 +4,7 @@ import { authorizeRole } from '../middlewares/roleMiddleware.js';
 import { getRsvpTrend } from '../controllers/analyticsController.js';
 import { getCategoryStats } from '../controllers/analyticsController.js';
 import { getExpiryStats } from '../controllers/analyticsController.js';
+import { getTopEngagedUsers } from '../controllers/analyticsController.js';
 
 import {
   getTotalEvents,
@@ -25,5 +26,6 @@ router.get('/popular-events', getTopEvents);
 router.get('/rsvp-trend', getRsvpTrend);
 router.get('/category-stats', getCategoryStats);
 router.get('/events/expiry-status', getExpiryStats);
+router.get('/users/most-engaged', getTopEngagedUsers);
 
 export default router;
