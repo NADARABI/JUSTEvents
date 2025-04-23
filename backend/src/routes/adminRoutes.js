@@ -6,14 +6,14 @@ import {
   rejectUser,
 } from '../controllers/adminController.js';
 
-import { verifyToken } from '../middlewares/authMiddleware.js';
-import { authorizeRole } from '../middlewares/roleMiddleware.js';
+import authMiddleware from '../middlewares/authMiddleware.js'; 
+import { authorizeRole } from '../middlewares/roleMiddleware.js'; 
 
 const router = express.Router();
 
 // Middleware: only System Admins can access these routes
-router.use(verifyToken);
-router.use(authorizeRole(['System Admin']));
+router.use(authMiddleware);
+router.use(authorizeRole(['System Admin'])); 
 
 // GET /admin/pending-users → List all pending accounts
 router.get('/pending-users', getPendingUsers);

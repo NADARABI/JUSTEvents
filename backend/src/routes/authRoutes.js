@@ -2,25 +2,27 @@ import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 console.log(" Microsoft callback route is loaded");
-
 import {
   register,
   login,
   verifyEmail,
   resendVerificationCode,
+  requestPasswordReset,
+  resetPassword
 } from '../controllers/authController.js';
 
-import { verifyToken } from '../middlewares/authMiddleware.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 import { authorizeRole } from '../middlewares/roleMiddleware.js';
-import { requestPasswordReset, resetPassword } from '../controllers/authController.js';
-import passport from 'passport';
 
-// Public Routes
+const router = express.Router();
+
+// Public Auth Routes
 router.post('/register', register);
 router.post('/login', login);
 router.post('/verify', verifyEmail);
 router.post('/resend-code', resendVerificationCode);
-
+router.post('/reset-password-request', requestPasswordReset);
+router.post('/reset-password-submit', resetPassword);
 // Google SSO 
 router.get('/google',
   passport.authenticate('google', { scope: ['email', 'profile'] })
@@ -65,5 +67,4 @@ router.get('/admin',
     res.json({ message: 'Welcome, Admin!' });
   }
 );
-
 export default router;
