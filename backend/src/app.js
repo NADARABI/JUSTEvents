@@ -19,7 +19,11 @@ const app = express();
 
 // Core Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  credentials: true
+}));
+
 
 // Session (for Passport SSO)
 app.use(session({
@@ -32,6 +36,7 @@ app.use(passport.session());
 
 // PUBLIC Routes
 app.use('/auth', authRoutes);
+console.log('/auth routes are active');
 
 // Protected API Routes
 app.use('/api', eventRoutes);
