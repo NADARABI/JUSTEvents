@@ -1,5 +1,7 @@
 import express from 'express';
-const router = express.Router();
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
+console.log(" Microsoft callback route is loaded");
 
 import {
   register,
@@ -19,38 +21,49 @@ router.post('/login', login);
 router.post('/verify', verifyEmail);
 router.post('/resend-code', resendVerificationCode);
 
-// Google SSO Routes
-// Route to start the Google authentication process
-router.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+// Google SSO 
+router.get('/google',
+  passport.authenticate('google', { scope: ['email', 'profile'] })
+);
 
-// Google OAuth callback route
-router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),  // If authentication fails, redirect to login page
+router.get('/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    res.redirect('/');  // On success, redirect to homepage
+    const token = jwt.sign({
+      id: req.user.id,
+      email: req.user.email,
+      role: req.user.role
+    }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({ token, user: req.user });
   }
 );
 
-// Microsoft SSO Routes
-router.get('/microsoft', passport.authenticate('microsoft'));
-
-//Microsoft OAuth callback route
+// Microsoft SSO
+router.get('/microsoft',
+  passport.authenticate('microsoft')
+);
 router.get('/microsoft/callback',
   passport.authenticate('microsoft', { failureRedirect: '/login' }),
   (req, res) => {
-    res.redirect('/'); // change this to CLIENT_URL + token if issuing JWT
+    const token = jwt.sign({
+      id: req.user.id,
+      email: req.user.email,
+      role: req.user.role
+    }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({ token, user: req.user });
   }
 );
 
-// Example of a protected route
-router.get('/admin', verifyToken, authorizeRole(['System Admin']), (req, res) => {
-  res.json({ message: 'Welcome, Admin!' });
-});
 
-// Request password reset (send reset link)
-router.post('/reset-password-request', requestPasswordReset);
-
-// Submit new password with reset token
-router.post('/reset-password-submit', resetPassword);
+// Protected Route Example 
+router.get('/admin',
+  authMiddleware,
+  authorizeRole(['System Admin']),
+  (req, res) => {
+    res.json({ message: 'Welcome, Admin!' });
+  }
+);
 
 export default router;
