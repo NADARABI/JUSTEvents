@@ -13,6 +13,7 @@ class Approval {
 
   // Update approval status (approve or reject)
   static async updateStatus({ entity_type, entity_id, admin_id, status, reason }) {
+    reason = reason ?? null;
     const [result] = await db.execute(
       `UPDATE approvals
        SET status = ?, decision_reason = ?, reviewed_at = NOW(), admin_id = ?
