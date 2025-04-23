@@ -11,7 +11,11 @@ import './middlewares/passport.js';
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  credentials: true
+}));
+
 
 // Use express-session to handle user sessions
 app.use(session({
@@ -28,6 +32,7 @@ app.use('/admin', adminRoutes); // Final route: /admin/pending-users etc.
 
 // Routes for Google OAuth
 app.use('/auth', authRoutes);
+console.log('/auth routes are active');
 
 // Initial test route to confirm setup clearly
 app.get('/', (req, res) => {
