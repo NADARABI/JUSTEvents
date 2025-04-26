@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import upload from '../middlewares/uploadMiddleware.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import { authorizeRole } from '../middlewares/roleMiddleware.js';
+import { refreshToken } from '../controllers/authController.js';
 import {
   register,
   login,
@@ -34,6 +35,7 @@ router.post('/verify', verifyEmail);
 router.post('/resend-code', resendVerificationCode);
 router.post('/reset-password-request', requestPasswordReset);
 router.post('/reset-password-submit', resetPassword);
+router.post('/refresh-token', refreshToken);
 
 // Google SSO
 router.get(

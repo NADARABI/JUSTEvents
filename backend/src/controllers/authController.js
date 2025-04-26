@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/User.js';
 import sendEmail from '../utils/sendEmail.js';
+import RefreshToken from '../models/RefreshToken.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'justevents-secret';
 
@@ -95,13 +96,21 @@ export const login = async (req, res) => {
 
     await User.updateLastLogin(user.id);
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { id: user.id, email: user.email, role: user.role, name: user.name },
       JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '15m' } // 15 minutes
     );
+    
+    const refreshToken = jwt.sign(
+      { id: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '7d' } // 7 days
+    );
+    
+    await RefreshToken.save(user.id, refreshToken);
 
-    sendResponse(res, 200, 'Login successful', { token, role: user.role, name: user.name });
+    sendResponse(res, 200, 'Login successful', { accessToken, refreshToken, role: user.role, name: user.name });
   } catch (err) {
     console.error('Login error:', err);
     sendResponse(res, 500, 'Login failed');
@@ -201,3 +210,37 @@ export const requestRole = async (req, res) => {
   }
 };
 
+export const refreshToken = async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ success: false, message: 'Refresh token is required' });
+  }
+
+  try {
+    const stored = await RefreshToken.findByToken(token);
+    if (!stored) {
+      return res.status(403).json({ success: false, message: 'Invalid refresh token' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(403).json({ success: false, message: 'Refresh token expired or invalid' });
+      }
+
+      const newAccessToken = jwt.sign(
+        { id: decoded.id, email: decoded.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '15m' } // short life again
+      );
+
+      res.status(200).json({
+        success: true,
+        accessToken: newAccessToken
+      });
+    });
+  } catch (error) {
+    console.error('Error in refreshToken:', error.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
