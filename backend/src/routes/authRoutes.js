@@ -1,3 +1,4 @@
+// src/routes/authRoutes.js
 import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
@@ -14,12 +15,11 @@ import {
   resetPassword,
   requestRole
 } from '../controllers/authController.js';
-
-console.log("Microsoft callback route is loaded");
+import User from '../models/User.js'; // ✅ Added to update last_login
 
 const router = express.Router();
 
-// Helper to sign JWT
+// Helper to sign JWT tokens
 const signToken = (user) => {
   return jwt.sign(
     { id: user.id, email: user.email, role: user.role },
@@ -46,9 +46,24 @@ router.get(
 router.get(
   '/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
-  (req, res) => {
-    const token = signToken(req.user);
-    res.json({ message: 'Google SSO successful', token, role: req.user.role, name: req.user.name });
+  async (req, res) => {
+    try {
+      if (req.user?.id) { 
+        await User.updateLastLogin(req.user.id);
+      } else {
+        console.warn('Skipping last_login update: No user ID available.');
+      }
+      const token = signToken(req.user);
+      res.json({
+        message: 'Google SSO successful',
+        token,
+        role: req.user.role,
+        name: req.user.name
+      });
+    } catch (error) {
+      console.error('Error in Google callback:', error.message);
+      res.status(500).json({ message: 'Server error after Google SSO login' });
+    }
   }
 );
 
@@ -61,13 +76,28 @@ router.get(
 router.get(
   '/microsoft/callback',
   passport.authenticate('microsoft', { failureRedirect: '/login', session: false }),
-  (req, res) => {
-    const token = signToken(req.user);
-    res.json({ message: 'Microsoft SSO successful', token, role: req.user.role, name: req.user.name });
+  async (req, res) => {
+    try {
+      if (req.user?.id) { 
+        await User.updateLastLogin(req.user.id);
+      } else {
+        console.warn('Skipping last_login update: No user ID available.');
+      }
+      const token = signToken(req.user);
+      res.json({
+        message: 'Microsoft SSO successful',
+        token,
+        role: req.user.role,
+        name: req.user.name
+      });
+    } catch (error) {
+      console.error('Error in Microsoft callback:', error.message);
+      res.status(500).json({ message: 'Server error after Microsoft SSO login' });
+    }
   }
 );
 
-// Example Protected Route (Admin Only)
+// Protected Route Example (System Admin Only)
 router.get(
   '/admin',
   authMiddleware,
@@ -77,12 +107,12 @@ router.get(
   }
 );
 
-// Request Role (For Pending users)
+// Request Role (For Pending Users)
 router.post(
   '/request-role',
   authMiddleware,
   authorizeRole(['Pending']),
-  upload.single('attachment'),
+  upload.single('attachment'), // Optional attachment
   requestRole
 );
 
