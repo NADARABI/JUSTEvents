@@ -7,6 +7,8 @@ import sendEmail from '../utils/sendEmail.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'justevents-secret';
 
+const validRoles = ['Organizer', 'Campus Admin', 'Visitor'];
+
 // Utility function to send standardized responses
 const sendResponse = (res, status, message, data = null) => {
   res.status(status).json({ success: status < 400, message, data });
@@ -45,7 +47,7 @@ export const register = async (req, res) => {
       provider: 'Local',
     });
 
-    await sendEmail(email, `Your verification code: ${verificationCode}`).catch((err) => {
+    await sendEmail(email, 'JUSTEvents Verification', `Your verification code is: ${verificationCode}`).catch((err) => {
       console.error('Error sending email:', err);
       return sendResponse(res, 500, 'Failed to send verification email');
     });
@@ -119,7 +121,7 @@ export const resendVerificationCode = async (req, res) => {
     const newCode = crypto.randomInt(100000, 999999).toString();
     await User.updateVerificationCode(email, newCode);
 
-    await sendEmail(email, `Your new verification code: ${newCode}`);
+    await sendEmail(email, 'JUSTEvents Verification', `Your new verification code: ${newCode}`);
     sendResponse(res, 200, 'New verification code sent to your email');
   } catch (err) {
     console.error('Resend verification error:', err);
@@ -142,7 +144,7 @@ export const requestPasswordReset = async (req, res) => {
     const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
     const message = `Click here to reset your password: ${resetLink}`;
 
-    await sendEmail(email, message);
+    await sendEmail(email, 'JUSTEvents Password Reset', message);
     sendResponse(res, 200, 'Password reset link sent to your email');
   } catch (err) {
     console.error('Error in password reset request:', err);
@@ -171,3 +173,31 @@ export const resetPassword = async (req, res) => {
     sendResponse(res, 500, 'Server error');
   }
 };
+
+// Request role after registration (for Pending users)
+export const requestRole = async (req, res) => {
+  const userId = req.user.id;
+  const { requested_role } = req.body;
+  const attachment = req.file?.filename || null;
+
+  if (!requested_role || !validRoles.includes(requested_role)) {
+    return res.status(400).json({ success: false, message: 'Please select a valid role (Organizer, Campus Admin, or Visitor).' });
+  }
+
+  try {
+    const updated = await User.storeRoleRequest(userId, requested_role, attachment);
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'User not found or unable to process your request.' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Your role request for '${requested_role}' has been submitted successfully.`,
+    });
+  } catch (error) {
+    console.error('Error in requestRole:', error.message);
+    res.status(500).json({ success: false, message: 'An error occurred while submitting your role request. Please try again later.' });
+  }
+};
+
