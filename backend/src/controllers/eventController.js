@@ -14,9 +14,25 @@ export const createEvent = async (req, res) => {
     const organizer_id = req.user.id;
     const image_url = req.file?.filename || null;
 
-    if (!title || !description || !date || !time || !venue_id) {
-      return sendResponse(res, 400, 'All fields are required');
-    }
+    if (!title || title.length < 3 || title.length > 100)
+      return sendResponse(res, 400, 'Title must be between 3 and 100 characters');
+
+    if (!description || description.length < 10 || description.length > 500)
+      return sendResponse(res, 400, 'Description must be between 10 and 500 characters');
+
+    if (!date || isNaN(Date.parse(date)) || new Date(date) < new Date())
+      return sendResponse(res, 400, 'Invalid or past date not allowed');
+
+    const eventTime = parseInt(time.split(':')[0], 10);
+    if (isNaN(eventTime) || eventTime < 8 || eventTime > 15)
+      return sendResponse(res, 400, 'Time must be between 08:00 and 15:00');
+
+    if (!venue_id) return sendResponse(res, 400, 'Venue is required');
+
+    // Check for conflicting event at same venue, date, time
+    const conflict = await Event.checkConflict(date, time, venue_id);
+    if (conflict)
+      return sendResponse(res, 409, 'Venue already booked at this date and time');
 
     const eventId = await Event.create({ title, description, date, time, organizer_id, venue_id, image_url });
     await Approval.create('Event', eventId);
@@ -36,7 +52,41 @@ export const editEvent = async (req, res) => {
 
     const existing = await Event.findById(id);
     if (!existing) return sendResponse(res, 404, 'Event not found');
-    if (existing.organizer_id !== req.user.id) return sendResponse(res, 403, 'Unauthorized');
+
+    if (existing.organizer_id !== req.user.id)
+      return sendResponse(res, 403, 'Unauthorized to edit this event');
+
+    // Validate updated fields
+    if (updates.title && (updates.title.length < 3 || updates.title.length > 100))
+      return sendResponse(res, 400, 'Title must be between 3 and 100 characters');
+
+    if (updates.description && (updates.description.length < 10 || updates.description.length > 500))
+      return sendResponse(res, 400, 'Description must be between 10 and 500 characters');
+
+    if (updates.date && (isNaN(Date.parse(updates.date)) || new Date(updates.date) < new Date()))
+      return sendResponse(res, 400, 'Invalid or past date not allowed');
+
+    if (updates.time) {
+      const eventTime = parseInt(updates.time.split(':')[0], 10);
+      if (isNaN(eventTime) || eventTime < 8 || eventTime > 15)
+        return sendResponse(res, 400, 'Time must be between 08:00 and 15:00');
+    }
+
+    // Check for conflict only if time/date/venue are actually changing
+    const changingVenueOrTime = 
+      (updates.venue_id && updates.venue_id !== existing.venue_id) ||
+      (updates.date && updates.date !== existing.date) ||
+      (updates.time && updates.time !== existing.time);
+
+    if (changingVenueOrTime) {
+      const dateToCheck = updates.date || existing.date;
+      const timeToCheck = updates.time || existing.time;
+      const venueToCheck = updates.venue_id || existing.venue_id;
+
+      const conflict = await Event.checkConflict(dateToCheck, timeToCheck, venueToCheck, id);
+      if (conflict)
+        return sendResponse(res, 409, 'Venue already booked at this date and time');
+    }
 
     await Event.update(id, updates);
     sendResponse(res, 200, 'Event updated successfully');
@@ -46,17 +96,24 @@ export const editEvent = async (req, res) => {
   }
 };
 
-// Delete event
+// Delete event 
 export const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
 
     const existing = await Event.findById(id);
     if (!existing) return sendResponse(res, 404, 'Event not found');
-    if (existing.organizer_id !== req.user.id) return sendResponse(res, 403, 'Unauthorized');
 
+    if (existing.organizer_id !== req.user.id)
+      return sendResponse(res, 403, 'Unauthorized to delete this event');
+
+    // delete related RSVPs
+    await Event.deleteRSVPs(id);
+
+    // delete the event 
     await Event.delete(id);
-    sendResponse(res, 200, 'Event deleted successfully');
+
+    sendResponse(res, 200, 'Event and related RSVPs deleted successfully');
   } catch (err) {
     console.error('deleteEvent:', err);
     sendResponse(res, 500, 'Server error while deleting event');
