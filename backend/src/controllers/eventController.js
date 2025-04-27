@@ -2,6 +2,7 @@ import Event from '../models/Event.js';
 import EventRsvp from '../models/EventRsvp.js';
 import Approval from '../models/Approval.js';
 import Notification from '../models/Notification.js';
+import db from '../utils/db.js';
 
 const sendResponse = (res, status, message, data = null) => {
   res.status(status).json({ success: status < 400, message, data });
@@ -151,14 +152,29 @@ export const rsvpEvent = async (req, res) => {
     const { id: event_id } = req.params;
     const user_id = req.user.id;
 
+    // Check if event exists and is approved
+    const [events] = await db.execute(
+      `SELECT id, status FROM events WHERE id = ?`,
+      [event_id]
+    );
+
+    if (events.length === 0) 
+      return sendResponse(res, 404, 'Event not found');
+
+    const event = events[0];
+    if (event.status !== 'Approved') 
+      return sendResponse(res, 403, 'Event not available for RSVP');
+
+    // attempt to RSVP
     const success = await EventRsvp.add(user_id, event_id);
-    if (!success) return sendResponse(res, 409, 'Already RSVPed');
+    if (!success) 
+      return sendResponse(res, 409, 'Already RSVPed to this event');
 
     await Notification.create(user_id, `You successfully RSVPed to Event #${event_id}`);
     sendResponse(res, 201, 'RSVP successful');
   } catch (err) {
     console.error('rsvpEvent:', err);
-    sendResponse(res, 500, 'RSVP failed');
+    sendResponse(res, 500, 'Server error during RSVP');
   }
 };
 
@@ -168,13 +184,17 @@ export const cancelRsvp = async (req, res) => {
     const { id: event_id } = req.params;
     const user_id = req.user.id;
 
-    await EventRsvp.remove(user_id, event_id);
-    sendResponse(res, 200, 'RSVP cancelled');
+    const removed = await EventRsvp.remove(user_id, event_id);
+    if (removed === 0)
+      return sendResponse(res, 404, 'No RSVP found to cancel');
+
+    sendResponse(res, 200, 'RSVP cancelled successfully');
   } catch (err) {
     console.error('cancelRsvp:', err);
-    sendResponse(res, 500, 'Failed to cancel RSVP');
+    sendResponse(res, 500, 'Server error during canceling RSVP');
   }
 };
+
 
 // Get RSVPs list for an event
 export const getRsvps = async (req, res) => {
