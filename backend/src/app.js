@@ -32,7 +32,7 @@ app.use(session({
   saveUninitialized: true
 }));
 app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.session());
 
 // PUBLIC Routes
 app.use('/auth', authRoutes);

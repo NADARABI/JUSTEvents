@@ -1,40 +1,30 @@
-//fake log, connect Nodemailer latter
-// const sendEmail = async (to, message) => {
-//     console.log(`Sending email to ${to}: ${message}`);
-//   };
-  
-//   export default sendEmail;
-
 // src/utils/sendEmail.js
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const sendEmail = async (to, subject, message) => {
+const sendEmail = async (to, subject, htmlContent) => {
   try {
-    // Configure the transporter with SMTP settings
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
-      secure: false, // true for 465, false for other ports
+      secure: false, // true for 465, false for 587 (we use 587 with TLS)
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
     });
 
-    // Define the email options
     const mailOptions = {
-      from: `"JUSTEvents" <${process.env.EMAIL_USER}>`,
+      from: `"JUSTEvents Service" <${process.env.EMAIL_USER}>`,
       to,
       subject,
-      text: message,
+      html: htmlContent,
     };
 
-    // Send the email
     const info = await transporter.sendMail(mailOptions);
-    console.log(`Email sent: ${info.messageId}`);
+    console.log(`Email sent successfully: ${info.messageId}`);
     return true;
   } catch (error) {
     console.error(`Error sending email to ${to}: ${error.message}`);
@@ -43,5 +33,3 @@ const sendEmail = async (to, subject, message) => {
 };
 
 export default sendEmail;
-
-  

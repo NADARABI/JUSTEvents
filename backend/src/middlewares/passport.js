@@ -9,6 +9,7 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: 'http://localhost:5000/auth/google/callback',
+  session: false,
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     let user = await User.findByEmail(profile.emails[0].value);
@@ -37,6 +38,7 @@ passport.use(new MicrosoftStrategy({
   clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
   callbackURL: process.env.MICROSOFT_CALLBACK_URL,
   scope: ['user.read'],
+  session: false,
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const email = profile.emails[0].value;
@@ -67,13 +69,13 @@ passport.use(new MicrosoftStrategy({
 }));
 
 // SERIALIZE / DESERIALIZE
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
+// passport.serializeUser((user, done) => {
+//   done(null, user.id);
+// });
 
-passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id);
-  done(null, user);
-});
+// passport.deserializeUser(async (id, done) => {
+//   const user = await User.findById(id);
+//   done(null, user);
+// });
 
   
