@@ -153,7 +153,15 @@ export const requestPasswordReset = async (req, res) => {
     const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
     const message = `Click here to reset your password: ${resetLink}`;
 
-    await sendEmail(email, 'JUSTEvents Password Reset', message);
+    await sendEmail(email, "JUSTEvents Password Reset", `
+      <div style="font-family: Arial, sans-serif; color: #333;">
+        <h2>Password Reset Requested</h2>
+        <p>Click the link below to reset your password:</p>
+        <a href="${resetLink}">${resetLink}</a>
+        <p>If you did not request a password reset, please ignore this email.</p>
+      </div>
+    `);
+    
     sendResponse(res, 200, 'Password reset link sent to your email');
   } catch (err) {
     console.error('Error in password reset request:', err);
