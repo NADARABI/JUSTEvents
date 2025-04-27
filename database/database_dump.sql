@@ -73,7 +73,7 @@ CREATE TABLE `event_rsvps` (
 
 LOCK TABLES `event_rsvps` WRITE;
 /*!40000 ALTER TABLE `event_rsvps` DISABLE KEYS */;
-INSERT INTO `event_rsvps` VALUES (1,1,1,'Going','2025-04-24 08:03:24'),(2,2,2,'Going','2025-04-24 08:03:24'),(3,3,3,'Going','2025-04-24 08:03:24'),(4,2,4,'Not Going','2025-04-24 08:03:24');
+INSERT INTO `event_rsvps` VALUES (1,1,1,'Going','2025-04-24 08:03:24'),(2,2,2,'Going','2025-04-24 08:03:24'),(4,2,4,'Not Going','2025-04-24 08:03:24');
 /*!40000 ALTER TABLE `event_rsvps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -140,7 +140,7 @@ CREATE TABLE `feedback` (
 
 LOCK TABLES `feedback` WRITE;
 /*!40000 ALTER TABLE `feedback` DISABLE KEYS */;
-INSERT INTO `feedback` VALUES (1,1,1,'Amazing session! Loved the AI applications.',5,'2025-04-24 08:03:32'),(2,2,2,'Good intro for beginners in web development.',4,'2025-04-24 08:03:32'),(3,3,3,'Very informative. I learned about ChatGPT?s role in education.',5,'2025-04-24 08:03:32');
+INSERT INTO `feedback` VALUES (1,1,1,'Amazing session! Loved the AI applications.',5,'2025-04-24 08:03:32'),(2,2,2,'Good intro for beginners in web development.',4,'2025-04-24 08:03:32');
 /*!40000 ALTER TABLE `feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -169,8 +169,35 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (1,1,'Your RSVP to AI in Engineering is confirmed.',0,'2025-04-24 08:04:16'),(2,2,'Thanks for attending Web Dev 101!',0,'2025-04-24 08:04:16'),(3,3,'Your feedback on ChatGPT in Education was submitted.',0,'2025-04-24 08:04:16');
+INSERT INTO `notifications` VALUES (1,1,'Your RSVP to AI in Engineering is confirmed.',0,'2025-04-24 08:04:16'),(2,2,'Thanks for attending Web Dev 101!',0,'2025-04-24 08:04:16');
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `refresh_tokens`
+--
+
+DROP TABLE IF EXISTS `refresh_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `refresh_tokens` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `token` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `refresh_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `refresh_tokens`
+--
+
+LOCK TABLES `refresh_tokens` WRITE;
+/*!40000 ALTER TABLE `refresh_tokens` DISABLE KEYS */;
+/*!40000 ALTER TABLE `refresh_tokens` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -258,7 +285,7 @@ CREATE TABLE `saved_events` (
 
 LOCK TABLES `saved_events` WRITE;
 /*!40000 ALTER TABLE `saved_events` DISABLE KEYS */;
-INSERT INTO `saved_events` VALUES (1,1,2,'2025-04-24 08:03:40'),(2,2,3,'2025-04-24 08:03:40'),(3,3,1,'2025-04-24 08:03:40');
+INSERT INTO `saved_events` VALUES (1,1,2,'2025-04-24 08:03:40'),(2,2,3,'2025-04-24 08:03:40');
 /*!40000 ALTER TABLE `saved_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -286,7 +313,7 @@ CREATE TABLE `users` (
   `last_login` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -295,7 +322,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Nada Rabee Samara','nrsamara20@cit.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-23 20:45:22',NULL,NULL,NULL),(2,'AMER MUTLEQ RABI','amrabi21@cit.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-23 20:50:45',NULL,NULL,NULL),(3,'Nada Samara','nrsamara20@gmail.com',NULL,'Pending',NULL,1,NULL,'Google',NULL,'2025-04-24 07:41:37',NULL,NULL,NULL),(4,'Dr. Rami Qasem','rami.qasem@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Campus Admin',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(5,'IEEE JUST','ieee@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Organizer',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(6,'Tech Club','tech.club@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Organizer',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(7,'Nada Samara','admin@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','System Admin',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(8,'Jana Saba','jana.saba@gmail.com','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Visitor',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:28',NULL,NULL,NULL),(9,'Nada Samara','nada@gmail.com','$2b$10$.sTwovIGIyhdt9X42FySWeNyAT3JNAk0USrRq0xn87siMR4FboK4.','Organizer','Organizer',1,NULL,'Local',NULL,'2025-04-24 08:06:29',NULL,NULL,'2025-04-24 08:11:55');
+INSERT INTO `users` VALUES (1,'Nada Rabee Samara','nrsamara20@cit.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-23 20:45:22',NULL,NULL,NULL),(2,'AMER MUTLEQ RABI','amrabi21@cit.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-23 20:50:45',NULL,NULL,NULL),(4,'Dr. Rami Qasem','rami.qasem@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Campus Admin',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(5,'IEEE JUST','ieee@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Organizer',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(6,'Tech Club','tech.club@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Organizer',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(7,'Nada Samara','admin@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','System Admin',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(8,'Jana Saba','jana.saba@gmail.com','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Visitor',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:28',NULL,NULL,NULL),(9,'Nada Samara','nada@gmail.com','$2b$10$.sTwovIGIyhdt9X42FySWeNyAT3JNAk0USrRq0xn87siMR4FboK4.','Organizer','Organizer',1,NULL,'Local',NULL,'2025-04-24 08:06:29',NULL,NULL,'2025-04-24 19:36:40'),(10,'Nada RoleTester','nada.request@example.com','$2b$10$D0wv6vbFgf.swGkWRwkRWe6EtoZ7K7G4CMY/NbV088rl6bbAOTaG6','Pending','Organizer',0,'795299','Local',NULL,'2025-04-24 19:40:10',NULL,NULL,NULL),(17,'Nada TestUser','raabulibdeh20@cit.just.edu.jo','$2b$10$0iBcfoOFvAqjLlMNKdpIHu59FZBbfJ1l4Qd8yYTLwbyfhdxFgukwO','Pending','Organizer',0,'380521','Local',NULL,'2025-04-26 21:36:19',NULL,NULL,NULL),(21,'Nada TestUser','ahmad2002hashash@gmail.com','$2b$10$DL94Q.48P0cckJGcWqSBHegWbk52FqaAeUrB//pHolEr7zATHzaWS','Pending','Organizer',0,'784420','Local',NULL,'2025-04-26 21:58:19',NULL,NULL,NULL),(22,'Nada TestUser','nrabee02@gmail.com','$2b$10$YuKSaulpZXNK.sDpMuI0OeArmtiv1LCh0P2ECSUMFHIZLovBioH8G','Pending','Organizer',0,'881899','Local',NULL,'2025-04-26 21:58:51',NULL,NULL,NULL),(23,'Nada TestUser','nrsamara20@gmail.com','$2b$10$qaiVmiP0RA8eNSD/SOarMuZ97WqxalFUUh/kSs0OPB2B3KjUIplYu','Pending','Organizer',1,NULL,'Local',NULL,'2025-04-26 22:12:59',NULL,NULL,'2025-04-26 22:15:00');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -308,4 +335,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-24 19:31:40
+-- Dump completed on 2025-04-27  1:35:31
