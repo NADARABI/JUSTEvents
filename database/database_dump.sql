@@ -33,7 +33,7 @@ CREATE TABLE `approvals` (
   PRIMARY KEY (`id`),
   KEY `admin_id` (`admin_id`),
   CONSTRAINT `approvals_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `approvals` (
 
 LOCK TABLES `approvals` WRITE;
 /*!40000 ALTER TABLE `approvals` DISABLE KEYS */;
-INSERT INTO `approvals` VALUES (1,NULL,'Event',1,'Approved',NULL,NULL),(2,NULL,'Event',2,'Approved',NULL,NULL),(3,NULL,'Event',3,'Approved',NULL,NULL),(4,NULL,'Event',4,'Approved',NULL,NULL),(5,4,'Room Booking',1,'Approved',NULL,NULL),(6,NULL,'Event',5,'Pending',NULL,NULL);
+INSERT INTO `approvals` VALUES (1,8,'Room Booking',1,'Approved','Booking looks good.','2025-04-28 04:45:35'),(2,8,'Room Booking',2,'Approved','Approved for Hackathon prep.','2025-04-28 04:45:35'),(3,9,'Event',1,'Approved','AI Seminar meets university goals.','2025-04-28 04:45:35');
 /*!40000 ALTER TABLE `approvals` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -64,7 +64,7 @@ CREATE TABLE `event_rsvps` (
   KEY `event_id` (`event_id`),
   CONSTRAINT `event_rsvps_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `event_rsvps_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +73,7 @@ CREATE TABLE `event_rsvps` (
 
 LOCK TABLES `event_rsvps` WRITE;
 /*!40000 ALTER TABLE `event_rsvps` DISABLE KEYS */;
-INSERT INTO `event_rsvps` VALUES (1,1,1,'Going','2025-04-24 08:03:24'),(2,2,2,'Going','2025-04-24 08:03:24'),(4,2,4,'Not Going','2025-04-24 08:03:24');
+INSERT INTO `event_rsvps` VALUES (1,1,1,'Going','2025-04-28 04:42:52'),(2,2,2,'Going','2025-04-28 04:42:52'),(3,3,4,'Going','2025-04-28 04:42:52'),(4,5,3,'Going','2025-04-28 04:42:52');
 /*!40000 ALTER TABLE `event_rsvps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -98,7 +98,7 @@ CREATE TABLE `events` (
   PRIMARY KEY (`id`),
   KEY `organizer_id` (`organizer_id`),
   CONSTRAINT `events_ibfk_1` FOREIGN KEY (`organizer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -107,7 +107,7 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
-INSERT INTO `events` VALUES (1,'AI in Engineering','Explore how Artificial Intelligence is being used in electrical and mechanical systems.','Technology','2025-05-28','11:00:00',5,1,'Approved',NULL),(2,'Web Dev 101','Introductory hands-on session for HTML/CSS and JS for all students.','Technology','2025-05-30','13:00:00',6,9,'Approved',NULL),(3,'ChatGPT in Education','Panel discussion on how LLMs are transforming student workflows and classroom experience.','Seminar','2025-06-01','14:00:00',6,13,'Approved',NULL),(4,'Engineering Day Expo','Annual showcase of graduation projects and student startups.','Exhibition','2025-06-05','10:00:00',5,3,'Approved',NULL),(5,'AI Workshop','Intro to Artificial Intelligence and its campus applications.','General','2025-05-15','10:30:00',9,1,'Pending',NULL);
+INSERT INTO `events` VALUES (1,'AI in Healthcare Seminar','A seminar discussing the future of AI in medical fields.','Academic','2025-05-20','10:00:00',6,4,'Approved',NULL),(2,'Engineering Hackathon','48-hour coding competition for engineering students.','Academic','2025-05-25','09:00:00',6,1,'Approved',NULL),(3,'Medical Awareness Campaign','Campaign to raise awareness about common diseases.','Social','2025-05-22','11:00:00',7,5,'Approved',NULL),(4,'Student Clubs Fair','An event where new students can meet and join campus clubs.','Social','2025-05-30','13:00:00',7,7,'Approved',NULL),(5,'Career Development Workshop','Workshop on CV writing and interview preparation.','Workshop','2025-06-01','14:00:00',6,2,'Approved',NULL);
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -140,7 +140,7 @@ CREATE TABLE `feedback` (
 
 LOCK TABLES `feedback` WRITE;
 /*!40000 ALTER TABLE `feedback` DISABLE KEYS */;
-INSERT INTO `feedback` VALUES (1,1,1,'Amazing session! Loved the AI applications.',5,'2025-04-24 08:03:32'),(2,2,2,'Good intro for beginners in web development.',4,'2025-04-24 08:03:32');
+INSERT INTO `feedback` VALUES (1,1,1,'Very informative seminar, loved it!',5,'2025-04-28 04:45:20'),(2,2,2,'Hackathon was very competitive and fun!',4,'2025-04-28 04:45:20'),(3,4,3,'Nice opportunity to meet clubs.',5,'2025-04-28 04:45:20');
 /*!40000 ALTER TABLE `feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -160,7 +160,7 @@ CREATE TABLE `notifications` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -169,7 +169,6 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (1,1,'Your RSVP to AI in Engineering is confirmed.',0,'2025-04-24 08:04:16'),(2,2,'Thanks for attending Web Dev 101!',0,'2025-04-24 08:04:16');
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,7 +187,7 @@ CREATE TABLE `refresh_tokens` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `refresh_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,6 +196,7 @@ CREATE TABLE `refresh_tokens` (
 
 LOCK TABLES `refresh_tokens` WRITE;
 /*!40000 ALTER TABLE `refresh_tokens` DISABLE KEYS */;
+INSERT INTO `refresh_tokens` VALUES (1,1,'token_nada','2025-04-28 04:41:57'),(2,2,'token_ahmad','2025-04-28 04:41:57'),(3,3,'token_amer','2025-04-28 04:41:57'),(4,4,'token_lara','2025-04-28 04:41:57'),(5,5,'token_mohammad','2025-04-28 04:41:57'),(6,6,'token_engclub','2025-04-28 04:41:57'),(7,7,'token_medclub','2025-04-28 04:41:57'),(8,8,'token_dean','2025-04-28 04:41:57'),(9,9,'token_library','2025-04-28 04:41:57'),(10,10,'token_visitor','2025-04-28 04:41:57'),(11,11,'token_admin','2025-04-28 04:41:57');
 /*!40000 ALTER TABLE `refresh_tokens` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -219,7 +219,7 @@ CREATE TABLE `room_bookings` (
   KEY `room_id` (`room_id`),
   CONSTRAINT `room_bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `room_bookings_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -228,7 +228,7 @@ CREATE TABLE `room_bookings` (
 
 LOCK TABLES `room_bookings` WRITE;
 /*!40000 ALTER TABLE `room_bookings` DISABLE KEYS */;
-INSERT INTO `room_bookings` VALUES (1,1,13,'2025-06-10 10:00:00','2025-06-10 12:00:00','Approved'),(2,2,10,'2025-06-11 14:00:00','2025-06-11 16:00:00','Pending');
+INSERT INTO `room_bookings` VALUES (1,1,7,'2025-05-21 12:00:00','2025-05-21 14:00:00','Approved'),(2,2,8,'2025-05-22 10:00:00','2025-05-22 12:00:00','Approved'),(3,3,5,'2025-05-23 13:00:00','2025-05-23 15:00:00','Approved');
 /*!40000 ALTER TABLE `room_bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -255,7 +255,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'E1-201','Engineering Building E1',60,'Available'),(2,'E1-202','Engineering Building E1',50,'Available'),(3,'E2-101','Engineering Building E2',55,'Available'),(4,'E2-Lab 1','Engineering Building E2',35,'Available'),(5,'E3-102','Engineering Building E3',70,'Available'),(6,'E3-Lab 3','Engineering Building E3',30,'Available'),(7,'E4-001','Engineering Building E4',80,'Available'),(8,'E4-Lab 2','Engineering Building E4',40,'Available'),(9,'C4-Lab 1','Computer Center C4',30,'Available'),(10,'C4-Lab 2','Computer Center C4',35,'Available'),(11,'C4-Lab 3','Computer Center C4',25,'Available'),(12,'L2-101','Lecture Hall L2',120,'Available'),(13,'L2-102','Lecture Hall L2',100,'Available'),(14,'Library Seminar Room','Main Library',25,'Available'),(15,'Library Hall A','Main Library',80,'Available');
+INSERT INTO `rooms` VALUES (1,'E201','Engineering Building A',50,'Available'),(2,'E301','Engineering Building A',40,'Available'),(3,'E401','Engineering Building A',100,'Available'),(4,'M101','Medical Building B',60,'Available'),(5,'M201','Medical Building B',35,'Available'),(6,'M301','Medical Building B',45,'Available'),(7,'Library Study Room 1','Main Library',20,'Available'),(8,'Library Study Room 2','Main Library',25,'Available');
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -285,7 +285,7 @@ CREATE TABLE `saved_events` (
 
 LOCK TABLES `saved_events` WRITE;
 /*!40000 ALTER TABLE `saved_events` DISABLE KEYS */;
-INSERT INTO `saved_events` VALUES (1,1,2,'2025-04-24 08:03:40'),(2,2,3,'2025-04-24 08:03:40');
+INSERT INTO `saved_events` VALUES (1,1,2,'2025-04-28 04:42:07'),(2,2,1,'2025-04-28 04:42:07'),(3,3,4,'2025-04-28 04:42:07');
 /*!40000 ALTER TABLE `saved_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -313,7 +313,7 @@ CREATE TABLE `users` (
   `last_login` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -322,7 +322,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Nada Rabee Samara','nrsamara20@cit.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-23 20:45:22',NULL,NULL,NULL),(2,'AMER MUTLEQ RABI','amrabi21@cit.just.edu.jo',NULL,'Student',NULL,1,NULL,'Microsoft',NULL,'2025-04-23 20:50:45',NULL,NULL,NULL),(4,'Dr. Rami Qasem','rami.qasem@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Campus Admin',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(5,'IEEE JUST','ieee@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Organizer',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(6,'Tech Club','tech.club@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Organizer',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(7,'Nada Samara','admin@just.edu.jo','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','System Admin',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:27',NULL,NULL,NULL),(8,'Jana Saba','jana.saba@gmail.com','$2b$10$js3hd/8oKTyxXYuDz1W5j.6YNQGZ8HaTuAQUFRlGGRS6kAnvKhJ6a','Visitor',NULL,1,NULL,'Local',NULL,'2025-04-24 07:54:28',NULL,NULL,NULL),(9,'Nada Samara','nada@gmail.com','$2b$10$.sTwovIGIyhdt9X42FySWeNyAT3JNAk0USrRq0xn87siMR4FboK4.','Organizer','Organizer',1,NULL,'Local',NULL,'2025-04-24 08:06:29',NULL,NULL,'2025-04-24 19:36:40'),(10,'Nada RoleTester','nada.request@example.com','$2b$10$D0wv6vbFgf.swGkWRwkRWe6EtoZ7K7G4CMY/NbV088rl6bbAOTaG6','Pending','Organizer',0,'795299','Local',NULL,'2025-04-24 19:40:10',NULL,NULL,NULL),(17,'Nada TestUser','raabulibdeh20@cit.just.edu.jo','$2b$10$0iBcfoOFvAqjLlMNKdpIHu59FZBbfJ1l4Qd8yYTLwbyfhdxFgukwO','Pending','Organizer',0,'380521','Local',NULL,'2025-04-26 21:36:19',NULL,NULL,NULL),(21,'Nada TestUser','ahmad2002hashash@gmail.com','$2b$10$DL94Q.48P0cckJGcWqSBHegWbk52FqaAeUrB//pHolEr7zATHzaWS','Pending','Organizer',0,'784420','Local',NULL,'2025-04-26 21:58:19',NULL,NULL,NULL),(22,'Nada TestUser','nrabee02@gmail.com','$2b$10$YuKSaulpZXNK.sDpMuI0OeArmtiv1LCh0P2ECSUMFHIZLovBioH8G','Pending','Organizer',0,'881899','Local',NULL,'2025-04-26 21:58:51',NULL,NULL,NULL),(23,'Nada TestUser','nrsamara20@gmail.com','$2b$10$qaiVmiP0RA8eNSD/SOarMuZ97WqxalFUUh/kSs0OPB2B3KjUIplYu','Pending','Organizer',1,NULL,'Local',NULL,'2025-04-26 22:12:59',NULL,NULL,'2025-04-26 22:15:00');
+INSERT INTO `users` VALUES (1,'Nada Samara','nada@college.just.edu.jo','$2b$10$xyz123student1','Student',NULL,1,NULL,'Local',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(2,'Ahmad Alhashash','ahmad@college.just.edu.jo','$2b$10$xyz123student2','Student',NULL,1,NULL,'Local',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(3,'Amer Rabi','amer@college.just.edu.jo','$2b$10$xyz123student3','Student',NULL,1,NULL,'Local',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(4,'Lara Allouh','lara@college.just.edu.jo','$2b$10$xyz123student4','Student',NULL,1,NULL,'Local',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(5,'Mohammad Naim','mohammad@college.just.edu.jo','$2b$10$xyz123student5','Student',NULL,1,NULL,'Local',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(6,'Engineering Club','engclub@just.edu.jo',NULL,'Organizer',NULL,1,NULL,'Google',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(7,'Medical Club','medclub@just.edu.jo',NULL,'Organizer',NULL,1,NULL,'Google',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(8,'Dean Office','deanoffice@just.edu.jo',NULL,'Campus Admin',NULL,1,NULL,'Microsoft',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(9,'Library Admin','libraryadmin@just.edu.jo',NULL,'Campus Admin',NULL,1,NULL,'Microsoft',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(10,'External Visitor','visitor1@gmail.com',NULL,'Visitor',NULL,1,NULL,'Local',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL),(11,'System Super Admin','admin@just.edu.jo','$2b$10$xyz123admin','System Admin',NULL,1,NULL,'Local',NULL,'2025-04-28 04:37:59',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -335,4 +335,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-27  1:35:31
+-- Dump completed on 2025-04-28  7:46:48
