@@ -19,3 +19,8 @@ export const requestPasswordReset = (email) => {
 export const resetPassword = (token, newPassword) => {
   return api.post('/auth/reset-password-submit', { token, newPassword });
 };
+
+export const resendVerificationCode = (email) => {
+    return api.post('/auth/resend-code', { email });
+  };
+  

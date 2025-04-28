@@ -40,7 +40,15 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="container d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+    <div className="container d-flex align-items-center justify-content-center" 
+    style={{ 
+      minHeight: '100vh', 
+      backgroundImage:'url("/images/just.jpeg")',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    }}
+    >
       <div className="card p-4" style={{ width: '100%', maxWidth: '400px' }}>
         <h2 className="text-center mb-4">Welcome Back to JUSTEvents!</h2>
         <InputField
