@@ -2,10 +2,7 @@ import Event from '../models/Event.js';
 import EventRsvp from '../models/EventRsvp.js';
 import Approval from '../models/Approval.js';
 import Notification from '../models/Notification.js';
-
-const sendResponse = (res, status, message, data = null) => {
-  res.status(status).json({ success: status < 400, message, data });
-};
+import { sendResponse } from '../utils/sendResponse.js';
 
 // Create new event
 export const createEvent = async (req, res) => {
@@ -19,6 +16,10 @@ export const createEvent = async (req, res) => {
     }
 
     const eventId = await Event.create({ title, description, date, time, organizer_id, venue_id, image_url });
+    const conflict = await Event.checkConflict(date, time, venue_id);
+    if (conflict) {
+      return sendResponse(res, 409, 'Venue already booked at this date and time');
+    }
     await Approval.create('Event', eventId);
 
     sendResponse(res, 201, 'Event created and pending approval', { eventId });
@@ -37,6 +38,14 @@ export const editEvent = async (req, res) => {
     const existing = await Event.findById(id);
     if (!existing) return sendResponse(res, 404, 'Event not found');
     if (existing.organizer_id !== req.user.id) return sendResponse(res, 403, 'Unauthorized');
+
+    const dateToCheck = updates.date || existing.date;
+    const timeToCheck = updates.time || existing.time;
+    const venueToCheck = updates.venue_id || existing.venue_id;
+    const conflict = await Event.checkConflict(dateToCheck, timeToCheck, venueToCheck, id);
+    if (conflict) {
+      return sendResponse(res, 409, 'Venue already booked at this date and time');
+    }
 
     await Event.update(id, updates);
     sendResponse(res, 200, 'Event updated successfully');
@@ -111,8 +120,10 @@ export const cancelRsvp = async (req, res) => {
     const { id: event_id } = req.params;
     const user_id = req.user.id;
 
-    await EventRsvp.remove(user_id, event_id);
-    sendResponse(res, 200, 'RSVP cancelled');
+    const removed = await EventRsvp.remove(user_id, event_id);
+    if (!removed) return sendResponse(res, 404, 'You have not RSVPed to this event');
+
+    sendResponse(res, 200, 'RSVP cancelled successfully');
   } catch (err) {
     console.error('cancelRsvp:', err);
     sendResponse(res, 500, 'Failed to cancel RSVP');
@@ -124,7 +135,7 @@ export const getRsvps = async (req, res) => {
   try {
     const { id: event_id } = req.params;
     const rsvps = await EventRsvp.getByEvent(event_id);
-    sendResponse(res, 200, 'RSVP list fetched', rsvps);
+    sendResponse(res, 200, 'RSVP list fetched successfully', rsvps);
   } catch (err) {
     console.error('getRsvps:', err);
     sendResponse(res, 500, 'Failed to fetch RSVPs');
@@ -136,7 +147,7 @@ export const getStats = async (req, res) => {
   try {
     const { id: event_id } = req.params;
     const stats = await EventRsvp.getStats(event_id);
-    sendResponse(res, 200, 'Event stats fetched', stats);
+    sendResponse(res, 200, 'Event statistics retrieved successfully', stats);
   } catch (err) {
     console.error('getStats:', err);
     sendResponse(res, 500, 'Failed to fetch stats');
