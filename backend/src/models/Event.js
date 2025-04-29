@@ -1,6 +1,20 @@
 import db from '../utils/db.js';
 
 class Event {
+  // Check for event conflict
+static async checkConflict(date, time, venue_id, excludeId = null) {
+  let query = `SELECT id FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
+  const params = [date, time, venue_id];
+
+  if (excludeId) {
+    query += ` AND id != ?`; // Exclude self when editing
+    params.push(excludeId);
+  }
+
+  const [rows] = await db.execute(query, params);
+  return rows.length > 0;
+}
+
   // Create new event
   static async create({ title, description, date, time, organizer_id, venue_id, image_url }) {
 
