@@ -5,15 +5,12 @@ import crypto from 'crypto';
 import User from '../models/User.js';
 import sendEmail from '../utils/sendEmail.js';
 import RefreshToken from '../models/RefreshToken.js';
+import { sendResponse } from '../utils/sendResponse.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'justevents-secret';
 
 const validRoles = ['Organizer', 'Campus Admin', 'Visitor'];
 
-// Utility function to send standardized responses
-const sendResponse = (res, status, message, data = null) => {
-  res.status(status).json({ success: status < 400, message, data });
-};
 
 // Register a new user (Form)
 export const register = async (req, res) => {
@@ -193,62 +190,57 @@ export const resetPassword = async (req, res) => {
 
 // Request role after registration (for Pending users)
 export const requestRole = async (req, res) => {
-  const userId = req.user.id;
-  const { requested_role } = req.body;
-  const attachment = req.file?.filename || null;
-
-  if (!requested_role || !validRoles.includes(requested_role)) {
-    return res.status(400).json({ success: false, message: 'Please select a valid role (Organizer, Campus Admin, or Visitor).' });
-  }
-
   try {
+    const userId = req.user.id;
+    const { requested_role } = req.body;
+    const attachment = req.file?.filename || null;
+
+    if (!requested_role || !validRoles.includes(requested_role)) {
+      return sendResponse(res, 400, 'Please select a valid role (Organizer, Campus Admin, or Visitor).');
+    }
+
     const updated = await User.storeRoleRequest(userId, requested_role, attachment);
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: 'User not found or unable to process your request.' });
+      return sendResponse(res, 404, 'User not found or unable to process your request.');
     }
 
-    res.status(200).json({
-      success: true,
-      message: `Your role request for '${requested_role}' has been submitted successfully.`,
-    });
+    sendResponse(res, 200, `Your role request for '${requested_role}' has been submitted successfully.`);
   } catch (error) {
     console.error('Error in requestRole:', error.message);
-    res.status(500).json({ success: false, message: 'An error occurred while submitting your role request. Please try again later.' });
+    sendResponse(res, 500, 'An error occurred while submitting your role request. Please try again later.');
   }
 };
 
 export const refreshToken = async (req, res) => {
-  const { token } = req.body;
-
-  if (!token) {
-    return res.status(400).json({ success: false, message: 'Refresh token is required' });
-  }
-
   try {
+    const { token } = req.body;
+
+    if (!token) {
+      return sendResponse(res, 400, 'Refresh token is required');
+    }
+
     const stored = await RefreshToken.findByToken(token);
     if (!stored) {
-      return res.status(403).json({ success: false, message: 'Invalid refresh token' });
+      return sendResponse(res, 403, 'Invalid refresh token');
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
-        return res.status(403).json({ success: false, message: 'Refresh token expired or invalid' });
+        console.error('JWT verify error:', err.message);
+        return sendResponse(res, 403, 'Refresh token expired or invalid');
       }
 
       const newAccessToken = jwt.sign(
         { id: decoded.id, email: decoded.email },
         process.env.JWT_SECRET,
-        { expiresIn: '15m' } // short life again
+        { expiresIn: '15m' }
       );
 
-      res.status(200).json({
-        success: true,
-        accessToken: newAccessToken
-      });
+      sendResponse(res, 200, 'New access token generated successfully', { accessToken: newAccessToken });
     });
   } catch (error) {
     console.error('Error in refreshToken:', error.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    sendResponse(res, 500, 'Server error during token refresh');
   }
 };
