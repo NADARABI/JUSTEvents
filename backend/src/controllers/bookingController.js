@@ -1,12 +1,9 @@
-// src/controllers/bookingController.js
 import Booking from '../models/Booking.js';
 import { sendResponse } from '../utils/sendResponse.js';
 import db from '../utils/db.js';
+import { createNotification } from '../utils/notificationHelper.js'; 
 
-
-/**
- * User creates a new booking request
- */
+// Create a new booking
 export const createBooking = async (req, res) => {
   const user_id = req.user.id;
   const { room_id, purpose, start_time, end_time } = req.body;
@@ -20,9 +17,10 @@ export const createBooking = async (req, res) => {
     if (hasConflict) {
       return sendResponse(res, 409, 'The room is already booked for the selected time slot');
     }
+
     const isDuplicate = await Booking.checkDuplicateBooking(user_id, room_id, start_time, end_time);
     if (isDuplicate) {
-        return sendResponse(res, 409, 'You have already submitted a similar booking request');
+      return sendResponse(res, 409, 'You have already submitted a similar booking request');
     }
 
     const bookingId = await Booking.create({ user_id, room_id, purpose, start_time, end_time });
@@ -33,9 +31,7 @@ export const createBooking = async (req, res) => {
   }
 };
 
-/**
- * Fetch all bookings made by the current user
- */
+// Get user's own bookings
 export const getMyBookings = async (req, res) => {
   const user_id = req.user.id;
 
@@ -48,9 +44,7 @@ export const getMyBookings = async (req, res) => {
   }
 };
 
-/**
- * Cancel a user's booking if it is still pending
- */
+// Cancel pending booking
 export const cancelBooking = async (req, res) => {
   const user_id = req.user.id;
   const { id } = req.params;
@@ -61,7 +55,6 @@ export const cancelBooking = async (req, res) => {
     if (result === 'not_found') {
       return sendResponse(res, 404, 'Booking not found');
     }
-
     if (result === 'not_owned') {
       return sendResponse(res, 403, 'You can only cancel your own bookings');
     }
@@ -79,10 +72,7 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
-
-/**
- * Admin: Get all pending room booking requests
- */
+//  Get all pending bookings (admin only)
 export const getPendingBookings = async (req, res) => {
   try {
     const bookings = await Booking.getPending();
@@ -93,9 +83,7 @@ export const getPendingBookings = async (req, res) => {
   }
 };
 
-/**
- * Admin: Approve or reject a booking request
- */
+// Admin reviews (approve/reject) booking
 export const reviewBooking = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -105,24 +93,30 @@ export const reviewBooking = async (req, res) => {
   }
 
   try {
-    const [rows] = await db.execute(`SELECT status FROM room_bookings WHERE id = ?`, [id]);
+    const [rows] = await db.execute(`SELECT user_id, room_id, status FROM room_bookings WHERE id = ?`, [id]);
 
-    if (rows.length === 0){
-     return sendResponse(res, 404, 'Booking not found');
+    if (rows.length === 0) {
+      return sendResponse(res, 404, 'Booking not found');
     }
-    
-    const currentStatus = rows[0].status;
-    if (currentStatus !== 'Pending') {
+
+    const booking = rows[0];
+
+    if (booking.status !== 'Pending') {
       return sendResponse(res, 409, 'This booking has already been reviewed');
     }
+
     const updated = await Booking.updateStatus(id, status);
     if (!updated) {
       return sendResponse(res, 500, 'Failed to update booking status');
     }
 
-    const booking = await db.execute(`SELECT user_id, room_id FROM room_bookings WHERE id = ?`, [id]);
-    // Trigger Notification.create(user_id, `Your booking was ${status.toLowerCase()}`)
-    
+    // Trigger notification to user
+    await createNotification(
+      booking.user_id,
+      `Your room booking was ${status.toLowerCase()}.`,
+      status === 'Approved' ? 'success' : 'warning'
+    );
+
     return sendResponse(res, 200, `Booking ${status.toLowerCase()} successfully`);
   } catch (err) {
     console.error('reviewBooking error:', err.message);
