@@ -12,6 +12,7 @@ import feedbackRoutes from './routes/feedbackRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import savedEventRoutes from './routes/savedEventRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
 
 import './middlewares/passport.js';
 
@@ -47,6 +48,7 @@ app.use('/api', feedbackRoutes);
 app.use('/analytics', analyticsRoutes);
 app.use('/api', savedEventRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/booking', bookingRoutes);
 
 // Root Health Check
 app.get('/', (req, res) => {
