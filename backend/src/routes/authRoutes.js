@@ -15,7 +15,7 @@ import {
   resetPassword,
   requestRole
 } from '../controllers/authController.js';
-import User from '../models/User.js'; // ✅ Added to update last_login
+import User from '../models/User.js'; // Added to update last_login
 
 const router = express.Router();
 
