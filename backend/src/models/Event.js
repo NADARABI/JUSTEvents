@@ -165,11 +165,11 @@ static async checkConflict(date, time, venue_id, excludeId = null) {
       SELECT id, title, date, time, category, status
       FROM events
       WHERE date BETWEEN ? AND ?
+        AND status = 'Approved'
       ORDER BY date ASC, time ASC
     `, [startDate, endDate]);
     return rows;
-  }
-  
+  }  
   
 }
 
