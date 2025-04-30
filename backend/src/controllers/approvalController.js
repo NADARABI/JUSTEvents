@@ -1,10 +1,7 @@
 import Approval from '../models/Approval.js';
 import Event from '../models/Event.js';
-import Notification from '../models/Notification.js';
-
-const sendResponse = (res, status, message, data = null) => {
-  res.status(status).json({ success: status < 400, message, data });
-};
+import { createNotification } from '../utils/notificationHelper.js'; 
+import { sendResponse } from '../utils/sendResponse.js'; 
 
 // Get all pending event approvals
 export const getPendingEvents = async (req, res) => {
@@ -12,12 +9,12 @@ export const getPendingEvents = async (req, res) => {
     const approvals = await Approval.getPending('Event');
     sendResponse(res, 200, 'Pending event approvals fetched', approvals);
   } catch (err) {
-    console.error('getPendingEvents error:', err);
+    console.error('getPendingEvents error:', err.message);
     sendResponse(res, 500, 'Failed to fetch pending approvals');
   }
 };
 
-// Review (approve/reject) a specific event
+// Review (approve/reject) an event
 export const reviewEvent = async (req, res) => {
   try {
     const { event_id } = req.params;
@@ -42,11 +39,16 @@ export const reviewEvent = async (req, res) => {
 
     await Event.updateStatus(event_id, status);
     const event = await Event.findById(event_id);
-    await Notification.create(event.organizer_id, `Your event "${event.title}" was ${status.toLowerCase()}.`);
+
+    await createNotification(
+      event.organizer_id,
+      `Your event "${event.title}" was ${status.toLowerCase()}.`,
+      status === 'Approved' ? 'success' : 'warning'
+    );
 
     sendResponse(res, 200, `Event ${status.toLowerCase()} successfully`);
   } catch (err) {
-    console.error('reviewEvent error:', err);
+    console.error('reviewEvent error:', err.message);
     sendResponse(res, 500, 'Failed to process event approval');
   }
 };

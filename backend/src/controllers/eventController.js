@@ -1,8 +1,8 @@
 import Event from '../models/Event.js';
 import EventRsvp from '../models/EventRsvp.js';
 import Approval from '../models/Approval.js';
-import Notification from '../models/Notification.js';
 import { sendResponse } from '../utils/sendResponse.js';
+import { createNotification } from '../utils/notificationHelper.js';
 
 // Create new event
 export const createEvent = async (req, res) => {
@@ -106,10 +106,19 @@ export const rsvpEvent = async (req, res) => {
     const success = await EventRsvp.add(user_id, event_id);
     if (!success) return sendResponse(res, 409, 'Already RSVPed');
 
-    await Notification.create(user_id, `You successfully RSVPed to Event #${event_id}`);
+    const event = await Event.findById(event_id);
+
+    if (event?.organizer_id && event.organizer_id !== user_id) {
+      await createNotification(
+        event.organizer_id,
+        `A user has RSVP'd to your event "${event.title}".`,
+        'info'
+      );
+    }
+
     sendResponse(res, 201, 'RSVP successful');
   } catch (err) {
-    console.error('rsvpEvent:', err);
+    console.error('rsvpEvent error:', err.message); 
     sendResponse(res, 500, 'RSVP failed');
   }
 };
