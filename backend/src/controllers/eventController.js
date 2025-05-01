@@ -15,11 +15,11 @@ export const createEvent = async (req, res) => {
       return sendResponse(res, 400, 'All fields are required');
     }
 
-    const eventId = await Event.create({ title, description, date, time, organizer_id, venue_id, image_url });
     const conflict = await Event.checkConflict(date, time, venue_id);
     if (conflict) {
       return sendResponse(res, 409, 'Venue already booked at this date and time');
     }
+    const eventId = await Event.create({ title, description, date, time, organizer_id, venue_id, image_url });
     await Approval.create('Event', eventId);
 
     sendResponse(res, 201, 'Event created and pending approval', { eventId });
