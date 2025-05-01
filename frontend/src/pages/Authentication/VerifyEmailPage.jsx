@@ -8,67 +8,52 @@ import { toast } from 'react-toastify';
 const VerifyEmailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const emailFromState = location.state?.email || '';
-  
-  const [email, setEmail] = useState(emailFromState);
+  const email = location.state?.email || '';
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleVerify = async () => {
+    if (!code) {
+      toast.error('Please enter the code');
+      return;
+    }
     try {
       setLoading(true);
       await verifyEmail(email, code);
       toast.success('Email verified successfully!');
       navigate('/login');
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || 'Verification failed');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Verification failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleResendCode = async () => {
+  const handleResend = async () => {
     try {
       await resendVerificationCode(email);
       toast.success('Verification code resent!');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to resend code');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to resend code');
     }
   };
 
   return (
-    <div className="container d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
-      <div className="card p-4" style={{ width: '100%', maxWidth: '400px' }}>
-        <h2 className="text-center mb-4">Check your email for a code</h2>
+    <>
+      <h2 className="mb-4">Check your email for a code</h2>
+      <InputField label="Email" type="email" value={email} disabled />
+      <InputField
+        label="Enter verification code"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        placeholder="Enter code"
+      />
+      <PrimaryButton text="Submit" onClick={handleVerify} isLoading={loading} />
 
-        <InputField
-          label="Email Address"
-          name="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
-        />
-        <InputField
-          label="Verification Code"
-          name="code"
-          type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="Enter your code"
-        />
-
-        <PrimaryButton text="Submit" onClick={handleVerify} isLoading={loading} />
-
-        <div className="text-center mt-3">
-          <button className="btn btn-link" onClick={handleResendCode}>
-            Resend Code
-          </button>
-        </div>
+      <div className="text-center mt-3">
+        Didn’t get a code? <button onClick={handleResend} className="btn btn-link p-0">Resend Code</button>
       </div>
-    </div>
+    </>
   );
 };
 

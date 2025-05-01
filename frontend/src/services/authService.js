@@ -1,26 +1,38 @@
-import api from './api'; // axios instance
+import axios from 'axios';
 
-export const register = (name, email, password, role) => {
-  return api.post('/auth/register', { name, email, password, role });
+// ✅ Register a new user
+export const register = (name, email, password, role) =>
+  axios.post('/auth/register', { name, email, password, role });
+
+// ✅ Login with email & password
+export const login = (email, password) =>
+  axios.post('/auth/login', { email, password });
+
+// ✅ Verify email with code
+export const verifyEmail = (email, code) =>
+  axios.post('/auth/verify', { email, code });
+
+// ✅ Resend verification code
+export const resendVerificationCode = (email) =>
+  axios.post('/auth/resend-code', { email });
+
+// ✅ Request password reset link
+export const requestPasswordReset = (email) =>
+  axios.post('/auth/reset-password-request', { email });
+
+// ✅ Submit new password using token
+export const resetPassword = (token, newPassword) =>
+  axios.post('/auth/reset-password-submit', { token, newPassword });
+
+// ✅ Request role change for pending user
+export const requestRole = (requestedRole, attachment) => {
+  const formData = new FormData();
+  formData.append('requestedRole', requestedRole);
+  if (attachment) {
+    formData.append('attachment', attachment);
+  }
+  return axios.post('/auth/request-role', formData);
 };
 
-export const verifyEmail = (email, code) => {
-  return api.post('/auth/verify', { email, code });
-};
-
-export const login = (email, password) => {
-  return api.post('/auth/login', { email, password }).then((res) => res.data);
-};
-
-export const requestPasswordReset = (email) => {
-  return api.post('/auth/reset-password-request', { email });
-};
-
-export const resetPassword = (token, newPassword) => {
-  return api.post('/auth/reset-password-submit', { token, newPassword });
-};
-
-export const resendVerificationCode = (email) => {
-    return api.post('/auth/resend-code', { email });
-  };
-  
+// ✅ Refresh access token (optional for future use)
+export const refreshToken = () => axios.post('/auth/refresh-token');

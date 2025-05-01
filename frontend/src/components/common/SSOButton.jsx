@@ -1,31 +1,29 @@
 import React from 'react';
 
 const SSOButton = ({ provider, onClick }) => {
-  const getButtonText = () => {
-    switch (provider) {
-      case 'google':
-        return 'Continue with Google';
-      case 'microsoft':
-        return 'Continue with Microsoft';
-      default:
-        return 'Continue';
-    }
-  };
-
-  const getButtonClass = () => {
-    switch (provider) {
-      case 'google':
-        return 'btn btn-outline-danger w-100';
-      case 'microsoft':
-        return 'btn btn-outline-primary w-100';
-      default:
-        return 'btn btn-secondary w-100';
-    }
+  const logos = {
+    google: '/images/google.jpeg',
+    microsoft: '/images/outlook.jpeg',
   };
 
   return (
-    <button className={getButtonClass()} onClick={onClick} type="button">
-      {getButtonText()}
+    <button
+      onClick={onClick}
+      className="border rounded p-3 bg-white"
+      style={{
+        width: '80px',
+        height: '80px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+      }}
+    >
+      <img
+        src={logos[provider]}
+        alt={`${provider} login`}
+        style={{ width: '40px', height: '40px' }}
+      />
     </button>
   );
 };
