@@ -65,6 +65,7 @@ export const verifyEmail = async (req, res) => {
 
     const user = await User.findByEmail(email);
     if (!user) return sendResponse(res, 404, 'User not found');
+    if (user.is_verified) return sendResponse(res, 400, 'Email already verified');
     if (user.verification_code !== code) return sendResponse(res, 400, 'Invalid verification code');
 
     await User.verifyEmail(email);
