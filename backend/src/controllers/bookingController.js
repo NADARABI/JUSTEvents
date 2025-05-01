@@ -72,18 +72,18 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
-//  Get all pending bookings (admin only)
+// Campus Admin: Get all pending booking requests
 export const getPendingBookings = async (req, res) => {
   try {
     const bookings = await Booking.getPending();
-    return sendResponse(res, 200, 'Pending booking requests retrieved successfully', bookings);
+    sendResponse(res, 200, 'Pending booking requests retrieved successfully', bookings);
   } catch (err) {
     console.error('getPendingBookings error:', err.message);
-    return sendResponse(res, 500, 'Server error while fetching pending bookings');
+    sendResponse(res, 500, 'Failed to fetch pending booking requests');
   }
 };
 
-// Admin reviews (approve/reject) booking
+// Campus Admin: Review (approve/reject) a booking
 export const reviewBooking = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -93,7 +93,10 @@ export const reviewBooking = async (req, res) => {
   }
 
   try {
-    const [rows] = await db.execute(`SELECT user_id, room_id, status FROM room_bookings WHERE id = ?`, [id]);
+    const [rows] = await db.execute(
+      `SELECT user_id, room_id, status FROM room_bookings WHERE id = ?`,
+      [id]
+    );
 
     if (rows.length === 0) {
       return sendResponse(res, 404, 'Booking not found');
@@ -110,16 +113,26 @@ export const reviewBooking = async (req, res) => {
       return sendResponse(res, 500, 'Failed to update booking status');
     }
 
-    // Trigger notification to user
+    // Notify the user about booking status
     await createNotification(
       booking.user_id,
       `Your room booking was ${status.toLowerCase()}.`,
       status === 'Approved' ? 'success' : 'warning'
     );
 
-    return sendResponse(res, 200, `Booking ${status.toLowerCase()} successfully`);
+    sendResponse(res, 200, `Booking ${status.toLowerCase()} successfully`);
   } catch (err) {
     console.error('reviewBooking error:', err.message);
-    return sendResponse(res, 500, 'Server error while updating booking status');
+    sendResponse(res, 500, 'Failed to process booking decision');
+  }
+};
+
+export const getBookingStats = async (req, res) => {
+  try {
+    const stats = await Booking.getBookingStats();
+    sendResponse(res, 200, 'Booking summary stats retrieved', stats);
+  } catch (err) {
+    console.error('getBookingStats error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch booking summary stats');
   }
 };

@@ -40,7 +40,7 @@ const Booking = {
   },
 
   /**
-   * Check if there's a conflicting approved booking
+   * Check for booking time conflict (already approved)
    */
   async findConflictingBooking(room_id, start_time, end_time) {
     try {
@@ -64,7 +64,7 @@ const Booking = {
   },
 
   /**
-   * Get all pending booking requests (for Campus Admin review)
+   * Get all pending bookings (Campus Admin)
    */
   async getPending() {
     try {
@@ -84,7 +84,7 @@ const Booking = {
   },
 
   /**
-   * Update booking status (Approve or Reject)
+   * Update booking status (approve or reject)
    */
   async updateStatus(id, status) {
     try {
@@ -102,29 +102,32 @@ const Booking = {
   },
 
   /**
-   * Delete a booking (User cancels if still pending)
+   * Cancel a booking by user if still pending
    */
   async deleteById(id, user_id) {
     const [rows] = await db.execute(
       `SELECT id, user_id, status FROM room_bookings WHERE id = ?`,
       [id]
     );
-  
+
     if (rows.length === 0) return 'not_found';
-  
+
     const booking = rows[0];
-  
+
     if (booking.user_id !== user_id) return 'not_owned';
     if (booking.status !== 'Pending') return 'already_processed';
-  
+
     const [result] = await db.execute(
       `DELETE FROM room_bookings WHERE id = ?`,
       [id]
     );
-  
+
     return result.affectedRows > 0 ? 'deleted' : 'error';
-  },  
-  
+  },
+
+  /**
+   * Check for duplicate pending booking
+   */
   async checkDuplicateBooking(user_id, room_id, start_time, end_time) {
     try {
       const [rows] = await db.execute(
@@ -139,8 +142,41 @@ const Booking = {
       console.error('Booking.checkDuplicateBooking error:', error.message);
       throw new Error('Failed to check for duplicate booking');
     }
+  },
+
+  /**
+   * Get campus admin booking stats
+   */
+  async getBookingStats() {
+    try {
+      const [[{ total_pending }]] = await db.execute(`
+        SELECT COUNT(*) AS total_pending FROM room_bookings WHERE status = 'Pending'
+      `);
+
+      const [[{ total_today }]] = await db.execute(`
+        SELECT COUNT(*) AS total_today FROM room_bookings 
+        WHERE DATE(created_at) = CURDATE()
+      `);
+
+      const [[{ total_approved }]] = await db.execute(`
+        SELECT COUNT(*) AS total_approved FROM room_bookings WHERE status = 'Approved'
+      `);
+
+      const [[{ total_rejected }]] = await db.execute(`
+        SELECT COUNT(*) AS total_rejected FROM room_bookings WHERE status = 'Rejected'
+      `);
+
+      return {
+        total_pending,
+        total_today,
+        total_approved,
+        total_rejected
+      };
+    } catch (error) {
+      console.error('Booking.getBookingStats error:', error.message);
+      throw new Error('Failed to retrieve booking stats');
+    }
   }
-  
 };
 
 export default Booking;

@@ -1,20 +1,18 @@
 import Approval from '../models/Approval.js';
 import Event from '../models/Event.js';
-import { createNotification } from '../utils/notificationHelper.js'; 
-import { sendResponse } from '../utils/sendResponse.js'; 
+import { createNotification } from '../utils/notificationHelper.js';
+import { sendResponse } from '../utils/sendResponse.js';
 
-// Get all pending event approvals
+// ✅ GET /admin/pending-events
 export const getPendingEvents = async (req, res) => {
   try {
     const approvals = await Approval.getPending('Event');
-    sendResponse(res, 200, 'Pending event approvals fetched', approvals);
+    sendResponse(res, 200, 'Pending event approvals fetched successfully', approvals);
   } catch (err) {
     console.error('getPendingEvents error:', err.message);
-    sendResponse(res, 500, 'Failed to fetch pending approvals');
+    sendResponse(res, 500, 'Failed to fetch event approvals');
   }
 };
-
-// Review (approve/reject) an event
 export const reviewEvent = async (req, res) => {
   try {
     const { event_id } = req.params;
@@ -23,6 +21,15 @@ export const reviewEvent = async (req, res) => {
 
     if (!['Approved', 'Rejected'].includes(status)) {
       return sendResponse(res, 400, 'Invalid approval status');
+    }
+
+    const event = await Event.findById(event_id);
+    if (!event) {
+      return sendResponse(res, 404, 'Event not found');
+    }
+
+    if (event.status !== 'Pending') {
+      return sendResponse(res, 409, `Event is already ${event.status.toLowerCase()} and cannot be reviewed again`);
     }
 
     const affected = await Approval.updateStatus({
@@ -38,7 +45,6 @@ export const reviewEvent = async (req, res) => {
     }
 
     await Event.updateStatus(event_id, status);
-    const event = await Event.findById(event_id);
 
     await createNotification(
       event.organizer_id,
