@@ -7,7 +7,8 @@ import {
   getMyBookings,
   cancelBooking,
   getPendingBookings,
-  reviewBooking
+  reviewBooking,
+  getBookingStats
 } from '../controllers/bookingController.js';
 
 const router = express.Router();
@@ -23,5 +24,11 @@ router.delete('/bookings/:id', authorizeRole(['Student', 'Organizer', 'Visitor']
 // Admin: Review pending bookings
 router.get('/bookings/pending', authorizeRole(['Campus Admin']), getPendingBookings);
 router.patch('/bookings/:id', authorizeRole(['Campus Admin']), reviewBooking);
+
+router.get(
+  '/bookings/stats',
+  authorizeRole(['Campus Admin']),
+  getBookingStats
+);
 
 export default router;

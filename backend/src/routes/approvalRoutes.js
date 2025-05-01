@@ -9,9 +9,9 @@ import { authorizeRole } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
-// All routes below require Campus Admin access
+// All routes below require System Admin access
 router.use(authMiddleware);
-router.use(authorizeRole(['Campus Admin']));
+router.use(authorizeRole(['System Admin']));
 
 // GET /approve/events → List all pending event approvals
 router.get('/events', getPendingEvents);
