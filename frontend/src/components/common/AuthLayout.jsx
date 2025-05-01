@@ -25,9 +25,9 @@ const AuthLayout = () => {
 
       {/* ✅ Footer */}
       <footer className="text-center p-3" style={{ backgroundColor: '#002b5b', color: '#fff' }}>
-        <div>© {new Date().getFullYear()} Jordan University of Science and Technology</div>
-        <div>Graduation Project — JUSTEvents System</div>
-        <div>Supervised by Dr. Luay Alalawneh</div>
+        <div>© {new Date().getFullYear()} Jordan University of Science and Technology.</div>
+        <div>Graduation Project — JUSTEvents Website.</div>
+        <div>Supervised by Dr. Luay Alalawneh.</div>
       </footer>
     </div>
   );
