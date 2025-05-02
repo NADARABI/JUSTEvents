@@ -24,6 +24,19 @@ export const createBooking = async (req, res) => {
     }
 
     const bookingId = await Booking.create({ user_id, room_id, purpose, start_time, end_time });
+    // Notify all Campus Admins
+    const [admins] = await db.execute(
+      `SELECT id, name FROM users WHERE role = 'Campus Admin'`
+    );
+    const [room] = await db.execute(`SELECT name FROM rooms WHERE id = ?`, [room_id]);
+    const roomName = room.length > 0 ? room[0].name : 'a room';
+    for (const admin of admins) {
+      await createNotification(
+        admin.id,
+        `New booking request from ${req.user.name} for ${roomName} on ${start_time}.`,
+        'info'
+      );
+    }
     return sendResponse(res, 201, 'Booking request submitted successfully', { bookingId });
   } catch (err) {
     console.error('createBooking error:', err.message);

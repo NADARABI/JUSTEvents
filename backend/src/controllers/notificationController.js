@@ -5,7 +5,8 @@ import { sendResponse } from '../utils/sendResponse.js';
 export const getUserNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
-    const notifications = await Notification.getByUser(userId);
+    const onlyUnread = req.query.unread === 'true';
+    const notifications = await Notification.getByUser(userId, onlyUnread);
     sendResponse(res, 200, 'Notifications fetched successfully', notifications);
   } catch (err) {
     console.error('getUserNotifications error:', err.message);
