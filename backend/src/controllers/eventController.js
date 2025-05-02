@@ -3,6 +3,7 @@ import EventRsvp from '../models/EventRsvp.js';
 import Approval from '../models/Approval.js';
 import { sendResponse } from '../utils/sendResponse.js';
 import { createNotification } from '../utils/notificationHelper.js';
+import db from '../utils/db.js';
 
 // Create new event
 export const createEvent = async (req, res) => {
@@ -13,6 +14,18 @@ export const createEvent = async (req, res) => {
 
     if (!title || !description || !date || !time || !venue_id) {
       return sendResponse(res, 400, 'All fields are required');
+    }
+
+    // Validate venue_id
+    const [venues] = await db.execute(`SELECT id FROM rooms WHERE id = ?`, [venue_id]);
+    if (venues.length === 0) {
+      return sendResponse(res, 404, 'Invalid venue ID');
+    }
+
+    // Validate date format: YYYY-MM-DD
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(date)) {
+      return sendResponse(res, 400, 'Invalid date format. Use YYYY-MM-DD');
     }
 
     const conflict = await Event.checkConflict(date, time, venue_id);
@@ -98,17 +111,24 @@ export const getEventById = async (req, res) => {
 };
 
 // RSVP to an event
+// RSVP to an event
 export const rsvpEvent = async (req, res) => {
   try {
     const { id: event_id } = req.params;
     const user_id = req.user.id;
 
+    // Check event status first
+    const event = await Event.findById(event_id);
+    if (!event || event.status !== 'Approved') {
+      return sendResponse(res, 403, 'You cannot RSVP to unapproved events');
+    }
+
+    // Add RSVP
     const success = await EventRsvp.add(user_id, event_id);
     if (!success) return sendResponse(res, 409, 'Already RSVPed');
 
-    const event = await Event.findById(event_id);
-
-    if (event?.organizer_id && event.organizer_id !== user_id) {
+    // Notify organizer
+    if (event.organizer_id && event.organizer_id !== user_id) {
       await createNotification(
         event.organizer_id,
         `A user has RSVP'd to your event "${event.title}".`,
@@ -118,7 +138,7 @@ export const rsvpEvent = async (req, res) => {
 
     sendResponse(res, 201, 'RSVP successful');
   } catch (err) {
-    console.error('rsvpEvent error:', err.message); 
+    console.error('rsvpEvent error:', err.message);
     sendResponse(res, 500, 'RSVP failed');
   }
 };
