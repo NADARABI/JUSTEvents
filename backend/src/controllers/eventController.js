@@ -49,6 +49,20 @@ export const editEvent = async (req, res) => {
 
     await Event.update(id, updates);
     sendResponse(res, 200, 'Event updated successfully');
+
+    const rsvps = await EventRsvp.getByEvent(id);
+    const rsvpUserIds = rsvps.map(r => r.user_id);
+
+    // Send notifications to all RSVP'd users
+    for (const userId of rsvpUserIds) {
+      if (userId !== req.user.id) {
+        await createNotification(
+          userId,
+          `The event "${existing.title}" you RSVPed to has been updated.`,
+          'info'
+        );
+      }
+    }
   } catch (err) {
     console.error('editEvent:', err);
     sendResponse(res, 500, 'Server error while editing event');
@@ -64,7 +78,20 @@ export const deleteEvent = async (req, res) => {
     if (!existing) return sendResponse(res, 404, 'Event not found');
     if (existing.organizer_id !== req.user.id) return sendResponse(res, 403, 'Unauthorized');
 
+    // Fetch all RSVP'd users
+    const rsvps = await EventRsvp.getByEvent(id);
+    const rsvpUserIds = rsvps.map(r => r.user_id);
+
     await Event.delete(id);
+
+    // Notify all RSVP'd users
+    for (const userId of rsvpUserIds) {
+      await createNotification(
+        userId,
+        `The event "${existing.title}" you RSVPed to has been canceled.`,
+        'error'
+      );
+    }
     sendResponse(res, 200, 'Event deleted successfully');
   } catch (err) {
     console.error('deleteEvent:', err);
@@ -103,11 +130,15 @@ export const rsvpEvent = async (req, res) => {
     const { id: event_id } = req.params;
     const user_id = req.user.id;
 
+    const event = await Event.findById(event_id);
+    if (!event || event.status !== 'Approved'){
+      return sendResponse(res, 403, 'You cannot RSVP to unapproved events');
+    }
+
     const success = await EventRsvp.add(user_id, event_id);
     if (!success) return sendResponse(res, 409, 'Already RSVPed');
 
-    const event = await Event.findById(event_id);
-
+    // Notify organizer
     if (event?.organizer_id && event.organizer_id !== user_id) {
       await createNotification(
         event.organizer_id,
@@ -115,6 +146,13 @@ export const rsvpEvent = async (req, res) => {
         'info'
       );
     }
+
+    // Notify student
+    await createNotification(
+      user_id,
+      `You successfully RSVPed to "${event.title}".`,
+      'success'
+    );
 
     sendResponse(res, 201, 'RSVP successful');
   } catch (err) {
@@ -132,6 +170,22 @@ export const cancelRsvp = async (req, res) => {
     const removed = await EventRsvp.remove(user_id, event_id);
     if (!removed) return sendResponse(res, 404, 'You have not RSVPed to this event');
 
+    const event = await Event.findById(event_id);
+    if (event) {
+      await createNotification(
+        user_id,
+        `You canceled your RSVP for "${event.title}".`,
+        'warning'
+      );
+    }
+    if (event?.organizer_id && event.organizer_id !== user_id) {
+      await createNotification(
+        event.organizer_id,
+        `A user canceled their RSVP for "${event.title}".`,
+        'warning'
+      );
+    }    
+    
     sendResponse(res, 200, 'RSVP cancelled successfully');
   } catch (err) {
     console.error('cancelRsvp:', err);
