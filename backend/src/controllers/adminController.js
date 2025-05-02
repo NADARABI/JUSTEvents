@@ -19,8 +19,11 @@ export const approveUser = async (req, res) => {
     const { id } = req.params;
     const user = await User.findById(id);
 
-    if (!user || user.role !== 'Pending') {
-      return sendResponse(res, 404, 'Pending user not found');
+    if (!user) {
+      return sendResponse(res, 404, 'User not found');
+    }
+    if (user.role !== 'Pending') {
+      return sendResponse(res, 400, 'User is not pending approval');
     }
 
     if (!user.requested_role) {
@@ -40,9 +43,12 @@ export const rejectUser = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
-
-    if (!user || user.role !== 'Pending') {
-      return sendResponse(res, 404, 'Pending user not found');
+    
+    if (!user) {
+      return sendResponse(res, 404, 'User not found');
+    }
+    if (user.role !== 'Pending') {
+      return sendResponse(res, 400, 'User is not pending approval');
     }
 
     await User.updateRole(id, 'Visitor');
