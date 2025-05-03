@@ -7,7 +7,7 @@ const PrimaryButton = ({
   type = 'button',
   className = '',
   disabled = false,
-  loadingText = 'Loading...'
+  loadingText = 'Loading...',
 }) => {
   return (
     <button
@@ -16,7 +16,8 @@ const PrimaryButton = ({
       disabled={isLoading || disabled}
       aria-busy={isLoading}
       aria-label={text}
-      className={`w-100 text-white ${className}`}
+      title={text}
+      className={`w-100 text-white btn ${className}`}
       style={{
         backgroundColor: '#113A5D',
         border: 'none',
@@ -32,7 +33,11 @@ const PrimaryButton = ({
     >
       {isLoading ? (
         <span>
-          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+          <span
+            className="spinner-border spinner-border-sm me-2"
+            role="status"
+            aria-hidden="true"
+          />
           {loadingText}
         </span>
       ) : (

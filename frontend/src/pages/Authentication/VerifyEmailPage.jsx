@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import InputField from '../../components/common/InputField';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import { verifyEmail, resendVerificationCode } from '../../services/authService';
@@ -17,6 +17,7 @@ const VerifyEmailPage = () => {
       toast.error('Please enter the code');
       return;
     }
+
     try {
       setLoading(true);
       await verifyEmail(email, code);
@@ -41,6 +42,7 @@ const VerifyEmailPage = () => {
   return (
     <>
       <h2 className="mb-4">Check your email for a code</h2>
+
       <InputField label="Email" type="email" value={email} disabled />
       <InputField
         label="Enter verification code"
@@ -51,7 +53,14 @@ const VerifyEmailPage = () => {
       <PrimaryButton text="Submit" onClick={handleVerify} isLoading={loading} />
 
       <div className="text-center mt-3">
-        Didn’t get a code? <button onClick={handleResend} className="btn btn-link p-0">Resend Code</button>
+        Didn’t get a code?{' '}
+        <button onClick={handleResend} className="btn btn-link p-0">
+          Resend Code
+        </button>
+      </div>
+
+      <div className="text-center mt-4">
+        <Link to="/login">Back to login</Link>
       </div>
     </>
   );

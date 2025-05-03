@@ -4,7 +4,7 @@ import PrimaryButton from '../../components/common/PrimaryButton';
 import SSOButton from '../../components/common/SSOButton';
 import { register } from '../../services/authService';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -22,19 +22,23 @@ const RegisterPage = () => {
   };
 
   const handleRegister = async () => {
-    if (form.password !== form.confirmPassword) {
+    const { name, email, password, confirmPassword, role } = form;
+
+    if (!name || !email || !password || !confirmPassword || !role) {
+      toast.warning('Please fill in all fields and select a role');
+      return;
+    }
+
+    if (password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
-    if (!form.role) {
-      toast.error('Please select a role');
-      return;
-    }
+
     try {
       setLoading(true);
-      await register(form.name, form.email, form.password, form.role);
+      await register(name, email, password, role);
       toast.success('Registered successfully! Please verify your email.');
-      navigate('/verify-email', { state: { email: form.email } });
+      navigate('/verify-email', { state: { email } });
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || 'Registration failed');
@@ -50,6 +54,8 @@ const RegisterPage = () => {
   const handleMicrosoftLogin = () => {
     window.location.href = 'http://localhost:5000/auth/microsoft';
   };
+
+  const roles = ['Student', 'Organizer', 'Visitor', 'Campus Admin'];
 
   return (
     <>
@@ -97,10 +103,11 @@ const RegisterPage = () => {
           required
         >
           <option value="">Select a role</option>
-          <option value="Student">Student</option>
-          <option value="Organizer">Organizer</option>
-          <option value="Visitor">Visitor</option>
-          <option value="Campus Admin">Campus Admin</option>
+          {roles.map((role) => (
+            <option key={role} value={role}>
+              {role}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -113,6 +120,10 @@ const RegisterPage = () => {
       <div className="d-flex justify-content-center gap-3">
         <SSOButton provider="microsoft" onClick={handleMicrosoftLogin} />
         <SSOButton provider="google" onClick={handleGoogleLogin} />
+      </div>
+
+      <div className="text-center mt-4">
+        Already have an account? <Link to="/login">Log in</Link>
       </div>
     </>
   );

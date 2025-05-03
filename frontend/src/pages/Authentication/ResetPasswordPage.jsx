@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import InputField from '../../components/common/InputField';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import { resetPassword } from '../../services/authService';
@@ -20,6 +20,11 @@ const ResetPasswordPage = () => {
   };
 
   const handleReset = async () => {
+    if (!form.password || !form.confirmPassword) {
+      toast.warning('Please fill in both fields');
+      return;
+    }
+
     if (form.password !== form.confirmPassword) {
       toast.error('Passwords do not match');
       return;
@@ -59,6 +64,10 @@ const ResetPasswordPage = () => {
       />
 
       <PrimaryButton text="Reset Password" onClick={handleReset} isLoading={loading} />
+
+      <div className="text-center mt-4">
+        <Link to="/login">Back to login</Link>
+      </div>
     </>
   );
 };

@@ -11,7 +11,8 @@ const InputField = ({
   autoFocus = false,
   error = '',
   className = '',
-  showToggle = false, // for password
+  showToggle = false, // for password toggle
+  disabled = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const inputId = id || name;
@@ -33,6 +34,7 @@ const InputField = ({
           name={name}
           required
           autoFocus={autoFocus}
+          disabled={disabled}
           inputMode={type === 'email' ? 'email' : undefined}
         />
         {type === 'password' && showToggle && (
@@ -40,6 +42,8 @@ const InputField = ({
             className="position-absolute top-50 end-0 translate-middle-y me-3"
             style={{ cursor: 'pointer' }}
             onClick={() => setShowPassword((prev) => !prev)}
+            role="button"
+            aria-label="Toggle password visibility"
           >
             {showPassword ? '👁️' : '🙈'}
           </span>

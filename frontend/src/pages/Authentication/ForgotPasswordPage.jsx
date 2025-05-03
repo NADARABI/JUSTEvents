@@ -3,6 +3,7 @@ import InputField from '../../components/common/InputField';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import { requestPasswordReset } from '../../services/authService';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ const ForgotPasswordPage = () => {
       toast.error('Please enter your email');
       return;
     }
+
     try {
       setLoading(true);
       await requestPasswordReset(email);
@@ -37,7 +39,7 @@ const ForgotPasswordPage = () => {
       <PrimaryButton text="Send Reset Link" onClick={handleSendReset} isLoading={loading} />
 
       <div className="text-center mt-4">
-        <a href="/login">Back to login</a>
+        <Link to="/login">Back to login</Link>
       </div>
     </>
   );

@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import { requestRole } from '../../services/authService';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const RequestRolePage = () => {
   const [requestedRole, setRequestedRole] = useState('');
   const [attachment, setAttachment] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const roles = ['Organizer', 'Campus Admin', 'Visitor'];
 
   const handleFileChange = (e) => {
     setAttachment(e.target.files[0]);
@@ -44,9 +46,11 @@ const RequestRolePage = () => {
           onChange={(e) => setRequestedRole(e.target.value)}
         >
           <option value="">Select a role</option>
-          <option value="Organizer">Organizer</option>
-          <option value="Campus Admin">Campus Admin</option>
-          <option value="Visitor">Visitor</option>
+          {roles.map((role) => (
+            <option key={role} value={role}>
+              {role}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -60,11 +64,11 @@ const RequestRolePage = () => {
         />
       </div>
 
-      <PrimaryButton
-        text="Submit Request"
-        onClick={handleSubmit}
-        isLoading={loading}
-      />
+      <PrimaryButton text="Submit Request" onClick={handleSubmit} isLoading={loading} />
+
+      <div className="text-center mt-4">
+        <Link to="/login">Back to login</Link>
+      </div>
     </>
   );
 };

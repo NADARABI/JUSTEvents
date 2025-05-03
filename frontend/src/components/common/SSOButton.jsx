@@ -7,11 +7,13 @@ const SSOButton = ({ provider, onClick, size = 64, disabled = false }) => {
   };
 
   const capitalized = provider.charAt(0).toUpperCase() + provider.slice(1);
+  const logoSrc = logos[provider];
 
   return (
     <button
       onClick={onClick}
       aria-label={`Login with ${capitalized}`}
+      title={`Login with ${capitalized}`}
       disabled={disabled}
       className="border rounded-circle bg-white"
       style={{
@@ -26,7 +28,7 @@ const SSOButton = ({ provider, onClick, size = 64, disabled = false }) => {
       }}
     >
       <img
-        src={logos[provider]}
+        src={logoSrc || '/images/default-icon.png'}
         alt={`${capitalized} logo`}
         style={{ width: size / 2, height: size / 2 }}
       />

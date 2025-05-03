@@ -4,7 +4,7 @@ import PrimaryButton from '../../components/common/PrimaryButton';
 import SSOButton from '../../components/common/SSOButton';
 import { login } from '../../services/authService';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -16,6 +16,11 @@ const LoginPage = () => {
   };
 
   const handleLogin = async () => {
+    if (!form.email || !form.password) {
+      toast.warning('Please enter both email and password');
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await login(form.email, form.password);
@@ -58,7 +63,7 @@ const LoginPage = () => {
       <PrimaryButton text="Login" onClick={handleLogin} isLoading={loading} />
 
       <div className="text-end mt-2">
-        <a href="/forgot-password">Forgot password?</a>
+        <Link to="/forgot-password">Forgot password?</Link>
       </div>
 
       <div className="text-center my-3">Or sign in with</div>
@@ -69,7 +74,7 @@ const LoginPage = () => {
       </div>
 
       <div className="text-center mt-4">
-        Don’t have an account? <a href="/register">Create one</a>
+        Don’t have an account? <Link to="/register">Create one</Link>
       </div>
     </>
   );
