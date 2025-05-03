@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { login } from '../../services/authService';
+import { toast } from 'react-toastify';
+
 import InputField from '../../components/common/InputField';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import SSOButton from '../../components/common/SSOButton';
-import { login } from '../../services/authService';
-import { toast } from 'react-toastify';
-import { useNavigate, Link } from 'react-router-dom';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -23,9 +24,9 @@ const LoginPage = () => {
 
     try {
       setLoading(true);
-      const res = await login(form.email, form.password);
+      await login(form.email, form.password);
       toast.success('Login successful!');
-      navigate('/dashboard'); // أو الصفحة الرئيسية بعد تسجيل الدخول
+      navigate('/dashboard');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
@@ -76,6 +77,8 @@ const LoginPage = () => {
       <div className="text-center mt-4">
         Don’t have an account? <Link to="/register">Create one</Link>
       </div>
+
+      
     </>
   );
 };

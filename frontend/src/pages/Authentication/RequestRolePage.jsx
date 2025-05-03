@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import PrimaryButton from '../../components/common/PrimaryButton';
+import { useNavigate, Link } from 'react-router-dom';
 import { requestRole } from '../../services/authService';
 import { toast } from 'react-toastify';
-import { useNavigate, Link } from 'react-router-dom';
+
+import PrimaryButton from '../../components/common/PrimaryButton';
 
 const RequestRolePage = () => {
   const [requestedRole, setRequestedRole] = useState('');
@@ -26,7 +27,7 @@ const RequestRolePage = () => {
       setLoading(true);
       await requestRole(requestedRole, attachment);
       toast.success(`Role request for "${requestedRole}" submitted successfully!`);
-      navigate('/login'); // or dashboard if needed
+      navigate('/login');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to submit role request');
     } finally {
@@ -64,11 +65,17 @@ const RequestRolePage = () => {
         />
       </div>
 
-      <PrimaryButton text="Submit Request" onClick={handleSubmit} isLoading={loading} />
+      <PrimaryButton
+        text="Submit Request"
+        onClick={handleSubmit}
+        isLoading={loading}
+      />
 
       <div className="text-center mt-4">
         <Link to="/login">Back to login</Link>
       </div>
+
+      
     </>
   );
 };

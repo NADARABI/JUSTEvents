@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import '../../pages/Authentication/auth.css';
+import Footer from './Footer.jsx'; 
 
 const AuthLayout = () => {
   return (
@@ -21,11 +22,7 @@ const AuthLayout = () => {
       </main>
 
       {/* Footer */}
-      <footer className="auth-footer">
-        <div>© {new Date().getFullYear()} Jordan University of Science and Technology.</div>
-        <div>Graduation Project — JUSTEvents Website.</div>
-        <div>Supervised by Dr. Luay Alalawneh.</div>
-      </footer>
+      <Footer />
     </div>
   );
 };

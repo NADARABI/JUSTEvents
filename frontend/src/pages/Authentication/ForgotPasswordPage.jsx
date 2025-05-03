@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import InputField from '../../components/common/InputField';
-import PrimaryButton from '../../components/common/PrimaryButton';
+import { Link } from 'react-router-dom';
 import { requestPasswordReset } from '../../services/authService';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+
+import InputField from '../../components/common/InputField';
+import PrimaryButton from '../../components/common/PrimaryButton';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -29,6 +30,7 @@ const ForgotPasswordPage = () => {
   return (
     <>
       <h2 className="mb-4">Reset your password</h2>
+
       <InputField
         label="Email"
         type="email"
@@ -36,11 +38,18 @@ const ForgotPasswordPage = () => {
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Enter your email"
       />
-      <PrimaryButton text="Send Reset Link" onClick={handleSendReset} isLoading={loading} />
+
+      <PrimaryButton
+        text="Send Reset Link"
+        onClick={handleSendReset}
+        isLoading={loading}
+      />
 
       <div className="text-center mt-4">
         <Link to="/login">Back to login</Link>
       </div>
+
+      
     </>
   );
 };
