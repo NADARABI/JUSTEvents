@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { register } from '../../services/authService';
+import { toast } from 'react-toastify';
+
 import InputField from '../../components/common/InputField';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import SSOButton from '../../components/common/SSOButton';
-import { register } from '../../services/authService';
-import { toast } from 'react-toastify';
-import { useNavigate, Link } from 'react-router-dom';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ const RegisterPage = () => {
     role: '',
   });
   const [loading, setLoading] = useState(false);
+
+  const roles = ['Student', 'Organizer', 'Visitor', 'Campus Admin'];
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -40,7 +43,6 @@ const RegisterPage = () => {
       toast.success('Registered successfully! Please verify your email.');
       navigate('/verify-email', { state: { email } });
     } catch (error) {
-      console.error(error);
       toast.error(error.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
@@ -54,8 +56,6 @@ const RegisterPage = () => {
   const handleMicrosoftLogin = () => {
     window.location.href = 'http://localhost:5000/auth/microsoft';
   };
-
-  const roles = ['Student', 'Organizer', 'Visitor', 'Campus Admin'];
 
   return (
     <>
@@ -125,6 +125,7 @@ const RegisterPage = () => {
       <div className="text-center mt-4">
         Already have an account? <Link to="/login">Log in</Link>
       </div>
+
     </>
   );
 };

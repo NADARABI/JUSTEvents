@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import InputField from '../../components/common/InputField';
-import PrimaryButton from '../../components/common/PrimaryButton';
 import { resetPassword } from '../../services/authService';
 import { toast } from 'react-toastify';
+
+import InputField from '../../components/common/InputField';
+import PrimaryButton from '../../components/common/PrimaryButton';
 
 const ResetPasswordPage = () => {
   const { token } = useParams();
@@ -20,19 +21,21 @@ const ResetPasswordPage = () => {
   };
 
   const handleReset = async () => {
-    if (!form.password || !form.confirmPassword) {
+    const { password, confirmPassword } = form;
+
+    if (!password || !confirmPassword) {
       toast.warning('Please fill in both fields');
       return;
     }
 
-    if (form.password !== form.confirmPassword) {
+    if (password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
 
     try {
       setLoading(true);
-      await resetPassword(token, form.password);
+      await resetPassword(token, password);
       toast.success('Password reset successfully!');
       navigate('/login');
     } catch (error) {
@@ -63,11 +66,17 @@ const ResetPasswordPage = () => {
         placeholder="Confirm new password"
       />
 
-      <PrimaryButton text="Reset Password" onClick={handleReset} isLoading={loading} />
+      <PrimaryButton
+        text="Reset Password"
+        onClick={handleReset}
+        isLoading={loading}
+      />
 
       <div className="text-center mt-4">
         <Link to="/login">Back to login</Link>
       </div>
+
+      
     </>
   );
 };

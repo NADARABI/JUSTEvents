@@ -1,0 +1,65 @@
+.saved-events-container {
+    padding: 60px 30px;
+    background: linear-gradient(135deg, #f9f9f9, #e8f1f5);
+    min-height: 100vh;
+  }
+  
+  .saved-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #062743;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .saved-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+  }
+  
+  /* Glowing Gradient Card */
+  .event-glow-card {
+    background: linear-gradient(145deg, #ffffff, #f3faff);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-left: 6px solid #4F959D;
+  }
+  
+  .event-glow-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+  }
+  
+  .event-content h5 {
+    color: #113A5D;
+    font-size: 20px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .event-content p {
+    font-size: 15px;
+    color: #4f959d;
+    margin-bottom: 1.2rem;
+  }
+  
+  .event-unsave-btn {
+    background-color: #062743;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .event-unsave-btn:hover {
+    background-color: #113a5d;
+  }
+
+  
+  
+  
