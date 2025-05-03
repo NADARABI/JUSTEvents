@@ -1,0 +1,45 @@
+.feedback-list {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    max-width: 700px;
+    margin: 2rem auto;
+  }
+  
+  .feedback-heading {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #062743;
+    text-align: center;
+  }
+  
+  .feedback-item {
+    border-top: 1px solid #ddd;
+    padding: 1rem 0;
+  }
+  
+  .feedback-rating .star {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-right: 2px;
+  }
+  
+  .feedback-rating .filled {
+    color: #f5b301;
+  }
+  
+  .feedback-meta {
+    font-size: 0.85rem;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5rem 0;
+  }
+  
+  .feedback-comment {
+    font-style: italic;
+    color: #113A5D;
+  }
+  
