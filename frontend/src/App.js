@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthLayout from './components/common/AuthLayout';
 
-import LandingPage from './pages/LandingPage';
+import SplashScreen from './pages/SplashScreen';
+import LandingPage from './pages/LandingPage'; 
 import LoginPage from './pages/Authentication/LoginPage';
 import RegisterPage from './pages/Authentication/RegisterPage';
 import VerifyEmailPage from './pages/Authentication/VerifyEmailPage';
@@ -12,6 +13,7 @@ import RequestRolePage from './pages/Authentication/RequestRolePage';
 import SavedEventsPage from './pages/SavedEvents/SavedEventsPage';
 import FeedbackPage from './pages/Feedback/FeedbackPage';
 import EventFeedbackList from './components/Feedback/EventFeedbackList';
+import EventsPage from './pages/EventManagement/EventsPage'; 
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,9 +23,14 @@ function App() {
     <BrowserRouter>
       <ToastContainer />
       <Routes>
-        {/* Auth & landing pages under shared layout */}
+        {/*  Splash Screen FIRST */}
+        <Route path="/" element={<SplashScreen />} />
+
+        {/*  Landing Page SECOND (after redirect) */}
+        <Route path="/home" element={<LandingPage />} />
+
+        {/*  Auth Pages under layout */}
         <Route element={<AuthLayout />}>
-          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
@@ -32,16 +39,13 @@ function App() {
           <Route path="/request-role" element={<RequestRolePage />} />
         </Route>
 
-        {/* Saved Events */}
+        {/*  Events */}
+        <Route path="/events" element={<EventsPage />} />
         <Route path="/saved" element={<SavedEventsPage />} />
-
-        {/* Submit Feedback */}
         <Route path="/feedback" element={<FeedbackPage />} />
-
-        {/* View Feedback (for testing) */}
         <Route path="/mock-feedback" element={<EventFeedbackList eventId={1} />} />
 
-        {/* Fallback */}
+        {/*  Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
