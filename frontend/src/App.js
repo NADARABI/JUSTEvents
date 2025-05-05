@@ -1,3 +1,4 @@
+// src/App.js
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthLayout from './components/common/AuthLayout';
 
@@ -21,15 +22,16 @@ import 'react-toastify/dist/ReactToastify.css';
 function App() {
   return (
     <BrowserRouter>
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+
       <Routes>
-        {/*  Splash Screen FIRST */}
+        {/* Splash screen → entry point */}
         <Route path="/" element={<SplashScreen />} />
 
-        {/*  Landing Page SECOND (after redirect) */}
+        {/* Landing page → public content */}
         <Route path="/home" element={<LandingPage />} />
 
-        {/*  Auth Pages under layout */}
+        {/* Auth pages → wrapped with shared layout */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -39,14 +41,14 @@ function App() {
           <Route path="/request-role" element={<RequestRolePage />} />
         </Route>
 
-        {/*  Events */}
+        {/* Event & Feedback Pages */}
         <Route path="/events" element={<EventsPage />} />
         <Route path="/saved" element={<SavedEventsPage />} />
         <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="/mock-feedback" element={<EventFeedbackList eventId={1} />} />
 
-        {/*  Fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* Catch-all fallback route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

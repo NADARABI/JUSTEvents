@@ -1,8 +1,8 @@
+// src/pages/Authentication/LoginPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../../services/authService';
 import { toast } from 'react-toastify';
-
+import api from '../../services/api'; 
 import InputField from '../../components/common/InputField';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import SSOButton from '../../components/common/SSOButton';
@@ -24,7 +24,7 @@ const LoginPage = () => {
 
     try {
       setLoading(true);
-      await login(form.email, form.password);
+      await api.post('/auth/login', form); 
       toast.success('Login successful!');
       navigate('/dashboard');
     } catch (error) {
@@ -77,8 +77,6 @@ const LoginPage = () => {
       <div className="text-center mt-4">
         Don’t have an account? <Link to="/register">Create one</Link>
       </div>
-
-      
     </>
   );
 };

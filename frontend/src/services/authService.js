@@ -6,7 +6,7 @@ export const register = (name, email, password, role) =>
 
 // Login with email & password
 export const login = (email, password) =>
-  axios.post('/auth/login', { email, password });
+  axios.post('api/auth/login', { email, password });
 
 // Verify email with code
 export const verifyEmail = (email, code) =>
