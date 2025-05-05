@@ -1,10 +1,11 @@
 import React from 'react';
+import './footer.css';
 
 const Footer = () => {
   return (
-    <footer className="text-center p-3" style={{ backgroundColor: '#002b5b', color: '#fff' }}>
-      <div>© {new Date().getFullYear()} Jordan University of Science and Technology.</div>
-      <div>Graduation Project — JUSTEvents Website.</div>
+    <footer className="footer">
+      <div>© {new Date().getFullYear()} Jordan University of Science and Technology</div>
+      <div>Graduation Project — JUSTEvents Website</div>
     </footer>
   );
 };
