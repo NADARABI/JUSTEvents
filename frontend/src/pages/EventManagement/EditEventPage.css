@@ -1,0 +1,14 @@
+.edit-event-container {
+    background-color: #F9F9F9;
+    min-height: 100vh;
+    padding: 40px 16px;
+  }
+  
+  .edit-event-heading {
+    color: #062743;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  

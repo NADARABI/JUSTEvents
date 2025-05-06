@@ -13,6 +13,11 @@ import SavedEventsPage from './pages/SavedEvents/SavedEventsPage';
 import FeedbackPage from './pages/Feedback/FeedbackPage';
 import EventFeedbackList from './components/Feedback/EventFeedbackList';
 
+import CreateEventPage from './pages/EventManagement/CreateEventPage';
+import EditEventPage from './pages/EventManagement/EditEventPage';
+import MyEventsPage from './pages/Organizer/MyEventsPage';
+import PrivateRoute from './components/Routes/PrivateRoute'; // تأكد من المسار الصحيح
+
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -40,6 +45,32 @@ function App() {
 
         {/* View Feedback (for testing) */}
         <Route path="/mock-feedback" element={<EventFeedbackList eventId={1} />} />
+
+        {/* Organizer-only routes */}
+        <Route
+          path="/events/create"
+          element={
+            <PrivateRoute role="Organizer">
+              <CreateEventPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/events/edit/:id"
+          element={
+            <PrivateRoute role="Organizer">
+              <EditEventPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/organizer/my-events"
+          element={
+            <PrivateRoute role="Organizer">
+              <MyEventsPage />
+            </PrivateRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />

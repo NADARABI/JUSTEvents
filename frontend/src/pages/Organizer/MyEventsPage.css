@@ -1,0 +1,48 @@
+.my-events-container {
+    background-color: #F9F9F9;
+    min-height: 100vh;
+    padding: 40px 16px;
+  }
+  
+  .my-events-heading {
+    color: #062743;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  
+  .event-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .event-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  
+  .event-status {
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .status-approved {
+    background-color: #98D2C0;
+    color: #062743;
+  }
+  
+  .status-pending {
+    background-color: #4F959D;
+    color: white;
+  }
+  
+  .status-rejected {
+    background-color: #FECACA;
+    color: #7F1D1D;
+  }
+  
