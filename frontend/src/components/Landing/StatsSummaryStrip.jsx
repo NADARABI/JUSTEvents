@@ -17,8 +17,14 @@ const StatsSummaryStrip = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await api.get('/api/analytics/public/stats-summary');
-        setStats(res.data || fallbackStats);
+        const res = await api.get('/analytics/summary-public');
+        setStats(
+          {
+            eventsHosted: res.data?.totalEvents ?? fallbackStats.eventsHosted,
+            activeUsers: res.data?.totalUsers ?? fallbackStats.activeUsers,
+            feedbackReceived: res.data?.totalFeedback ?? fallbackStats.feedbackReceived,
+          }
+        );
       } catch (err) {
         console.error('Failed to fetch stats summary:', err);
         setStats(fallbackStats);

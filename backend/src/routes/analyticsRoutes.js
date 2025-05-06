@@ -25,6 +25,10 @@ import {
 
 const router = express.Router();
 
+// Public read-only routes for landing page
+router.get('/popular-events-public', getPopularEventsPublic);
+router.get('/summary-public', getSummaryPublic);
+
 // Events analytics (System Admin + Organizer)
 router.use(authMiddleware);
 router.get('/total-events', authorizeRole(['System Admin', 'Organizer']), getTotalEvents);
@@ -50,8 +54,6 @@ router.get('/bookings/trends', authorizeRole(['System Admin', 'Campus Admin']), 
 router.get('/bookings/by-building', authorizeRole(['System Admin', 'Campus Admin']), getBookingsByBuilding);
 router.get('/bookings/cancel-rate', authorizeRole(['System Admin', 'Campus Admin']), getBookingCancelRate);
 
-// Public read-only routes for landing page
-router.get('/popular-events-public', getPopularEventsPublic);
-router.get('/summary-public', getSummaryPublic);
+
 
 export default router;

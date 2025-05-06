@@ -85,10 +85,11 @@ export const getFeedback = async (req, res) => {
 export const getRecentFeedbackPublic = async (req, res) => {
   try {
     const [rows] = await db.query(`
-      SELECT f.text, u.full_name
+      SELECT f.comment, u.name AS user_name
       FROM feedback f
       JOIN users u ON f.user_id = u.id
-      WHERE f.text IS NOT NULL
+      JOIN events e ON f.event_id = e.id
+      WHERE f.comment IS NOT NULL AND e.status = 'Approved'
       ORDER BY f.created_at DESC
       LIMIT 3
     `);

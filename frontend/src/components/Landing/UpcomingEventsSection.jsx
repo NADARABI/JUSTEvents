@@ -32,8 +32,8 @@ const UpcomingEventsSection = () => {
   useEffect(() => {
     const fetchUpcoming = async () => {
       try {
-        const res = await api.get('/api/public/events?upcoming=true');
-        setEvents(res.data?.length ? res.data : mockEvents);
+        const res = await api.get('/api/events?upcoming=true');
+        setEvents(res.data?.data?.length ? res.data.data : mockEvents);
       } catch (err) {
         console.error('Failed to fetch upcoming events:', err);
         setEvents(mockEvents);
@@ -58,6 +58,7 @@ const UpcomingEventsSection = () => {
         <ul className="calendar-event-list">
           {events.map((event) => {
             const d = new Date(event.date);
+            //const d = event.date ? new Date(event.date) : new Date();
             const day = d.toLocaleDateString('en-US', { day: '2-digit' });
             const month = d.toLocaleDateString('en-US', { month: 'short' });
             const weekday = d.toLocaleDateString('en-US', { weekday: 'short' });

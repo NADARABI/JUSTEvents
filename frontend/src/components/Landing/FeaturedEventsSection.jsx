@@ -37,7 +37,7 @@ const FeaturedEventsSection = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const response = await api.get('/api/public/analytics/popular-events');
+        const response = await api.get('/analytics/popular-events-public');
         const data = response?.data || [];
         setEvents(data.length > 0 ? data : mockEvents);
       } catch (error) {

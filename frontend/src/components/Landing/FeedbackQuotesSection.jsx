@@ -48,8 +48,8 @@ const FeedbackQuotesSection = () => {
         <div className="feedback-grid">
           {feedbacks.map((item, index) => (
             <div className="feedback-card" key={index}>
-              <p className="feedback-text">“{item.text}”</p>
-              <span className="feedback-user">— {item.full_name}</span>
+              <p className="feedback-text">“{item.comment}”</p>
+              <span className="feedback-user">— {item.user_name}</span>
             </div>
           ))}
         </div>

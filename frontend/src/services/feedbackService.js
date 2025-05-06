@@ -2,7 +2,7 @@ import axios from './api'; // Uses configured baseURL + token
 
 // Public: Fetch recent feedback (for Landing Page)
 export const getRecentFeedbackPublic = () => {
-  return axios.get('/feedback/recent-public');
+  return axios.get('/api/recent-public');
 };
 
 // Submit feedback for a specific event (protected)
