@@ -1,29 +1,27 @@
 .featured-events-section {
-    padding: 3rem 1rem;
-    background-color: #ffffff;
-    text-align: center;
-  }
-  
-  .section-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #062743;
-    margin-bottom: 2rem;
-  }
-  
-  .event-card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .loading-text,
-  .empty-text {
-    /*color: #4f959d;*/
-    color: #062743;
-    font-size: 1rem;
-    margin-top: 1rem;
-  }
-  
+  padding: 3rem 1rem;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #062743;
+  margin-bottom: 2rem;
+}
+
+.event-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading-text,
+.empty-text {
+  color: #4f959d;
+  font-size: 1rem;
+  margin-top: 1.5rem;
+}

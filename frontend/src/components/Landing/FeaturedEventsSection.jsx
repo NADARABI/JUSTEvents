@@ -1,7 +1,6 @@
-// src/components/Landing/FeaturedEventsSection.jsx
 import React, { useEffect, useState } from 'react';
 import EventCard from '../Events/EventCard';
-import api from '../../services/api'; 
+import api from '../../services/api';
 import './featuredEventsSection.css';
 
 const mockEvents = [
@@ -38,11 +37,11 @@ const FeaturedEventsSection = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const response = await api.get('/api/analytics/popular-events'); 
+        const response = await api.get('/api/public/analytics/popular-events');
         const data = response?.data || [];
         setEvents(data.length > 0 ? data : mockEvents);
       } catch (error) {
-        console.error('Failed to fetch popular events:', error);
+        console.error('Failed to fetch featured events:', error);
         setEvents(mockEvents);
       } finally {
         setLoading(false);

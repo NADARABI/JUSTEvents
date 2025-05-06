@@ -9,6 +9,7 @@ import FeaturedEventsSection from '../components/Landing/FeaturedEventsSection';
 import UpcomingEventsSection from '../components/Landing/UpcomingEventsSection';
 import FeedbackQuotesSection from '../components/Landing/FeedbackQuotesSection';
 import StatsSummaryStrip from '../components/Landing/StatsSummaryStrip';
+import DualCTASection from '../components/Landing/DualCTASection.jsx';
 
 const LandingPage = () => {
   return (
@@ -24,6 +25,7 @@ const LandingPage = () => {
       <UpcomingEventsSection />
       <FeedbackQuotesSection />
       <StatsSummaryStrip />
+      <DualCTASection />
       <Footer />
     </div>
   );

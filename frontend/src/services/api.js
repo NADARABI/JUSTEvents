@@ -1,24 +1,33 @@
-// src/api.js
 import axios from 'axios';
 
-// Create an axios instance with the correct base URL
+// Create axios instance for the whole app
 const api = axios.create({
-  baseURL: 'http://localhost:5000', 
+  baseURL: 'http://localhost:5000',
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // Set timeout to 10 seconds
+  timeout: 10000,
 });
 
 // Debug log
-console.log("AXIOS BASE URL:", api.defaults.baseURL);
+console.log(" AXIOS CONNECTED →", api.defaults.baseURL);
 
-// Add token automatically 
+// Smart token injection
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) {
+
+  const isPublic =
+    config.url.includes('/public') ||
+    config.url.includes('/auth') ||
+    config.url === '/analytics/popular-events-public' ||
+    config.url === '/analytics/summary-public' ||
+    config.url === '/feedback/recent-public' ||
+    (config.method === 'get' && config.url.startsWith('/events'));
+
+  if (token && !isPublic) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
