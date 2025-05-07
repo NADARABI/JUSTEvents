@@ -18,24 +18,27 @@
 
 .event-image {
   width: 100%;
-  height: 200px;
+  height: 180px;
   object-fit: cover;
   background-color: #98d2c0;
   transition: filter 0.3s ease;
 }
 
-.event-image:hover {
-  filter: brightness(0.95);
+@media (min-width: 768px) {
+  .event-image {
+    height: 200px;
+  }
 }
 
 .event-image.placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f9f9f9;
   background: #4f959d;
+  height: 180px;
 }
 
 .event-body {
@@ -88,9 +91,10 @@
   font-weight: 600;
   font-size: 0.9rem;
   margin-top: auto;
-  transition: background-color 0.25s ease;
+  transition: background-color 0.25s ease, transform 0.2s ease;
 }
 
 .event-button:hover {
   background-color: #113a5d;
+  transform: scale(1.03);
 }

@@ -1,21 +1,27 @@
-import axios from './api'; // Uses configured baseURL + token
+// src/services/feedbackService.js
+import axios from './api'; // Axios instance with baseURL + token config
 
-// Public: Fetch recent feedback (for Landing Page)
-export const getRecentFeedbackPublic = () => {
-  return axios.get('/api/recent-public');
-};
+/**
+ * Public: Fetch recent public feedback for the Landing Page
+ */
+export const getRecentFeedbackPublic = () => axios.get('/api/recent-public');
 
-// Submit feedback for a specific event (protected)
-export const submitFeedback = (eventId, rating, comment) => {
-  return axios.post('/feedback/submit', { eventId, rating, comment });
-};
+/**
+ * Submit feedback for a specific event (Protected)
+ * @param {number} eventId - The ID of the event
+ * @param {object} payload - The feedback data (comment, rating)
+ */
+export const submitFeedback = (eventId, payload) => axios.post(`/events/${eventId}/feedback`, payload);
 
-//  Fetch all feedback for a specific event (protected)
-export const fetchEventFeedback = (eventId) => {
-  return axios.get(`/feedback/events/${eventId}/feedback`);
-};
+/**
+ * Fetch all feedback for a specific event
+ * @param {number} eventId - The ID of the event
+ */
+export const fetchEventFeedback = (eventId) => axios.get(`/api/events/${eventId}/feedback`);
 
-// Export object if needed elsewhere
+/**
+ * Consolidated object export
+ */
 const feedbackService = {
   getRecentFeedbackPublic,
   submitFeedback,

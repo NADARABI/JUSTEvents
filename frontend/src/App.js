@@ -1,7 +1,6 @@
 // src/App.js
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthLayout from './components/common/AuthLayout';
-
 import SplashScreen from './pages/SplashScreen';
 import LandingPage from './pages/LandingPage'; 
 import LoginPage from './pages/Authentication/LoginPage';
@@ -11,27 +10,36 @@ import ForgotPasswordPage from './pages/Authentication/ForgotPasswordPage';
 import ResetPasswordPage from './pages/Authentication/ResetPasswordPage';
 import RequestRolePage from './pages/Authentication/RequestRolePage';
 
+import EventsPage from './pages/EventManagement/EventsPage';
+import EventDetailsPage from './pages/EventManagement/EventDetailsPage';
 import SavedEventsPage from './pages/SavedEvents/SavedEventsPage';
-import FeedbackPage from './pages/Feedback/FeedbackPage';
-import EventFeedbackList from './components/Feedback/EventFeedbackList';
-import EventsPage from './pages/EventManagement/EventsPage'; 
-
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <BrowserRouter>
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000} 
+        hideProgressBar={false} 
+        newestOnTop={false} 
+        closeOnClick 
+        rtl={false} 
+        pauseOnFocusLoss 
+        draggable 
+        pauseOnHover 
+        theme="colored"  
+      />
 
       <Routes>
-        {/* Splash screen → entry point */}
+        {/* Splash screen → Entry Point */}
         <Route path="/" element={<SplashScreen />} />
 
-        {/* Landing page → public content */}
+        {/* Public Landing Page */}
         <Route path="/home" element={<LandingPage />} />
 
-        {/* Auth pages → wrapped with shared layout */}
+        {/* Auth Pages → Wrapped with shared layout */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -41,13 +49,14 @@ function App() {
           <Route path="/request-role" element={<RequestRolePage />} />
         </Route>
 
-        {/* Event & Feedback Pages */}
+        {/* Event Pages */}
         <Route path="/events" element={<EventsPage />} />
-        <Route path="/saved" element={<SavedEventsPage />} />
-        <Route path="/feedback" element={<FeedbackPage />} />
-        <Route path="/mock-feedback" element={<EventFeedbackList eventId={1} />} />
+        <Route path="/events/:id" element={<EventDetailsPage />} />
 
-        {/* Catch-all fallback route */}
+        {/* Saved Events */}
+        <Route path="/saved" element={<SavedEventsPage />} />
+
+        {/* Catch-all Fallback Route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

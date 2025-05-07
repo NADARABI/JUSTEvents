@@ -1,27 +1,43 @@
+// src/components/Events/CategoryFilterStrip.jsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './categoryFilterStrip.css';
 
-const categories = ['All', 'Tech', 'Workshops', 'Clubs', 'Competitions', 'Sports', 'Health'];
+const categories = [
+  'All',
+  'General',
+  'Social',
+  'Sports',
+  'Academic',
+  'Tech',
+  'Health',
+  'Workshop',
+];
 
 const CategoryFilterStrip = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentCategory = new URLSearchParams(location.search).get('category') || 'All';
 
-  const handleFilterClick = (category) => {
+  const handleClick = (category) => {
     const query = category === 'All' ? '' : `?category=${encodeURIComponent(category)}`;
     navigate(`/events${query}`);
   };
 
   return (
-    <section className="category-strip">
-      <div className="category-scroll-wrapper">
+    <div className="category-strip-wrapper">
+      <div className="category-strip">
         {categories.map((cat) => (
-          <button key={cat} className="category-button" onClick={() => handleFilterClick(cat)}>
+          <button
+            key={cat}
+            className={`category-pill ${currentCategory === cat ? 'active' : ''}`}
+            onClick={() => handleClick(cat)}
+          >
             {cat}
           </button>
         ))}
       </div>
-    </section>
+    </div>
   );
 };
 

@@ -6,8 +6,7 @@ import './eventCard.css';
 const EventCard = ({ event }) => {
   const { id, title, date, description, image_url, category } = event;
 
-  const formattedDate = new Date(date).toLocaleDateString('en-GB', {
-    weekday: 'short',
+  const formattedDate = new Date(date).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -23,7 +22,7 @@ const EventCard = ({ event }) => {
           loading="lazy"
         />
       ) : (
-        <div className="event-image placeholder">No Image</div>
+        <div className="event-image placeholder">No Image Available</div>
       )}
 
       <div className="event-body">
