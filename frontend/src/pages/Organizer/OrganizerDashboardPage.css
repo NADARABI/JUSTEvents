@@ -1,0 +1,116 @@
+.dashboard-container {
+    padding: 40px 20px;
+    background-color: #F9F9F9;
+    min-height: 100vh;
+  }
+  
+  .dashboard-heading {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    color: #062743;
+    margin-bottom: 30px;
+  }
+  
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    max-width: 800px;
+    margin: 0 auto 40px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  }
+  
+  .stat-card.total {
+    background-color: #113A5D;
+    color: white;
+  }
+  
+  .stat-card.approved {
+    background-color: #98D2C0;
+    color: #062743;
+  }
+  
+  .stat-card.pending {
+    background-color: #4F959D;
+    color: white;
+  }
+  
+  .stat-card.rejected {
+    background-color: #FECACA;
+    color: #7F1D1D;
+  }
+  
+  .upcoming-section {
+    max-width: 600px;
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+  
+  .upcoming-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+  }
+  
+  .upcoming-list li {
+    background: white;
+    margin: 6px auto;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .quick-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .quick-btn {
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s ease;
+  }
+  
+  .quick-btn.primary {
+    background-color: #113A5D;
+    color: white;
+  }
+  
+  .quick-btn.primary:hover {
+    background-color: #4F959D;
+  }
+  
+  .quick-btn.secondary {
+    background-color: white;
+    color: #113A5D;
+    border: 2px solid #113A5D;
+  }
+  
+  .quick-btn.secondary:hover {
+    background-color: #F0F0F0;
+  }
+  
+  .muted-text {
+    color: gray;
+    font-size: 14px;
+  }
+  
+  .dashboard-loading {
+    text-align: center;
+    color: #113A5D;
+    font-size: 18px;
+    margin-top: 50px;
+  }
+  

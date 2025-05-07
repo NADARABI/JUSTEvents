@@ -16,6 +16,8 @@ import EventFeedbackList from './components/Feedback/EventFeedbackList';
 import CreateEventPage from './pages/EventManagement/CreateEventPage';
 import EditEventPage from './pages/EventManagement/EditEventPage';
 import MyEventsPage from './pages/Organizer/MyEventsPage';
+import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
+
 import PrivateRoute from './components/Routes/PrivateRoute'; // تأكد من المسار الصحيح
 
 import { ToastContainer } from 'react-toastify';
@@ -68,6 +70,14 @@ function App() {
           element={
             <PrivateRoute role="Organizer">
               <MyEventsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/organizer/dashboard"
+          element={
+            <PrivateRoute role="Organizer">
+              <OrganizerDashboardPage />
             </PrivateRoute>
           }
         />
