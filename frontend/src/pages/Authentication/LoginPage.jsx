@@ -24,9 +24,32 @@ const LoginPage = () => {
 
     try {
       setLoading(true);
-      await api.post('/auth/login', form); 
+      const { data } = await api.post('/auth/login', form); 
+
+      // Store data in local storage
+      localStorage.setItem('accessToken', data.token);
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
       toast.success('Login successful!');
-      navigate('/dashboard');
+
+      // Redirect based on role
+      switch (data.role) {
+        case 'Organizer':
+          navigate('/organizer/dashboard');
+          break;
+        case 'Student':
+          navigate('/events');
+          break;
+        case 'Campus Admin':
+          navigate('/admin/pending-events');
+          break;
+        case 'System Admin':
+          navigate('/admin/pending-users');
+          break;
+        default:
+          navigate('/home');
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
@@ -35,15 +58,15 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/auth/google';
+    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
   };
 
   const handleMicrosoftLogin = () => {
-    window.location.href = 'http://localhost:5000/auth/microsoft';
+    window.location.href = `${process.env.REACT_APP_API_URL}/auth/microsoft`;
   };
 
   return (
-    <>
+    <div className="auth-container">
       <h2 className="mb-4">Login to JUSTEvents</h2>
 
       <InputField
@@ -77,7 +100,7 @@ const LoginPage = () => {
       <div className="text-center mt-4">
         Don’t have an account? <Link to="/register">Create one</Link>
       </div>
-    </>
+    </div>
   );
 };
 

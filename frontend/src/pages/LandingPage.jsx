@@ -14,18 +14,20 @@ import DualCTASection from '../components/Landing/DualCTASection.jsx';
 const LandingPage = () => {
   return (
     <div className="landing-container">
+
       <NavBar />
 
       {/* Hero Carousel Section */}
       <section className="hero-carousel-section">
         <HeroCarousel />
       </section>
+
       <CategoryFilterStrip />
       <FeaturedEventsSection />
       <UpcomingEventsSection />
       <FeedbackQuotesSection />
       <StatsSummaryStrip />
-      <DualCTASection />
+      <DualCTASection /> {/* Combined both Room Booking CTA + Organizer CTA */}
       <Footer />
     </div>
   );

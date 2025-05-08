@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+// src/components/Landing/UpcomingEventsSection.jsx
+import React, { useEffect, useState, useCallback } from 'react';
 import api from '../../services/api';
 import { CalendarDays } from 'lucide-react';
+import LoadingSpinner from '../common/LoadingSpinner';
+import { Link, useNavigate } from 'react-router-dom';
 import './upcomingEventsSection.css';
-import { Link } from 'react-router-dom';
 
 const mockEvents = [
   {
@@ -28,22 +30,32 @@ const mockEvents = [
 const UpcomingEventsSection = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUpcoming = async () => {
-      try {
-        const res = await api.get('/api/events?upcoming=true');
-        setEvents(res.data?.data?.length ? res.data.data : mockEvents);
-      } catch (err) {
-        console.error('Failed to fetch upcoming events:', err);
+  // Wrapped with useCallback
+  const fetchUpcoming = useCallback(async () => {
+    try {
+      console.log("Fetching Upcoming Events...");
+      const res = await api.get('/api/events?upcoming=true');
+      if (res.data?.data?.length > 0) {
+        setEvents(res.data.data);
+        console.log("API Data Loaded");
+      } else {
+        console.warn("API returned no data, using mock events.");
         setEvents(mockEvents);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchUpcoming();
+    } catch (err) {
+      console.error('Failed to fetch upcoming events:', err.message);
+      setEvents(mockEvents);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  // useEffect with correct dependencies
+  useEffect(() => {
+    fetchUpcoming();
+  }, [fetchUpcoming]);
 
   return (
     <section className="upcoming-events-calendar">
@@ -53,15 +65,16 @@ const UpcomingEventsSection = () => {
       </div>
 
       {loading ? (
-        <p className="loading-text">Loading events...</p>
+        <div className="loading-spinner">
+          <LoadingSpinner />
+        </div>
       ) : events.length > 0 ? (
         <ul className="calendar-event-list">
           {events.map((event) => {
-            const d = new Date(event.date);
-            //const d = event.date ? new Date(event.date) : new Date();
-            const day = d.toLocaleDateString('en-US', { day: '2-digit' });
-            const month = d.toLocaleDateString('en-US', { month: 'short' });
-            const weekday = d.toLocaleDateString('en-US', { weekday: 'short' });
+            const eventDate = event.date ? new Date(event.date) : new Date();
+            const day = eventDate.toLocaleDateString('en-US', { day: '2-digit' });
+            const month = eventDate.toLocaleDateString('en-US', { month: 'short' });
+            const weekday = eventDate.toLocaleDateString('en-US', { weekday: 'short' });
 
             return (
               <li className="calendar-event-card" key={event.id}>
@@ -73,14 +86,21 @@ const UpcomingEventsSection = () => {
                 <div className="calendar-event-info">
                   <h4>{event.title}</h4>
                   <p>{event.description}</p>
-                  <Link to={`/events/${event.id}`} className="calendar-event-link">View Details</Link>
+                  <Link to={`/events/${event.id}`} className="calendar-event-link">
+                    View Details
+                  </Link>
                 </div>
               </li>
             );
           })}
         </ul>
       ) : (
-        <p className="empty-text">No upcoming events available.</p>
+        <div className="empty-text">
+          No upcoming events available right now.
+          <button className="back-button" onClick={() => navigate('/')}>
+            Back to Home
+          </button>
+        </div>
       )}
     </section>
   );

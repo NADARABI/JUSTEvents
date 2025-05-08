@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+// src/components/Landing/FeaturedEventsSection.jsx
+import React, { useEffect, useState, useCallback } from 'react';
 import EventCard from '../Events/EventCard';
 import api from '../../services/api';
+import LoadingSpinner from '../common/LoadingSpinner';
 import './featuredEventsSection.css';
 
 const mockEvents = [
@@ -34,28 +36,40 @@ const FeaturedEventsSection = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchFeatured = async () => {
-      try {
-        const response = await api.get('/analytics/popular-events-public');
-        const data = response?.data || [];
-        setEvents(data.length > 0 ? data : mockEvents);
-      } catch (error) {
-        console.error('Failed to fetch featured events:', error);
+  //  Fetch function wrapped with useCallback to prevent re-creation
+  const fetchFeatured = useCallback(async () => {
+    try {
+      console.log("Fetching Featured Events...");
+      const response = await api.get('/analytics/popular-events-public');
+      const data = response?.data || [];
+      if (data.length > 0) {
+        setEvents(data);
+        console.log("API Data Loaded");
+      } else {
+        console.warn("API returned no data, using mock events.");
         setEvents(mockEvents);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchFeatured();
+    } catch (error) {
+      console.error('Failed to fetch featured events:', error.message);
+      setEvents(mockEvents);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  // useEffect with correct dependencies
+  useEffect(() => {
+    fetchFeatured();
+  }, [fetchFeatured]);
 
   return (
     <section className="featured-events-section">
       <h2 className="section-title">Featured Events</h2>
+
       {loading ? (
-        <p className="loading-text">Loading featured events...</p>
+        <div className="loading-spinner">
+          <LoadingSpinner />
+        </div>
       ) : events.length > 0 ? (
         <div className="event-card-grid">
           {events.map((event) => (

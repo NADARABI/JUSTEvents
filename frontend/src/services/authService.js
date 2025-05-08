@@ -1,4 +1,8 @@
+// src/services/authService.js
 import axios from 'axios';
+
+// Set the base URL for axios
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 // Register a new user
 export const register = (name, email, password, role) =>
@@ -6,7 +10,7 @@ export const register = (name, email, password, role) =>
 
 // Login with email & password
 export const login = (email, password) =>
-  axios.post('api/auth/login', { email, password });
+  axios.post('/auth/login', { email, password });
 
 // Verify email with code
 export const verifyEmail = (email, code) =>

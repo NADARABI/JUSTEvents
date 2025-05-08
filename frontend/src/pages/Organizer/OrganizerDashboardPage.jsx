@@ -1,3 +1,4 @@
+// src/pages/Organizer/OrganizerDashboardPage.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -11,9 +12,9 @@ const OrganizerDashboardPage = () => {
   useEffect(() => {
     const fetchMyEvents = async () => {
       try {
-        const res = await axios.get('/events?sort=latest');
-        const userId = JSON.parse(localStorage.getItem("user"))?.id;
-        const myEvents = res.data.data.filter(e => e.organizer_id === userId);
+        const res = await axios.get('/api/events?sort=latest');
+        const userId = JSON.parse(localStorage.getItem('user'))?.id;
+        const myEvents = res.data.data.filter((e) => e.organizer_id === userId);
         setEvents(myEvents);
       } catch (err) {
         console.error('Failed to load dashboard data', err);
@@ -26,12 +27,12 @@ const OrganizerDashboardPage = () => {
   }, []);
 
   const total = events.length;
-  const approved = events.filter(e => e.status === 'Approved').length;
-  const pending = events.filter(e => e.status === 'Pending').length;
-  const rejected = events.filter(e => e.status === 'Rejected').length;
+  const approved = events.filter((e) => e.status === 'Approved').length;
+  const pending = events.filter((e) => e.status === 'Pending').length;
+  const rejected = events.filter((e) => e.status === 'Rejected').length;
 
   const upcoming = events
-    .filter(e => new Date(e.date) >= new Date())
+    .filter((e) => new Date(e.date) >= new Date())
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .slice(0, 3);
 
@@ -73,7 +74,7 @@ const OrganizerDashboardPage = () => {
           <ul className="upcoming-list">
             {upcoming.map((e) => (
               <li key={e.id}>
-                <strong>{e.title}</strong> — {e.date} at {e.time}
+                <strong>{e.title}</strong> — {new Date(e.date).toLocaleDateString()} at {e.time}
               </li>
             ))}
           </ul>

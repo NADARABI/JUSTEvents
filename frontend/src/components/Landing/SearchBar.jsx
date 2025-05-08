@@ -1,5 +1,5 @@
 // src/components/Landing/SearchBar.jsx
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import './searchBar.css';
@@ -8,11 +8,13 @@ const SearchBar = ({ fromNav = false }) => {
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
 
-  const handleSearch = () => {
+  // Debounced search handler
+  const handleSearch = useCallback(() => {
     const trimmed = query.trim();
     navigate(trimmed ? `/events?search=${encodeURIComponent(trimmed)}` : '/events');
-  };
+  }, [query, navigate]); 
 
+  // KeyDown Handler
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSearch();
   };

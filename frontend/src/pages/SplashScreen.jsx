@@ -7,7 +7,7 @@ const SplashScreen = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/home'); //  redirect to Landing Page
+      navigate('/home'); //  redirect to Landing Page after 3.5 seconds
     }, 3500);
 
     return () => clearTimeout(timer);
@@ -38,6 +38,7 @@ const SplashScreen = () => {
       </p>
 
       <button
+        // Skip button
         onClick={() => navigate('/home')}
         className="btn btn-outline-dark"
         style={{ borderRadius: '12px', padding: '10px 24px', fontWeight: '500' }}

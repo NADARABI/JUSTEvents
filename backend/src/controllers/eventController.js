@@ -138,7 +138,6 @@ export const getEventById = async (req, res) => {
 };
 
 // RSVP to an event
-// RSVP to an event
 export const rsvpEvent = async (req, res) => {
   try {
     const { id: event_id } = req.params;

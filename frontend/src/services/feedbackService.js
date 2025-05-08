@@ -11,7 +11,7 @@ export const getRecentFeedbackPublic = () => axios.get('/api/recent-public');
  * @param {number} eventId - The ID of the event
  * @param {object} payload - The feedback data (comment, rating)
  */
-export const submitFeedback = (eventId, payload) => axios.post(`/events/${eventId}/feedback`, payload);
+export const submitFeedback = (eventId, payload) => axios.post(`/api/events/${eventId}/feedback`, payload);
 
 /**
  * Fetch all feedback for a specific event

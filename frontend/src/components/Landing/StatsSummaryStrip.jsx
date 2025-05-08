@@ -1,8 +1,9 @@
 // src/components/Landing/StatsSummaryStrip.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './statsSummaryStrip.css';
 import { CalendarCheck, Users, MessageSquare } from 'lucide-react';
 import api from '../../services/api';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 const fallbackStats = {
   eventsHosted: 136,
@@ -11,35 +12,40 @@ const fallbackStats = {
 };
 
 const StatsSummaryStrip = () => {
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState(fallbackStats);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await api.get('/analytics/summary-public');
-        setStats(
-          {
-            eventsHosted: res.data?.totalEvents ?? fallbackStats.eventsHosted,
-            activeUsers: res.data?.totalUsers ?? fallbackStats.activeUsers,
-            feedbackReceived: res.data?.totalFeedback ?? fallbackStats.feedbackReceived,
-          }
-        );
-      } catch (err) {
-        console.error('Failed to fetch stats summary:', err);
-        setStats(fallbackStats);
-      } finally {
-        setLoading(false);
+  const fetchStats = useCallback(async () => {
+    try {
+      console.log("Fetching Stats...");
+      const res = await api.get('/analytics/summary-public');
+      if (res.data) {
+        setStats({
+          eventsHosted: res.data.totalEvents ?? fallbackStats.eventsHosted,
+          activeUsers: res.data.totalUsers ?? fallbackStats.activeUsers,
+          feedbackReceived: res.data.totalFeedback ?? fallbackStats.feedbackReceived,
+        });
+      } else {
+        console.warn("No data returned, using fallback stats.");
       }
-    };
-
-    fetchStats();
+    } catch (err) {
+      console.error('Failed to fetch stats summary:', err.message);
+      setStats(fallbackStats);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   return (
     <section className="stats-strip" aria-label="JUSTEvents platform statistics">
       {loading ? (
-        <p className="loading-text">Loading stats...</p>
+        <div className="loading-spinner">
+          <LoadingSpinner />
+        </div>
       ) : (
         <>
           <div className="stat-card">

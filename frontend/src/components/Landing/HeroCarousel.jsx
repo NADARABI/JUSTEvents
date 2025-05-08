@@ -1,5 +1,5 @@
 // src/components/Landing/HeroCarousel.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './heroCarousel.css';
 
@@ -31,19 +31,39 @@ const HeroCarousel = () => {
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
 
-  const nextSlide = () => setIndex((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+  // Auto slide logic with timer reset
+  const resetInterval = useCallback(() => {
+    clearInterval(window.heroCarouselTimer);
+    window.heroCarouselTimer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % slides.length);
+    }, 6000);
+  }, []);
+
+  // Slide functions
+  const nextSlide = () => {
+    setIndex((prev) => (prev + 1) % slides.length);
+    resetInterval();
+  };
+
+  const prevSlide = () => {
+    setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    resetInterval();
+  };
 
   const handleButtonClick = () => {
     navigate(slides[index].link);
   };
 
+  const goToSlide = (i) => {
+    setIndex(i);
+    resetInterval();
+  };
+
+  // Initialize auto-slide
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % slides.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
+    resetInterval();
+    return () => clearInterval(window.heroCarouselTimer);
+  }, [resetInterval]);
 
   return (
     <div className="carousel-container" style={{ backgroundColor: slides[index].bg }}>
@@ -65,7 +85,8 @@ const HeroCarousel = () => {
           <span
             key={i}
             className={`dot ${i === index ? 'active' : ''}`}
-            onClick={() => setIndex(i)}
+            onClick={() => goToSlide(i)}
+            aria-current={i === index ? 'true' : 'false'}
           />
         ))}
       </div>
