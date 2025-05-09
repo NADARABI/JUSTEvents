@@ -56,13 +56,13 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
-
+  
   const handleGoogleLogin = () => {
-    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
+    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google?redirect_uri=${window.location.origin}/sso/callback`;
   };
-
+  
   const handleMicrosoftLogin = () => {
-    window.location.href = `${process.env.REACT_APP_API_URL}/auth/microsoft`;
+    window.location.href = `${process.env.REACT_APP_API_URL}/auth/microsoft?redirect_uri=${window.location.origin}/sso/callback`;
   };
 
   return (

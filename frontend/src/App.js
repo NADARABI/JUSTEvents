@@ -1,4 +1,3 @@
-// src/App.js
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import AuthLayout from './components/common/AuthLayout';
@@ -10,6 +9,7 @@ import VerifyEmailPage from './pages/Authentication/VerifyEmailPage';
 import ForgotPasswordPage from './pages/Authentication/ForgotPasswordPage';
 import ResetPasswordPage from './pages/Authentication/ResetPasswordPage';
 import RequestRolePage from './pages/Authentication/RequestRolePage';
+import SSOCallbackPage from './pages/Authentication/SSOCallbackPage';
 
 import EventsPage from './pages/EventManagement/EventsPage';
 import EventDetailsPage from './pages/EventManagement/EventDetailsPage';
@@ -22,7 +22,6 @@ import MyEventsPage from './pages/Organizer/MyEventsPage';
 import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
 
 import PrivateRoute from './components/Routes/PrivateRoute';
-
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -44,39 +43,30 @@ function App() {
         />
 
         <Routes>
-
           {/* Splash screen → Entry Point */}
           <Route path="/" element={<SplashScreen />} />
-
-          {/* Public Landing Page */}
           <Route path="/home" element={<LandingPage />} />
 
-          {/* Auth Pages → Wrapped with shared layout */}
+          {/* Auth Pages - Wrapped with AuthLayout */}
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-            <Route path="/request-role" element={<RequestRolePage />} />
-          </Route>
-          {/* Auth Pages → Wrapped with shared layout */}
-          <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/verify-email" element={<VerifyEmailPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          {/* Remove PrivateRoute for this */}
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/request-role" element={<RequestRolePage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Route>
 
+          {/* SSO Callback - Separate */}
+          <Route path="/sso/callback" element={<SSOCallbackPage />} />
+
+          {/* Request Role Page - Separate and Independent */}
+          <Route path="/request-role" element={<RequestRolePage />} />
 
           {/* Event Pages */}
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/:id" element={<EventDetailsPage />} />
 
-          {/* Saved Events (Protected) */}
+          {/* Protected Routes */}
           <Route 
             path="/saved" 
             element={
@@ -86,7 +76,6 @@ function App() {
             } 
           />
 
-          {/* Submit Feedback (Protected) */}
           <Route
             path="/feedback"
             element={
@@ -96,7 +85,6 @@ function App() {
             }
           />
 
-          {/* Organizer-only routes */}
           <Route
             path="/events/create"
             element={
@@ -129,34 +117,6 @@ function App() {
               </PrivateRoute>
             }
           />
-
-          {/* Admin-only routes (Uncomment when ready) */}
-          {/*
-          <Route
-            path="/admin/pending-events"
-            element={
-              <PrivateRoute role="Campus Admin">
-                <PendingEventsPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/admin/pending-users"
-            element={
-              <PrivateRoute role="System Admin">
-                <PendingUsersPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/bookings/pending"
-            element={
-              <PrivateRoute role="Campus Admin">
-                <PendingBookingsPage />
-              </PrivateRoute>
-            }
-          />
-          */}
 
           {/* Catch-all Fallback Route */}
           <Route path="*" element={<Navigate to="/" replace />} />

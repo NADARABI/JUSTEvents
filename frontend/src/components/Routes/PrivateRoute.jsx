@@ -1,36 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 const PrivateRoute = ({ children, roles = [] }) => {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
-      if (storedUser) {
-        setUser(storedUser);
+      const token = localStorage.getItem('accessToken');
+      const userData = JSON.parse(localStorage.getItem('user'));
+      const role = localStorage.getItem('role');
+
+      if (token && userData && role) {
+        if (roles.length > 0 && !roles.includes(role)) {
+          console.warn(`Role ${role} is not authorized for this page.`);
+          setIsAuthorized(false);
+        } else {
+          console.log("User is authorized with role:", role);
+          setIsAuthorized(true);
+        }
       }
     } catch (error) {
-      console.error("Failed to parse user data:", error.message);
-      localStorage.removeItem('user'); // Clear corrupted data
+      console.error("Error checking user data:", error.message);
+      setIsAuthorized(false);
     } finally {
-      setLoading(false); // Finish loading
+      setLoading(false);
     }
-  }, []);
+  }, [roles]);
 
   if (loading) {
-    return <div className="loading-spinner">Loading...</div>;
+    return <div>Loading...</div>;
   }
 
-  if (!user) {
-    // Not logged in
+  if (!isAuthorized) {
+    console.warn("User is not authorized, redirecting to login.");
     return <Navigate to="/login" />;
-  }
-
-  if (roles.length > 0 && !roles.includes(user.role)) {
-    // Logged in but role mismatch
-    return <Navigate to="/not-authorized" />;
   }
 
   return children;
