@@ -22,7 +22,7 @@ const slides = [
     title: "Stay in the Loop.",
     subtitle: "Browse and search for events happening this week on campus.",
     buttonText: "Upcoming Events",
-    link: "/events?upcoming=true",
+    link: "/events?upcoming=true", 
     bg: "#d9e9e5"
   }
 ];
@@ -31,7 +31,6 @@ const HeroCarousel = () => {
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
 
-  // Auto slide logic with timer reset
   const resetInterval = useCallback(() => {
     clearInterval(window.heroCarouselTimer);
     window.heroCarouselTimer = setInterval(() => {
@@ -39,7 +38,6 @@ const HeroCarousel = () => {
     }, 6000);
   }, []);
 
-  // Slide functions
   const nextSlide = () => {
     setIndex((prev) => (prev + 1) % slides.length);
     resetInterval();
@@ -51,15 +49,14 @@ const HeroCarousel = () => {
   };
 
   const handleButtonClick = () => {
-    navigate(slides[index].link);
+    // "Upcoming Events" button, toggle the state
+    if (slides[index].buttonText === "Upcoming Events") {
+      navigate(`/events?upcoming=true`);
+    } else {
+      navigate(slides[index].link);
+    }
   };
 
-  const goToSlide = (i) => {
-    setIndex(i);
-    resetInterval();
-  };
-
-  // Initialize auto-slide
   useEffect(() => {
     resetInterval();
     return () => clearInterval(window.heroCarouselTimer);
@@ -85,7 +82,7 @@ const HeroCarousel = () => {
           <span
             key={i}
             className={`dot ${i === index ? 'active' : ''}`}
-            onClick={() => goToSlide(i)}
+            onClick={() => setIndex(i)}
             aria-current={i === index ? 'true' : 'false'}
           />
         ))}

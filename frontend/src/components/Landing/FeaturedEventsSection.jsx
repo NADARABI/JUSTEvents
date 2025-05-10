@@ -4,6 +4,7 @@ import EventCard from '../Events/EventCard';
 import api from '../../services/api';
 import LoadingSpinner from '../common/LoadingSpinner';
 import './featuredEventsSection.css';
+import { useNavigate } from 'react-router-dom';
 
 const mockEvents = [
   {
@@ -35,8 +36,10 @@ const mockEvents = [
 const FeaturedEventsSection = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMock, setIsMock] = useState(false); 
+  const navigate = useNavigate();
 
-  //  Fetch function wrapped with useCallback to prevent re-creation
+  // Fetch function wrapped with useCallback to prevent re-creation
   const fetchFeatured = useCallback(async () => {
     try {
       console.log("Fetching Featured Events...");
@@ -44,14 +47,17 @@ const FeaturedEventsSection = () => {
       const data = response?.data || [];
       if (data.length > 0) {
         setEvents(data);
+        setIsMock(false);
         console.log("API Data Loaded");
       } else {
         console.warn("API returned no data, using mock events.");
         setEvents(mockEvents);
+        setIsMock(true);
       }
     } catch (error) {
       console.error('Failed to fetch featured events:', error.message);
       setEvents(mockEvents);
+      setIsMock(true);
     } finally {
       setLoading(false);
     }
@@ -62,9 +68,16 @@ const FeaturedEventsSection = () => {
     fetchFeatured();
   }, [fetchFeatured]);
 
+  // Handle Explore More Click
+  const handleExploreMore = () => {
+    navigate('/events');
+  };
+
   return (
     <section className="featured-events-section">
-      <h2 className="section-title">Featured Events</h2>
+      <h2 className="section-title">
+        {isMock ? "Sample Featured Events" : "Featured Events"}
+      </h2>
 
       {loading ? (
         <div className="loading-spinner">
@@ -79,6 +92,11 @@ const FeaturedEventsSection = () => {
       ) : (
         <p className="empty-text">No featured events available right now.</p>
       )}
+
+      {/* New Explore More Button */}
+      <button className="explore-more-button" onClick={handleExploreMore}>
+        Explore More Events
+      </button>
     </section>
   );
 };

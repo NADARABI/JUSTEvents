@@ -2,27 +2,35 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import SearchBar from '../Landing/SearchBar';
+import { FaBookmark, FaSignOutAlt } from 'react-icons/fa';
 import './navbar.css';
 
 const NavBar = () => {
   const navigate = useNavigate();
   
-  // State for authentication
+  // State for authentication and role
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('accessToken'));
+  const [role, setRole] = useState(localStorage.getItem('role'));
 
   // Listen for storage changes and update state
   useEffect(() => {
     const handleStorageChange = () => {
       setIsLoggedIn(!!localStorage.getItem('accessToken'));
+      setRole(localStorage.getItem('role'));
     };
 
     window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup listener on unmount
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
-  // Handle Logout Logic
+  /**
+   * Handle Logout Logic
+   * This removes the user session and redirects to the login page
+   */
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('role');
@@ -33,35 +41,77 @@ const NavBar = () => {
 
   return (
     <header className="navbar">
+      {/* Logo and Branding */}
       <div className="navbar-left">
         <NavLink to="/" className="logo-text">
           <img src="/logo.jpg" alt="JUSTEvents Logo" className="navbar-logo-img" />
         </NavLink>
       </div>
 
+      {/* Center Search Bar */}
       <div className="navbar-center">
         <SearchBar fromNav={true} />
       </div>
 
+      {/* Navigation Links */}
       <nav className="navbar-right">
         <NavLink to="/events" className="nav-link">Browse Events</NavLink>
 
         {!isLoggedIn ? (
+          // Links for Guest Users
           <>
             <NavLink to="/login" className="nav-link">Login</NavLink>
             <NavLink to="/register" className="nav-link">Register</NavLink>
           </>
         ) : (
+          // Links for Logged-In Users
           <>
-            <NavLink to="/saved" className="nav-link">Saved Events</NavLink>
-            <NavLink to="/organizer/dashboard" className="nav-link">Dashboard</NavLink>
+            {/* Display Saved Events for Student or Visitor */}
+            {role === 'Student' || role === 'Visitor' ? (
+              <>
+                <NavLink to="/saved" className="nav-link">
+                  <FaBookmark style={{ marginRight: '5px' }} /> Saved Events
+                </NavLink>
+              </>
+            ) : null}
 
+            {/* Display Organizer-Specific Links */}
+            {role === 'Organizer' && (
+              <>
+                <NavLink to="/organizer/dashboard" className="nav-link">Dashboard</NavLink>
+                <NavLink to="/organizer/my-events" className="nav-link">My Events</NavLink> 
+                <NavLink to="/events/create" className="nav-link">Create Event</NavLink> 
+              </>
+            )}
+
+            {/* --------------------------------------------- */}
+            {/* Campus Admin Links  */}
+            {/* --------------------------------------------- */}
+            {role === 'Campus Admin' && (
+              <>
+                {/* <NavLink to="/admin/dashboard" className="nav-link">Dashboard</NavLink> */}
+                {/* <NavLink to="/admin/manage-rooms" className="nav-link">Manage Rooms</NavLink> */}
+              </>
+            )}
+
+            {/* -------------------------------------------------- */}
+            {/* System Admin Links  */}
+            {/* -------------------------------------------------- */}
+            {role === 'System Admin' && (
+              <>
+                {/* <NavLink to="/admin/dashboard" className="nav-link">Dashboard</NavLink> */}
+                {/* <NavLink to="/admin/panel" className="nav-link">Admin Panel</NavLink> */}
+                {/* <NavLink to="/admin/manage-users" className="nav-link">Manage Users</NavLink> */}
+              </>
+            )}
+
+            {/* Display Logout Button */}
             <button 
               className="btn btn-danger nav-link logout-button" 
               style={{ marginLeft: '10px', cursor: 'pointer' }} 
               onClick={handleLogout}
             >
-              Logout
+              <FaSignOutAlt style={{ marginRight: '5px' }} /> Logout
             </button>
           </>
         )}

@@ -4,7 +4,7 @@ import { fetchEventFeedback } from '../../services/feedbackService';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import './eventFeedback.css';
 
-const EventFeedbackList = ({ eventId }) => {
+const EventFeedbackList = ({ eventId, refresh }) => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -16,7 +16,7 @@ const EventFeedbackList = ({ eventId }) => {
         setError(false);
 
         if (!eventId) {
-          console.error('❌ Event ID is missing.');
+          console.error('Event ID is missing.');
           setError(true);
           setLoading(false);
           return;
@@ -25,14 +25,14 @@ const EventFeedbackList = ({ eventId }) => {
         const res = await fetchEventFeedback(eventId);
 
         if (res.data && res.data.success) {
-          console.log("✅ Feedback List:", res.data.data);
+          console.log("Feedback List:", res.data.data);
           setFeedbacks(res.data.data);
         } else {
-          console.error('❌ Unexpected response format:', res.data);
+          console.error('Unexpected response format:', res.data);
           setFeedbacks([]);
         }
       } catch (error) {
-        console.error('❌ Error fetching feedback:', error.message);
+        console.error('Error fetching feedback:', error.message);
         setError(true);
       } finally {
         setLoading(false);
@@ -40,7 +40,7 @@ const EventFeedbackList = ({ eventId }) => {
     };
 
     fetchFeedbacks();
-  }, [eventId]);
+  }, [eventId, refresh]);
 
   // Display states
   if (loading) return <p className="text-center mt-4">Loading feedback...</p>;

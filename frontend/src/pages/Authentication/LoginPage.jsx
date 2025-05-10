@@ -15,48 +15,29 @@ const LoginPage = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
   const handleLogin = async () => {
     if (!form.email || !form.password) {
       toast.warning('Please enter both email and password');
       return;
     }
-
     try {
       setLoading(true);
       const { data } = await api.post('/auth/login', form); 
-
+      console.log("Login Response:", data);
       // Store data in local storage
-      localStorage.setItem('accessToken', data.token);
-      localStorage.setItem('role', data.role);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('accessToken', data.data.accessToken);
+      localStorage.setItem('role', data.data.role); 
+      localStorage.setItem('user', JSON.stringify(data.data)); //Storing full user object
 
       toast.success('Login successful!');
-
-      // Redirect based on role
-      switch (data.role) {
-        case 'Organizer':
-          navigate('/organizer/dashboard');
-          break;
-        case 'Student':
-          navigate('/events');
-          break;
-        case 'Campus Admin':
-          navigate('/admin/pending-events');
-          break;
-        case 'System Admin':
-          navigate('/admin/pending-users');
-          break;
-        default:
-          navigate('/home');
-      }
+      navigate('/home');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
-  
+
   const handleGoogleLogin = () => {
     window.location.href = `${process.env.REACT_APP_API_URL}/auth/google?redirect_uri=${window.location.origin}/sso/callback`;
   };

@@ -1,7 +1,6 @@
 // src/components/Events/CategoryFilterStrip.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import LoadingSpinner from '../common/LoadingSpinner'; 
 import './categoryFilterStrip.css';
 
 const categories = [
@@ -15,30 +14,38 @@ const categories = [
   'Workshop',
 ];
 
-const CategoryFilterStrip = () => {
+const CategoryFilterStrip = ({ onCategoryClick }) => {
+  const [currentCategory, setCurrentCategory] = useState('All');
   const navigate = useNavigate();
   const location = useLocation();
-  const [currentCategory, setCurrentCategory] = useState('All');
-  const [loading, setLoading] = useState(false);
 
-  // Initialize category based on URL
+  // Detect if we are on the EventsPage or not
+  const isOnEventsPage = location.pathname.includes("/events");
+
+  // Read the category from the URL and set it active
   useEffect(() => {
-    const categoryParam = new URLSearchParams(location.search).get('category');
-    if (categoryParam) {
-      setCurrentCategory(categoryParam);
+    const categoryFromURL = new URLSearchParams(location.search).get('category');
+    if (categoryFromURL && categories.includes(categoryFromURL)) {
+      console.log("Category from URL:", categoryFromURL);
+      setCurrentCategory(categoryFromURL);
     } else {
       setCurrentCategory('All');
     }
   }, [location.search]);
 
-  // Handle category click
   const handleClick = (category) => {
-    if (category !== currentCategory) {
-      setLoading(true); // Start loading spinner
-      const query = category === 'All' ? '' : `?category=${encodeURIComponent(category)}`;
+    console.log("Category Clicked:", category);
+    setCurrentCategory(category);
+
+    if (isOnEventsPage) {
+      // If we are on EventsPage, just call the click handler
+      if (onCategoryClick) {
+        onCategoryClick(category);
+      }
+    } else {
+      // If we are on LandingPage, navigate to the Events page
+      const query = category === 'All' ? '' : `?category=${category}`;
       navigate(`/events${query}`);
-      setCurrentCategory(category);
-      setTimeout(() => setLoading(false), 800); // Mock a network request delay
     }
   };
 
@@ -50,19 +57,11 @@ const CategoryFilterStrip = () => {
             key={cat}
             className={`category-pill ${currentCategory === cat ? 'active' : ''}`}
             onClick={() => handleClick(cat)}
-            disabled={currentCategory === cat || loading} // Disable if active or loading
           >
             {cat}
           </button>
         ))}
       </div>
-
-      {/* Loading Spinner */}
-      {loading && (
-        <div className="loading-wrapper">
-          <LoadingSpinner />
-        </div>
-      )}
     </div>
   );
 };

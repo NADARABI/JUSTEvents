@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import OrganizerNavbar from '../../components/Navbar/OrganizerNavbar';
 import './OrganizerDashboardPage.css';
 
 const OrganizerDashboardPage = () => {
@@ -42,7 +41,6 @@ const OrganizerDashboardPage = () => {
 
   return (
     <div className="dashboard-container">
-      <OrganizerNavbar />
       <h1 className="dashboard-heading">Organizer Dashboard</h1>
 
       {/* Stats */}
