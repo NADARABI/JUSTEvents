@@ -7,8 +7,8 @@ import './navbar.css';
 
 const NavBar = () => {
   const navigate = useNavigate();
-  
-  // State for authentication and role
+
+  // State Definitions
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('accessToken'));
   const [role, setRole] = useState(localStorage.getItem('role'));
 
@@ -66,16 +66,12 @@ const NavBar = () => {
         ) : (
           // Links for Logged-In Users
           <>
-            {/* Display Saved Events for Student or Visitor */}
-            {role === 'Student' || role === 'Visitor' ? (
-              <>
-                <NavLink to="/saved" className="nav-link">
-                  <FaBookmark style={{ marginRight: '5px' }} /> Saved Events
-                </NavLink>
-              </>
-            ) : null}
+            {/* Saved Events (Available for All Users) */}
+            <NavLink to="/saved" className="nav-link">
+              <FaBookmark style={{ marginRight: '5px' }} /> Saved Events
+            </NavLink>
 
-            {/* Display Organizer-Specific Links */}
+            {/* Organizer-Specific Links */}
             {role === 'Organizer' && (
               <>
                 <NavLink to="/organizer/dashboard" className="nav-link">Dashboard</NavLink>
@@ -84,9 +80,7 @@ const NavBar = () => {
               </>
             )}
 
-            {/* --------------------------------------------- */}
-            {/* Campus Admin Links  */}
-            {/* --------------------------------------------- */}
+            {/* Campus Admin Links */}
             {role === 'Campus Admin' && (
               <>
                 {/* <NavLink to="/admin/dashboard" className="nav-link">Dashboard</NavLink> */}
@@ -94,9 +88,7 @@ const NavBar = () => {
               </>
             )}
 
-            {/* -------------------------------------------------- */}
-            {/* System Admin Links  */}
-            {/* -------------------------------------------------- */}
+            {/* System Admin Links */}
             {role === 'System Admin' && (
               <>
                 {/* <NavLink to="/admin/dashboard" className="nav-link">Dashboard</NavLink> */}
@@ -105,7 +97,7 @@ const NavBar = () => {
               </>
             )}
 
-            {/* Display Logout Button */}
+            {/* Logout Button */}
             <button 
               className="btn btn-danger nav-link logout-button" 
               style={{ marginLeft: '10px', cursor: 'pointer' }} 

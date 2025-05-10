@@ -1,17 +1,20 @@
+/* Main Container */
 .my-events-container {
   background-color: #F9F9F9;
   min-height: 100vh;
   padding: 40px 20px;
 }
 
+/* Header Styling */
 .my-events-heading {
   color: #062743;
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
   margin-bottom: 24px;
   text-align: center;
 }
 
+/* Filter Button Styling */
 .filter-buttons {
   display: flex;
   justify-content: center;
@@ -22,7 +25,7 @@
 .filter-btn {
   padding: 8px 16px;
   border-radius: 20px;
-  border: 1px solid #113A5D;
+  border: 2px solid #113A5D;
   background-color: white;
   color: #113A5D;
   cursor: pointer;
@@ -34,6 +37,7 @@
   color: white;
 }
 
+/* Card Layout */
 .event-card-list {
   display: grid;
   gap: 20px;
@@ -45,17 +49,19 @@
   display: flex;
   gap: 16px;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Image Styling */
 .event-image img {
   width: 150px;
   height: 150px;
   object-fit: cover;
 }
 
+/* Details and Actions */
 .event-details {
   padding: 16px;
   flex: 1;
@@ -71,14 +77,33 @@
   padding: 8px 16px;
   border-radius: 5px;
   cursor: pointer;
+  color: white;
 }
 
 .edit-btn {
   background-color: #4F959D;
-  color: white;
 }
 
 .delete-btn {
   background-color: #D9534F;
-  color: white;
+}
+
+/* Status Styling */
+.status-approved {
+  color: #4F959D;
+}
+
+.status-pending {
+  color: #F0AD4E;
+}
+
+.status-rejected {
+  color: #D9534F;
+}
+
+/* Message Styling */
+.no-events-message, .loading-message {
+  text-align: center;
+  color: #062743;
+  margin-top: 20px;
 }

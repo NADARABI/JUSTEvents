@@ -231,3 +231,20 @@ export const getStats = async (req, res) => {
     sendResponse(res, 500, 'Failed to fetch stats');
   }
 };
+
+export const getMyEvents = async (req, res) => {
+  try {
+    const organizer_id = req.user.id;
+
+    // Fetch events created by this organizer
+    const [events] = await db.execute(
+      `SELECT * FROM events WHERE organizer_id = ? ORDER BY date DESC`, 
+      [organizer_id]
+    );
+
+    sendResponse(res, 200, 'Events fetched successfully', events);
+  } catch (err) {
+    console.error('getMyEvents:', err.message);
+    sendResponse(res, 500, 'Server error while fetching events');
+  }
+};

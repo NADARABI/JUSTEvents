@@ -9,7 +9,9 @@ const EditEventPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-  const [initialValues, setInitialValues] = useState({
+
+  // Form state
+  const [formValues, setFormValues] = useState({
     title: '',
     description: '',
     date: '',
@@ -18,21 +20,30 @@ const EditEventPage = () => {
     image: null,
   });
 
+  /**
+   * Fetch Event Details on Mount
+   */
   useEffect(() => {
     const fetchEvent = async () => {
       try {
         const res = await getEventById(id);
-        const event = res.data;
-        setInitialValues({
+        const event = res.data.data;
+
+        setFormValues({
           title: event.title,
           description: event.description,
           date: event.date,
           time: event.time,
           venue_id: event.venue_id,
+          image: null, // Image will be updated if changed
         });
-        setImagePreview(event.imageUrl); // Assuming imageUrl is returned
+
+        // Display the existing image preview if available
+        if (event.image_url) {
+          setImagePreview(`/images/${event.image_url}`);
+        }
       } catch (err) {
-        console.error('Failed to fetch event details:', err);
+        console.error('Failed to fetch event details:', err.message);
         toast.error('Failed to load event details');
       }
     };
@@ -40,86 +51,101 @@ const EditEventPage = () => {
     fetchEvent();
   }, [id]);
 
-  const handleEdit = async (formData) => {
+  /**
+   * Handle Image Change
+   */
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormValues({ ...formValues, image: file });
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  /**
+   * Handle Input Changes
+   */
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  };
+
+  /**
+   * Handle Edit Submission
+   */
+  const handleEdit = async (e) => {
+    e.preventDefault();
+
     try {
       setLoading(true);
 
-      const data = new FormData();
-      data.append('title', formData.title);
-      data.append('description', formData.description);
-      data.append('date', formData.date);
-      data.append('time', formData.time);
-      data.append('venue_id', formData.venue_id);
+      const formData = new FormData();
+      formData.append('title', formValues.title);
+      formData.append('description', formValues.description);
+      formData.append('date', formValues.date);
+      formData.append('time', formValues.time);
+      formData.append('venue_id', formValues.venue_id);
 
-      if (formData.image) {
-        data.append('image', formData.image);
+      if (formValues.image) {
+        formData.append('image', formValues.image);
       }
 
-      await editEvent(id, data);
+      await editEvent(id, formData);
       toast.success('Event updated successfully');
       navigate('/organizer/my-events');
     } catch (err) {
-      console.error('Update event error:', err);
+      console.error('Update event error:', err.message);
       toast.error('Failed to update event');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setInitialValues({ ...initialValues, image: file });
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
   return (
     <div className="edit-event-container">
       <h1 className="edit-event-heading">Edit Event</h1>
-      <form
-        className="event-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleEdit(initialValues);
-        }}
-      >
+      <form className="event-form" onSubmit={handleEdit}>
         <input
           type="text"
+          name="title"
           placeholder="Event Title"
           className="form-input"
-          value={initialValues.title}
-          onChange={(e) => setInitialValues({ ...initialValues, title: e.target.value })}
+          value={formValues.title}
+          onChange={handleChange}
           required
         />
         <textarea
+          name="description"
           placeholder="Event Description"
           className="form-input"
           rows="4"
-          value={initialValues.description}
-          onChange={(e) => setInitialValues({ ...initialValues, description: e.target.value })}
+          value={formValues.description}
+          onChange={handleChange}
           required
         />
         <input
           type="date"
+          name="date"
           className="form-input"
-          value={initialValues.date}
-          onChange={(e) => setInitialValues({ ...initialValues, date: e.target.value })}
+          value={formValues.date}
+          onChange={handleChange}
           required
         />
         <input
           type="time"
+          name="time"
           className="form-input"
-          value={initialValues.time}
-          onChange={(e) => setInitialValues({ ...initialValues, time: e.target.value })}
+          value={formValues.time}
+          onChange={handleChange}
           required
         />
         <input
           type="text"
+          name="venue_id"
           placeholder="Venue ID"
           className="form-input"
-          value={initialValues.venue_id}
-          onChange={(e) => setInitialValues({ ...initialValues, venue_id: e.target.value })}
+          value={formValues.venue_id}
+          onChange={handleChange}
           required
         />
         <input
@@ -129,6 +155,7 @@ const EditEventPage = () => {
           onChange={handleImageChange}
         />
 
+        {/* Image Preview */}
         {imagePreview && (
           <div className="image-preview">
             <img src={imagePreview} alt="Preview" />

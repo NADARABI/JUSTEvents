@@ -48,24 +48,37 @@ const EventDetailsPage = () => {
         setEvent(eventRes.data);
 
         // Parallel Fetch for Organizer and Room Info
-        const token = localStorage.getItem('accessToken');
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        const [organizerRes, roomRes] = await Promise.all([
-          api.get(`/api/users/${eventRes.data.organizer_id}/basic`, { headers }),
-          api.get(`/api/rooms/${eventRes.data.venue_id}/basic`, { headers })
+        const [organizerRes, roomRes] = await Promise.allSettled([
+          api.get(`/api/users/${eventRes.data.organizer_id}/basic`),
+          api.get(`/api/rooms/${eventRes.data.venue_id}/basic`)
         ]);
 
+        // Organizer Fetch Logic
+        if (organizerRes.status === "fulfilled") {
+          setOrganizer(organizerRes.value.data.data.name);
+        } else {
+          console.warn('Organizer info not found.');
+        }
 
-        // Set Organizer and Location
-        setOrganizer(organizerRes.data.data.name);
-        const roomData = roomRes.data.data;
-        setLocation(`${roomData.name}, ${roomData.building}`);
+        // Room Fetch Logic
+        if (roomRes.status === "fulfilled") {
+          const roomData = roomRes.value.data.data;
+          setLocation(`${roomData.name}, ${roomData.building}`);
+        } else {
+          console.warn('Room info not found.');
+        }
 
-        // Check if the event is already saved
-        const savedEvents = await getSavedEvents();
-        const isAlreadySaved = savedEvents.some(ev => ev.id === parseInt(id));
-        setIsSaved(isAlreadySaved);
-
+        // Check if the event is already saved (only if logged in)
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          try {
+            const savedEvents = await getSavedEvents();
+            const isAlreadySaved = savedEvents.some(ev => ev.id === parseInt(id));
+            setIsSaved(isAlreadySaved);
+          } catch (error) {
+            console.warn('Could not fetch saved events.');
+          }
+        }
       } catch (err) {
         console.error('Failed to fetch event details:', err.message);
         toast.error("Failed to load event details.");
@@ -75,7 +88,7 @@ const EventDetailsPage = () => {
     };
 
     fetchEventDetails();
-  }, [id]);
+  }, [id, refreshFeedback]);
 
   /**
    * Handle Save/Unsave Click
@@ -112,7 +125,7 @@ const EventDetailsPage = () => {
 
   return (
     <>
-      {/*  Hero Section */}
+      {/* Hero Section */}
       <div className="event-hero-full">
         <img
           src={event.image_url ? `/images/${event.image_url}` : DEFAULT_HERO_IMAGE}

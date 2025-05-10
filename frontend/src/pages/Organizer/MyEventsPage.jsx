@@ -1,6 +1,7 @@
+// src/pages/EventManagement/MyEventsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { deleteEvent } from '../../services/eventService';
 import './MyEventsPage.css';
@@ -10,15 +11,26 @@ const MyEventsPage = () => {
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('All');
 
+  // Fetch the user's events
   useEffect(() => {
     const fetchMyEvents = async () => {
       try {
-        const res = await axios.get('/events?sort=latest');
-        const userId = JSON.parse(localStorage.getItem("user"))?.id;
-        const myEvents = res.data.data.filter(e => e.organizer_id === userId);
-        setEvents(myEvents);
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          toast.error('You need to be logged in to view your events');
+          return;
+        }
+
+        // Fetching the user's own events
+        const res = await api.get('/api/my-events', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setEvents(res.data.data);
       } catch (err) {
-        console.error('Failed to load events', err);
+        console.error('Failed to load events:', err.message);
         toast.error('Error loading your events');
       } finally {
         setLoading(false);
@@ -28,6 +40,7 @@ const MyEventsPage = () => {
     fetchMyEvents();
   }, []);
 
+  // Handle Event Deletion
   const handleDelete = async (eventId) => {
     const confirm = window.confirm("Are you sure you want to delete this event?");
     if (!confirm) return;
@@ -37,26 +50,34 @@ const MyEventsPage = () => {
       toast.success("Event deleted successfully");
       setEvents((prev) => prev.filter(e => e.id !== eventId));
     } catch (err) {
-      console.error("Delete error", err);
+      console.error("Delete error", err.message);
       toast.error("Failed to delete event");
     }
   };
 
+  // Class Assignment for Event Status
   const getStatusClass = (status) => {
-    if (status === 'Approved') return 'status-approved';
-    if (status === 'Pending') return 'status-pending';
-    if (status === 'Rejected') return 'status-rejected';
-    return '';
+    switch (status) {
+      case 'Approved':
+        return 'status-approved';
+      case 'Pending':
+        return 'status-pending';
+      case 'Rejected':
+        return 'status-rejected';
+      default:
+        return '';
+    }
   };
 
-  if (loading) return <div className="text-center text-[#113A5D] mt-10">Loading...</div>;
-
+  // Filter Count
   const statusCount = {
     All: events.length,
     Approved: events.filter(e => e.status === 'Approved').length,
     Pending: events.filter(e => e.status === 'Pending').length,
     Rejected: events.filter(e => e.status === 'Rejected').length,
   };
+
+  if (loading) return <div className="loading-message">Loading your events...</div>;
 
   return (
     <div className="my-events-container">
@@ -68,9 +89,7 @@ const MyEventsPage = () => {
           <button
             key={status}
             onClick={() => setFilterStatus(status)}
-            className={`filter-btn ${
-              filterStatus === status ? 'active' : ''
-            }`}
+            className={`filter-btn ${filterStatus === status ? 'active' : ''}`}
           >
             {status} ({statusCount[status]})
           </button>
@@ -78,7 +97,7 @@ const MyEventsPage = () => {
       </div>
 
       {events.length === 0 ? (
-        <p className="text-center text-[#113A5D]">You haven’t created any events yet.</p>
+        <p className="no-events-message">You haven’t created any events yet.</p>
       ) : (
         <div className="event-card-list">
           {events
@@ -89,7 +108,7 @@ const MyEventsPage = () => {
               <div key={event.id} className="event-card">
                 <div className="event-image">
                   <img
-                    src={event.imageUrl || '/placeholder.png'}
+                    src={event.image_url ? `/images/${event.image_url}` : '/placeholder.png'}
                     alt={event.title}
                   />
                 </div>
