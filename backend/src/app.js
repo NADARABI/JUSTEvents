@@ -13,6 +13,7 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import savedEventRoutes from './routes/savedEventRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
+import campusMapRoutes from './routes/campusMapRoutes.js';
 
 import './middlewares/passport.js';
 
@@ -38,6 +39,7 @@ app.use(passport.initialize());
 // PUBLIC Routes
 app.use('/auth', authRoutes);
 console.log('/auth routes are active');
+app.use('/api/campus-map', campusMapRoutes);
 
 // Protected API Routes
 app.use('/api', eventRoutes);
