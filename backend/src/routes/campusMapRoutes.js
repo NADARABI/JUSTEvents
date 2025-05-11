@@ -3,7 +3,8 @@ import {
   getAllBuildings,
   getRoomsByBuilding,
   getMapMarkers,
-  getEventLocation
+  getEventLocation,
+  getNavigationPath
 } from '../controllers/CampusMapController.js';
 
 const router = express.Router();
@@ -19,5 +20,8 @@ router.get('/markers', getMapMarkers);
 
 // Get event location for mapping
 router.get('/events/:id/location', getEventLocation);
+
+// Get real-time navigation path
+router.get('/navigate', getNavigationPath);
 
 export default router;
