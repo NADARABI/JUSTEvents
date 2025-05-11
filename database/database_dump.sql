@@ -59,7 +59,7 @@ CREATE TABLE `buildings` (
   `location` varchar(255) DEFAULT NULL,
   `map_coordinates` json DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,7 +68,7 @@ CREATE TABLE `buildings` (
 
 LOCK TABLES `buildings` WRITE;
 /*!40000 ALTER TABLE `buildings` DISABLE KEYS */;
-INSERT INTO `buildings` VALUES (1,'Library Study Room 1',NULL,NULL),(2,'Engineering Lab 204',NULL,NULL),(3,'Medical Seminar Room',NULL,NULL),(4,'Auditorium A',NULL,NULL),(5,'Research Meeting Room',NULL,NULL),(6,'Study Room A',NULL,NULL),(7,'Lab 101',NULL,NULL),(8,'Classroom 203',NULL,NULL),(9,'Meeting Room 5',NULL,NULL),(10,'Study Room B',NULL,NULL);
+INSERT INTO `buildings` VALUES (1,'Library Study Room 1',NULL,NULL),(2,'Engineering Lab 204',NULL,NULL),(3,'Medical Seminar Room',NULL,NULL),(4,'Auditorium A',NULL,NULL),(5,'Research Meeting Room',NULL,NULL),(6,'Study Room A',NULL,NULL),(7,'Lab 101',NULL,NULL),(8,'Classroom 203',NULL,NULL),(9,'Meeting Room 5',NULL,NULL),(10,'Study Room B',NULL,NULL),(16,'Test Building','Main Campus','{\"x\": 123, \"y\": 456}');
 /*!40000 ALTER TABLE `buildings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,7 +188,7 @@ CREATE TABLE `map_coordinates` (
   PRIMARY KEY (`id`),
   KEY `fk_map_building` (`building_id`),
   CONSTRAINT `fk_map_building` FOREIGN KEY (`building_id`) REFERENCES `buildings` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,6 +197,7 @@ CREATE TABLE `map_coordinates` (
 
 LOCK TABLES `map_coordinates` WRITE;
 /*!40000 ALTER TABLE `map_coordinates` DISABLE KEYS */;
+INSERT INTO `map_coordinates` VALUES (1,16,100,200,1);
 /*!40000 ALTER TABLE `map_coordinates` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -303,7 +304,6 @@ DROP TABLE IF EXISTS `rooms`;
 CREATE TABLE `rooms` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `building` varchar(100) NOT NULL,
   `capacity` int NOT NULL,
   `type` enum('Study Room','Lab','Classroom','Meeting Room') DEFAULT 'Study Room',
   `status` enum('Available','Unavailable') DEFAULT 'Available',
@@ -314,7 +314,7 @@ CREATE TABLE `rooms` (
   PRIMARY KEY (`id`),
   KEY `fk_room_building` (`building_id`),
   CONSTRAINT `fk_room_building` FOREIGN KEY (`building_id`) REFERENCES `buildings` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,7 +323,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'Library Study Room 1','Library',6,'Study Room','Available','Small study room for groups up to 6 people.',1,NULL,NULL),(2,'Engineering Lab 204','Engineering Building',30,'Lab','Available','Computer lab equipped with 30 machines.',2,NULL,NULL),(3,'Medical Seminar Room','Medical Faculty',20,'Meeting Room','Available','Room suitable for seminars and discussions.',3,NULL,NULL),(4,'Auditorium A','Main Auditorium',200,'Classroom','Available','Large auditorium used for lectures and events.',4,NULL,NULL),(5,'Research Meeting Room','Research Center',10,'Meeting Room','Available','Reserved for research team meetings.',5,NULL,NULL),(6,'Study Room A','Building A',20,'Study Room','Available','A quiet place for group study.',6,NULL,NULL),(7,'Lab 101','Science Block',30,'Lab','Available','Computer lab with 30 workstations.',7,NULL,NULL),(8,'Classroom 203','Main Building',40,'Classroom','Available','Spacious classroom for lectures.',8,NULL,NULL),(9,'Meeting Room 5','Admin Block',15,'Meeting Room','Available','Board meeting room with projector.',9,NULL,NULL),(10,'Study Room B','Building B',15,'Study Room','Unavailable','Currently under renovation.',10,NULL,NULL);
+INSERT INTO `rooms` VALUES (1,'Library Study Room 1',6,'Study Room','Available','Small study room for groups up to 6 people.',1,NULL,NULL),(2,'Engineering Lab 204',30,'Lab','Available','Computer lab equipped with 30 machines.',2,NULL,NULL),(3,'Medical Seminar Room',20,'Meeting Room','Available','Room suitable for seminars and discussions.',3,NULL,NULL),(4,'Auditorium A',200,'Classroom','Available','Large auditorium used for lectures and events.',4,NULL,NULL),(5,'Research Meeting Room',10,'Meeting Room','Available','Reserved for research team meetings.',5,NULL,NULL),(6,'Study Room A',20,'Study Room','Available','A quiet place for group study.',6,NULL,NULL),(7,'Lab 101',30,'Lab','Available','Computer lab with 30 workstations.',7,NULL,NULL),(8,'Classroom 203',40,'Classroom','Available','Spacious classroom for lectures.',8,NULL,NULL),(9,'Meeting Room 5',15,'Meeting Room','Available','Board meeting room with projector.',9,NULL,NULL),(10,'Study Room B',15,'Study Room','Unavailable','Currently under renovation.',10,NULL,NULL),(11,'A+ Study Room',20,'Study Room','Available','A great study space',16,1,'{\"x\": 789, \"y\": 123}');
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -403,4 +403,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-11 21:32:05
+-- Dump completed on 2025-05-11 21:45:54
