@@ -1,82 +1,54 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { requestRole } from '../../services/authService';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import PrimaryButton from '../../components/common/PrimaryButton';
-
 const RequestRolePage = () => {
-  const [requestedRole, setRequestedRole] = useState('');
-  const [attachment, setAttachment] = useState(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
 
-  const roles = ['Organizer', 'Campus Admin', 'Visitor'];
+  useEffect(() => {
+    console.log(" RequestRolePage Loaded");
 
-  const handleFileChange = (e) => {
-    setAttachment(e.target.files[0]);
-  };
+    //  Safely get data from localStorage
+    const accessToken = localStorage.getItem('accessToken');
+    const role = localStorage.getItem('role');
+    const user = JSON.parse(localStorage.getItem('user') ?? "{}");
 
-  const handleSubmit = async () => {
-    if (!requestedRole) {
-      toast.error('Please select a role');
+    console.log(" Local Storage Data →", {
+      accessToken,
+      role,
+      user
+    });
+
+    if (!accessToken || !role || !user.name) {
+      console.error(" Missing user data in localStorage");
+      toast.error("You are not authenticated. Redirecting to login...");
+      navigate('/login');
       return;
     }
 
-    try {
-      setLoading(true);
-      await requestRole(requestedRole, attachment);
-      toast.success(`Role request for "${requestedRole}" submitted successfully!`);
-      navigate('/login');
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit role request');
-    } finally {
-      setLoading(false);
+    //  Make role lowercase and trim spaces safely
+    const cleanRole = role.trim().toLowerCase();
+
+    if (cleanRole !== 'pending') {
+      console.warn(" Role is not pending. Redirecting to home...");
+      navigate('/home');
+      return;
     }
-  };
+
+    console.log(" Role is pending. Loading data...");
+    setUserData(user);
+  }, [navigate]);
 
   return (
-    <>
-      <h2 className="mb-4">Request a Role</h2>
-
-      <div className="mb-3 text-start">
-        <label className="form-label">Select your desired role</label>
-        <select
-          className="form-select"
-          value={requestedRole}
-          onChange={(e) => setRequestedRole(e.target.value)}
-        >
-          <option value="">Select a role</option>
-          {roles.map((role) => (
-            <option key={role} value={role}>
-              {role}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-3 text-start">
-        <label className="form-label">Optional Attachment (PDF, Image, etc.)</label>
-        <input
-          type="file"
-          className="form-control"
-          accept=".pdf,.jpg,.jpeg,.png"
-          onChange={handleFileChange}
-        />
-      </div>
-
-      <PrimaryButton
-        text="Submit Request"
-        onClick={handleSubmit}
-        isLoading={loading}
-      />
-
-      <div className="text-center mt-4">
-        <Link to="/login">Back to login</Link>
-      </div>
-
-      
-    </>
+    <div>
+      <h2>Request Your Role</h2>
+      {userData ? (
+        <p>Welcome, {userData.name}. Please complete your role request.</p>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
   );
 };
 

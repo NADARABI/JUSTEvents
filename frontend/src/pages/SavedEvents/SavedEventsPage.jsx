@@ -9,13 +9,25 @@ const SavedEventsPage = () => {
   const [savedEvents, setSavedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Fetch Saved Events on Mount
+   */
   useEffect(() => {
     const fetchSavedEvents = async () => {
       try {
-        const res = await getSavedEvents();
-        setSavedEvents(res.data);
+        const events = await getSavedEvents();
+        
+        if (Array.isArray(events)) {
+          setSavedEvents(events);
+        } else {
+          console.error('Expected an array but got:', events);
+          toast.error('Failed to load saved events');
+          setSavedEvents([]); // Set it to an empty array if it fails
+        }
       } catch (error) {
+        console.error(error.message);
         toast.error('Failed to load saved events');
+        setSavedEvents([]); // Set it to an empty array if it fails
       } finally {
         setLoading(false);
       }
@@ -24,16 +36,23 @@ const SavedEventsPage = () => {
     fetchSavedEvents();
   }, []);
 
+  /**
+   * Handle Unsave Event
+   */
   const handleUnsave = async (eventId) => {
     try {
       await unsaveEvent(eventId);
       setSavedEvents((prev) => prev.filter((event) => event.id !== eventId));
       toast.success('Removed from saved events');
-    } catch {
+    } catch (error) {
+      console.error(error.message);
       toast.error('Failed to unsave event');
     }
   };
 
+  /**
+   * Render Logic
+   */
   return (
     <>
       <div className="saved-events-container">
@@ -46,7 +65,11 @@ const SavedEventsPage = () => {
         ) : (
           <div className="saved-grid">
             {savedEvents.map((event) => (
-              <SavedEventCard key={event.id} event={event} onUnsave={handleUnsave} />
+              <SavedEventCard
+                key={event.id}
+                event={event}
+                onUnsave={handleUnsave}
+              />
             ))}
           </div>
         )}

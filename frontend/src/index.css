@@ -4,3 +4,13 @@ body {
   font-family: 'Roboto', sans-serif;
   overflow-x: hidden;
 }
+html, body, #root {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+#root > * {
+  flex: 1;
+}

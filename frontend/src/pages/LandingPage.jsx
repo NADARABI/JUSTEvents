@@ -1,29 +1,34 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// src/pages/LandingPage.jsx
+import React from 'react';
+import './landingPage.css';
+import HeroCarousel from '../components/Landing/HeroCarousel.jsx';
+import Footer from '../components/common/Footer.jsx';
+import NavBar from '../components/common/NavBar.jsx';
+import CategoryFilterStrip from '../components/Landing/CategoryFilterStrip';
+import FeaturedEventsSection from '../components/Landing/FeaturedEventsSection';
+import UpcomingEventsSection from '../components/Landing/UpcomingEventsSection';
+import FeedbackQuotesSection from '../components/Landing/FeedbackQuotesSection';
+import StatsSummaryStrip from '../components/Landing/StatsSummaryStrip';
+import DualCTASection from '../components/Landing/DualCTASection.jsx';
 
 const LandingPage = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate('/login');
-    }, 3500); // 3.5 seconds
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
-
   return (
-    <div
-      className="d-flex flex-column justify-content-center align-items-center text-center"
-      style={{ height: '100vh', padding: '1rem' }}
-    >
-      <h1 className="mb-3" style={{ fontSize: '2.5rem' }}>
-        Welcome to <span className="text-primary">JUSTEvents</span>
-      </h1>
-      <p className="text-muted">Redirecting you to the login page...</p>
-      <button onClick={() => navigate('/login')} className="btn btn-outline-primary mt-4">
-        Skip Now
-      </button>
+    <div className="landing-container">
+
+      <NavBar />
+
+      {/* Hero Carousel Section */}
+      <section className="hero-carousel-section">
+        <HeroCarousel />
+      </section>
+
+      <CategoryFilterStrip />
+      <FeaturedEventsSection />
+      <UpcomingEventsSection />
+      <FeedbackQuotesSection />
+      <StatsSummaryStrip />
+      <DualCTASection /> {/* Combined both Room Booking CTA + Organizer CTA */}
+      <Footer />
     </div>
   );
 };
