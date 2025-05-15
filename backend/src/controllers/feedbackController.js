@@ -80,3 +80,23 @@ export const getFeedback = async (req, res) => {
     sendResponse(res, 500, 'Server error while fetching feedback');
   }
 };
+
+// Public feedback highlights for landing page
+export const getRecentFeedbackPublic = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT f.comment, u.name AS user_name
+      FROM feedback f
+      JOIN users u ON f.user_id = u.id
+      JOIN events e ON f.event_id = e.id
+      WHERE f.comment IS NOT NULL AND e.status = 'Approved'
+      ORDER BY f.created_at DESC
+      LIMIT 3
+    `);
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching recent public feedback:', error);
+    res.status(500).json({ message: 'Server error while loading feedback' });
+  }
+};

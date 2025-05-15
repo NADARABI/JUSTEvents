@@ -16,6 +16,9 @@ import { authorizeRole } from '../middlewares/roleMiddleware.js';
 import upload from '../middlewares/uploadMiddleware.js';
 
 const router = express.Router();
+// Public
+router.get('/events', getAllEvents);
+router.get('/events/:id', getEventById);
 
 router.post(
   '/events/test',
@@ -26,10 +29,6 @@ router.post(
     res.json({ message: "Access granted. Role is Organizer." });
   }
 );
-
-// Public
-router.get('/events', getAllEvents);
-router.get('/events/:id', getEventById);
 
 // Organizer Routes                                                 Accepts one image file named "image"
 router.post('/events', authMiddleware, authorizeRole(['Organizer']), upload.single('image'), createEvent);

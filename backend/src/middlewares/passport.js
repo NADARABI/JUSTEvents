@@ -11,12 +11,26 @@ passport.use(new GoogleStrategy({
   callbackURL: 'http://localhost:5000/auth/google/callback',
   session: false,
 }, async (accessToken, refreshToken, profile, done) => {
+  console.log("Full Google Profile Data →", JSON.stringify(profile, null, 2));
+
   try {
-    let user = await User.findByEmail(profile.emails[0].value);
+    if (!profile.emails || !profile.emails.length) {
+      console.error("Google account does not have a public email address.");
+      return done(null, false, { message: "No email address associated with this Google account." });
+    }
+
+    const email = profile.emails[0].value;
+    const name = profile.displayName ?? "Google User";
+
+    // Check if user already exists
+    let user = await User.findByEmail(email);
+
     if (!user) {
-      user = await User.create({
-        name: profile.displayName,
-        email: profile.emails[0].value,
+      console.log("User not found. Creating new user...");
+
+      const userId = await User.create({
+        name,
+        email,
         password_hash: null,
         provider: 'Google',
         is_verified: true,
@@ -25,12 +39,20 @@ passport.use(new GoogleStrategy({
         verification_code: null,
         attachment: null,
       });
+
+      user = await User.findById(userId);
     }
-    done(null, user);
+
+    console.log("User found or created →", user);
+
+    // Fix: Pass the full user object instead of just the ID
+    done(null, user); 
   } catch (err) {
+    console.error("Error in Google Strategy:", err.message);
     done(err);
   }
 }));
+
 
 // MICROSOFT STRATEGY 
 passport.use(new MicrosoftStrategy({

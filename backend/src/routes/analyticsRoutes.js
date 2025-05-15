@@ -18,10 +18,16 @@ import {
   getMostUsedRooms,
   getBookingTrends,
   getBookingsByBuilding,
-  getBookingCancelRate
+  getBookingCancelRate,
+  getSummaryPublic,
+  getPopularEventsPublic
 } from '../controllers/analyticsController.js';
 
 const router = express.Router();
+
+// Public read-only routes for landing page
+router.get('/popular-events-public', getPopularEventsPublic);
+router.get('/summary-public', getSummaryPublic);
 
 // Events analytics (System Admin + Organizer)
 router.use(authMiddleware);
@@ -47,5 +53,7 @@ router.get('/bookings/most-used', authorizeRole(['System Admin', 'Campus Admin']
 router.get('/bookings/trends', authorizeRole(['System Admin', 'Campus Admin']), getBookingTrends);
 router.get('/bookings/by-building', authorizeRole(['System Admin', 'Campus Admin']), getBookingsByBuilding);
 router.get('/bookings/cancel-rate', authorizeRole(['System Admin', 'Campus Admin']), getBookingCancelRate);
+
+
 
 export default router;

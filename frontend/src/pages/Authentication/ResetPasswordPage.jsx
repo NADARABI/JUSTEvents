@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { resetPassword } from '../../services/authService';
 import { toast } from 'react-toastify';
 
@@ -7,8 +7,14 @@ import InputField from '../../components/common/InputField';
 import PrimaryButton from '../../components/common/PrimaryButton';
 
 const ResetPasswordPage = () => {
-  const { token } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+
+  // Correct way to get the token:
+  const query = new URLSearchParams(location.search);
+  const token = query.get('token');
+
+  console.log("Token found in URL:", token);
 
   const [form, setForm] = useState({
     password: '',
@@ -75,8 +81,6 @@ const ResetPasswordPage = () => {
       <div className="text-center mt-4">
         <Link to="/login">Back to login</Link>
       </div>
-
-      
     </>
   );
 };

@@ -13,6 +13,8 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import savedEventRoutes from './routes/savedEventRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import roomRoutes from './routes/roomRoutes.js';
 
 import './middlewares/passport.js';
 
@@ -20,11 +22,12 @@ const app = express();
 
 // Core Middleware
 app.use(express.json());
-app.use(cors({
-  origin: 'http://localhost:3000', 
-  credentials: true
-}));
-
+app.use(cors(
+  {
+    origin: 'http://localhost:3000',
+    credentials: true
+  }
+));
 
 // Session (for Passport SSO)
 app.use(session({
@@ -37,7 +40,9 @@ app.use(passport.initialize());
 
 // PUBLIC Routes
 app.use('/auth', authRoutes);
-console.log('/auth routes are active');
+
+app.use('/api/users', userRoutes);
+app.use('/api/rooms', roomRoutes);
 
 // Protected API Routes
 app.use('/api', eventRoutes);
@@ -49,6 +54,7 @@ app.use('/analytics', analyticsRoutes);
 app.use('/api', savedEventRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/booking', bookingRoutes);
+
 
 // Root Health Check
 app.get('/', (req, res) => {

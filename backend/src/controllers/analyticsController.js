@@ -257,3 +257,57 @@ export const getBookingCancelRate = async (req, res) => {
     sendResponse(res, 500, 'Failed to calculate booking cancel rate');
   }
 };
+
+// Public version of popular events
+export const getPopularEventsPublic = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        e.id,
+        e.title,
+        e.date,
+        e.image_url,
+        e.category,
+        e.description,
+        COUNT(r.id) AS rsvp_count
+      FROM events e
+      LEFT JOIN event_rsvps r ON e.id = r.event_id
+      WHERE e.status = 'Approved'
+      GROUP BY e.id
+      ORDER BY rsvp_count DESC
+      LIMIT 3
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching public popular events:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+//  Public version of summary stats
+export const getSummaryPublic = async (req, res) => {
+  try {
+    const [events] = await db.query(`
+      SELECT COUNT(*) AS totalEvents 
+      FROM events 
+      WHERE status = 'Approved'
+    `);
+    const [users] = await db.query(`
+      SELECT COUNT(*) AS totalUsers 
+      FROM users
+    `);
+    const [feedback] = await db.query(`
+      SELECT COUNT(*) AS totalFeedback 
+      FROM feedback
+    `);
+
+    res.json({
+      totalEvents: events[0].totalEvents,
+      totalUsers: users[0].totalUsers,
+      totalFeedback: feedback[0].totalFeedback,
+    });
+  } catch (err) {
+    console.error('Error fetching public summary:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
