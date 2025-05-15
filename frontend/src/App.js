@@ -12,6 +12,7 @@ import RequestRolePage from './pages/Authentication/RequestRolePage';
 import SavedEventsPage from './pages/SavedEvents/SavedEventsPage';
 import FeedbackPage from './pages/Feedback/FeedbackPage';
 import EventFeedbackList from './components/Feedback/EventFeedbackList';
+import CampusAdminRoutes from './routes/campusAdminRoutes';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -40,6 +41,8 @@ function App() {
 
         {/* View Feedback (for testing) */}
         <Route path="/mock-feedback" element={<EventFeedbackList eventId={1} />} />
+
+        <CampusAdminRoutes />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
