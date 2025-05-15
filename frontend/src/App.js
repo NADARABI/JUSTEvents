@@ -12,6 +12,7 @@ import RequestRolePage from './pages/Authentication/RequestRolePage';
 import SavedEventsPage from './pages/SavedEvents/SavedEventsPage';
 import FeedbackPage from './pages/Feedback/FeedbackPage';
 import EventFeedbackList from './components/Feedback/EventFeedbackList';
+import CampusMap from './pages/CampusMap/CampusMap';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -43,6 +44,8 @@ function App() {
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
+
+        <Route path="/campus-map" element={<CampusMap />} />
       </Routes>
     </BrowserRouter>
   );

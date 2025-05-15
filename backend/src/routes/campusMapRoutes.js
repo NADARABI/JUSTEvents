@@ -1,4 +1,6 @@
 import express from 'express';
+import authMiddleware from '../middlewares/authMiddleware.js';
+import { optionalAuth } from '../middlewares/authMiddleware.js';
 import {
   getAllBuildings,
   getRoomsByBuilding,
@@ -13,7 +15,7 @@ const router = express.Router();
 router.get('/buildings', getAllBuildings);
 
 // Get all rooms by building
-router.get('/buildings/:id/rooms', getRoomsByBuilding);
+router.get('/buildings/:id/rooms', optionalAuth, getRoomsByBuilding);
 
 // Get all map markers for Google Maps
 router.get('/markers', getMapMarkers);

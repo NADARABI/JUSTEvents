@@ -51,6 +51,24 @@ class Room {
     const [result] = await db.execute('DELETE FROM rooms WHERE id = ?', [id]);
     return result.affectedRows > 0;
   }
+
+  static async update(id, data) {
+    const fields = [];
+    const values = [];
+    for (const key in data) {
+      if (key === 'map_coordinates') {
+        fields.push(`${key} = ?`);
+        values.push(JSON.stringify(data[key]));
+      } else {
+        fields.push(`${key} = ?`);
+        values.push(data[key]);
+      }
+    }
+    if (fields.length === 0) return await Room.findById(id); // No updates sent
+    values.push(id); // For WHERE clause
+    await db.execute(`UPDATE rooms SET ${fields.join(', ')} WHERE id = ?`, values);
+    return await Room.findById(id);
+  }
 }
 
 export default Room;
