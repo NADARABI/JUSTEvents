@@ -20,6 +20,9 @@ import CreateEventPage from './pages/EventManagement/CreateEventPage';
 import EditEventPage from './pages/EventManagement/EditEventPage';
 import MyEventsPage from './pages/Organizer/MyEventsPage';
 import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
+import EventFeedbackList from './components/Feedback/EventFeedbackList';
+import CampusAdminRoutes from './routes/campusAdminRoutes';
+
 
 import PrivateRoute from './components/Routes/PrivateRoute';
 import { ToastContainer } from 'react-toastify';
@@ -72,7 +75,7 @@ function App() {
           <Route path="/sso/callback" element={<SSOCallbackPage />} />
 
           {/* Request Role Page - Separate and Independent */}
-integration-1
+
           <Route path="/request-role" element={<RequestRolePage />} />
 
         {/* Saved Events */}
@@ -84,13 +87,16 @@ integration-1
         {/* View Feedback (for testing) */}
         <Route path="/mock-feedback" element={<EventFeedbackList eventId={1} />} />
 
-        {/* System Admin Panel */}
+
+        <CampusAdminRoutes />
+          {/* System Admin Panel */}
         <Route path="/admin/*" element={<SystemAdminLayout />}>
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="pending-users" element={<PendingUsersPage />} />
           <Route path="pending-events" element={<PendingEventsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
         </Route>
+
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
