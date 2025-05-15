@@ -16,12 +16,19 @@ import EventFeedbackList from './components/Feedback/EventFeedbackList';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// ✅ Admin Layout + Dashboard
+import SystemAdminLayout from './pages/AdminSystem/layout/SystemAdminLayout';
+import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
+import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
+import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
+import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
+
 function App() {
   return (
     <BrowserRouter>
       <ToastContainer />
       <Routes>
-        {/* Auth & landing pages under shared layout */}
+        {/* ✅ Auth & landing pages under shared layout */}
         <Route element={<AuthLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -32,16 +39,24 @@ function App() {
           <Route path="/request-role" element={<RequestRolePage />} />
         </Route>
 
-        {/* Saved Events */}
+        {/* ✅ Saved Events */}
         <Route path="/saved" element={<SavedEventsPage />} />
 
-        {/* Submit Feedback */}
+        {/* ✅ Submit Feedback */}
         <Route path="/feedback" element={<FeedbackPage />} />
 
-        {/* View Feedback (for testing) */}
+        {/* ✅ View Feedback (for testing) */}
         <Route path="/mock-feedback" element={<EventFeedbackList eventId={1} />} />
 
-        {/* Fallback */}
+        {/* ✅ System Admin Panel */}
+        <Route path="/admin/*" element={<SystemAdminLayout />}>
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="pending-users" element={<PendingUsersPage />} />
+          <Route path="pending-events" element={<PendingEventsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
+        </Route>
+
+        {/* ✅ Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
