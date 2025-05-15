@@ -20,13 +20,28 @@ import CreateEventPage from './pages/EventManagement/CreateEventPage';
 import EditEventPage from './pages/EventManagement/EditEventPage';
 import MyEventsPage from './pages/Organizer/MyEventsPage';
 import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
+import EventFeedbackList from './components/Feedback/EventFeedbackList';
+import CampusAdminRoutes from './routes/campusAdminRoutes';
+
 
 import PrivateRoute from './components/Routes/PrivateRoute';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Admin Layout + Dashboard
+import SystemAdminLayout from './pages/AdminSystem/layout/SystemAdminLayout';
+import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
+import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
+import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
+import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
+
 function App() {
   return (
+
+    <BrowserRouter>
+      <ToastContainer />
+      <Routes>
+
     <UserProvider>
       <BrowserRouter>
         <ToastContainer 
@@ -60,8 +75,33 @@ function App() {
           <Route path="/sso/callback" element={<SSOCallbackPage />} />
 
           {/* Request Role Page - Separate and Independent */}
+
           <Route path="/request-role" element={<RequestRolePage />} />
 
+        {/* Saved Events */}
+        <Route path="/saved" element={<SavedEventsPage />} />
+
+        {/* Submit Feedback */}
+        <Route path="/feedback" element={<FeedbackPage />} />
+
+        {/* View Feedback (for testing) */}
+        <Route path="/mock-feedback" element={<EventFeedbackList eventId={1} />} />
+
+
+        <CampusAdminRoutes />
+          {/* System Admin Panel */}
+        <Route path="/admin/*" element={<SystemAdminLayout />}>
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="pending-users" element={<PendingUsersPage />} />
+          <Route path="pending-events" element={<PendingEventsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
+        </Route>
+
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
           {/* Event Pages */}
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/:id" element={<EventDetailsPage />} />
@@ -123,6 +163,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </UserProvider>
+ integration-1
   );
 }
 
