@@ -5,7 +5,12 @@ export const getRoomBasicInfo = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [rows] = await db.execute('SELECT name, building FROM rooms WHERE id = ?', [id]);
+    const [rows] = await db.execute(`
+      SELECT r.name, b.name AS building
+      FROM rooms r
+      JOIN buildings b ON r.building_id = b.id
+      WHERE r.id = ?
+    `, [id]);
 
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Room not found' });
