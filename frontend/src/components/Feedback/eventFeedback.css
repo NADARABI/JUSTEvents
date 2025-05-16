@@ -63,3 +63,21 @@
   gap: 5px;
   margin-top: 8px;
 }
+
+.feedback-actions {
+  margin-top: 8px;
+}
+
+.feedback-actions button {
+  margin-right: 10px;
+  background: #4f959d;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.feedback-actions button:hover {
+  background: #3c7c85;
+}

@@ -6,7 +6,7 @@ import './feedbackForm.css';
 
 const MAX_COMMENT_LENGTH = 500;
 
-const FeedbackForm = ({ eventId, onFeedbackSubmitted }) => {
+const FeedbackForm = ({ eventId, onFeedbackSubmitted, existingFeedback }) => {
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
@@ -14,127 +14,100 @@ const FeedbackForm = ({ eventId, onFeedbackSubmitted }) => {
   const location = useLocation();
   const isLoggedIn = !!localStorage.getItem('accessToken');
 
-  /**
-   * Restore State after Redirect from Login
-   */
-  useEffect(() => {
-    const savedComment = localStorage.getItem('savedComment');
-    const savedRating = localStorage.getItem('savedRating');
-    if (savedComment) setComment(savedComment);
-    if (savedRating) setRating(Number(savedRating));
-  }, []);
+  const isEdit = !!existingFeedback;
 
   /**
-   * Handle Form Submission
+   * Populate state if editing
+   */
+  useEffect(() => {
+    if (isEdit) {
+      setComment(existingFeedback.comment);
+      setRating(existingFeedback.rating);
+    } else {
+      const savedComment = localStorage.getItem('savedComment');
+      const savedRating = localStorage.getItem('savedRating');
+      if (savedComment) setComment(savedComment);
+      if (savedRating) setRating(Number(savedRating));
+    }
+  }, [isEdit, existingFeedback]);
+
+  /**
+   * Handle Form Submission (POST or PUT)
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!isLoggedIn) {
-      // Save form state before redirection
       localStorage.setItem('savedComment', comment);
       localStorage.setItem('savedRating', rating);
       localStorage.setItem('redirectAfterLogin', location.pathname);
-      toast.warning("You need to be logged in to submit feedback.");
-      navigate('/login');
-      return;
+      toast.warning('You need to be logged in to submit feedback.');
+      return navigate('/login');
     }
 
     try {
-      setLoading(true); // Set loading state
-      const token = localStorage.getItem('accessToken'); // Fetch the token
+      setLoading(true);
+      const token = localStorage.getItem('accessToken');
 
-      // Submit feedback
-      const response = await api.post(
-        `/api/events/${eventId}/feedback`,
-        {
-          event_id: eventId,
-          comment,
-          rating,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // Handle successful response
-      if (response.data.success) {
-        toast.success("Feedback submitted successfully!");
-
-        // Clear saved data
-        localStorage.removeItem('savedComment');
-        localStorage.removeItem('savedRating');
-
-        // Clear form state
-        setComment('');
-        setRating(5);
-
-        // Trigger list refresh
-        onFeedbackSubmitted();
-      }
-    } catch (error) {
-      console.error("Failed to submit feedback:", error.message);
-
-      // Check for Specific Error Types
-      if (error.response) {
-        if (error.response.status === 401) {
-          toast.error("Unauthorized. Please log in.");
-          localStorage.setItem('savedComment', comment);
-          localStorage.setItem('savedRating', rating);
-          navigate('/login');
-        } else if (error.response.status === 409) {
-          toast.error("You have already submitted feedback for this event.");
-        } else if (error.response.status === 403) {
-          toast.error("You do not have permission to submit feedback for this event.");
-        } else {
-          toast.error("Failed to submit feedback. Please try again.");
-        }
+      if (isEdit) {
+        // Edit feedback (PUT)
+        await api.put(`/api/feedback/${existingFeedback.id}`, { comment, rating }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success('Feedback updated!');
       } else {
-        toast.error("Failed to submit feedback. Please try again.");
+        // New feedback (POST)
+        await api.post(`/api/events/${eventId}/feedback`, { comment, rating }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success('Feedback submitted!');
+      }
+
+      localStorage.removeItem('savedComment');
+      localStorage.removeItem('savedRating');
+      setComment('');
+      setRating(5);
+      onFeedbackSubmitted();
+    } catch (error) {
+      console.error(error.message);
+      if (error.response?.status === 409) {
+        toast.error('You have already submitted feedback.');
+      } else if (error.response?.status === 403) {
+        toast.error('Not allowed.');
+      } else {
+        toast.error('Error submitting feedback.');
       }
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
   };
 
-  /**
-   * Handle Star Click
-   */
-  const handleStarClick = (value) => setRating(value);
-
   return (
     <form className="feedback-form" onSubmit={handleSubmit}>
-      <h3>Share Your Experience</h3>
+      <h3>{isEdit ? 'Edit Your Feedback' : 'Share Your Experience'}</h3>
 
-      {/* Star Rating */}
       <div className="star-rating">
         {[1, 2, 3, 4, 5].map((num) => (
           <span
             key={num}
             className={`star ${num <= rating ? 'active' : ''}`}
-            onClick={() => handleStarClick(num)}
+            onClick={() => setRating(num)}
           >
             ★
           </span>
         ))}
       </div>
 
-      {/* Textarea with Character Counter */}
       <textarea
-        placeholder="Write your feedback... (Max 500 characters)"
+        placeholder="Write your feedback..."
         value={comment}
         onChange={(e) => setComment(e.target.value.slice(0, MAX_COMMENT_LENGTH))}
         required
       />
-      <div className="char-counter">
-        {comment.length} / {MAX_COMMENT_LENGTH}
-      </div>
+      <div className="char-counter">{comment.length} / {MAX_COMMENT_LENGTH}</div>
 
-      {/* Submit Button */}
       <button type="submit" disabled={loading}>
-        {loading ? 'Submitting...' : 'Submit Feedback'}
+        {loading ? 'Submitting...' : isEdit ? 'Update Feedback' : 'Submit Feedback'}
       </button>
     </form>
   );

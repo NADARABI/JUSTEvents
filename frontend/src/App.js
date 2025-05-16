@@ -23,7 +23,7 @@ import CreateEventPage from './pages/EventManagement/CreateEventPage';
 import EditEventPage from './pages/EventManagement/EditEventPage';
 
 import SavedEventsPage from './pages/SavedEvents/SavedEventsPage';
-import FeedbackPage from './pages/Feedback/FeedbackPage';
+//import FeedbackPage from './pages/Feedback/FeedbackPage';
 import EventFeedbackList from './components/Feedback/EventFeedbackList';
 
 import MyEventsPage from './pages/Organizer/MyEventsPage';
@@ -79,7 +79,7 @@ function App() {
             path="/feedback"
             element={
               <PrivateRoute role={["Student", "Organizer"]}>
-                <FeedbackPage />
+               {/* <FeedbackPage /> */}
               </PrivateRoute>
             }
           />

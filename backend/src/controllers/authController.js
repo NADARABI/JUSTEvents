@@ -108,7 +108,7 @@ export const login = async (req, res) => {
     
     await RefreshToken.save(user.id, refreshToken);
 
-    sendResponse(res, 200, 'Login successful', { accessToken, refreshToken, role: user.role, name: user.name });
+    sendResponse(res, 200, 'Login successful', { accessToken, refreshToken, id: user.id, role: user.role, name: user.name });
   } catch (err) {
     console.error('Login error:', err);
     sendResponse(res, 500, 'Login failed');

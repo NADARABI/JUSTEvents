@@ -13,23 +13,22 @@ const AuthLayout = () => {
     console.log(" Checking authentication state...");
 
     const accessToken = localStorage.getItem('accessToken');
-    const role = localStorage.getItem('role');
+    const role = localStorage.getItem('role')?.toLowerCase();
 
     if (accessToken) {
       console.log(" User is authenticated.");
       setIsAuthenticated(true);
-    } else if (role === "pending") {
-      console.log(" User is pending. Allowing access to Request Role.");
-      setIsPending(true);
-    } else {
-      console.warn(" User is not authenticated.");
     }
 
-    //  Loading is complete
+    if (role === "pending") {
+      console.log(" User is pending. Allowing access to Request Role.");
+      setIsPending(true);
+    }
+
     setIsLoading(false);
   }, []);
 
-  // NEW: Show a loader while checking authentication
+  // 🌀 Loading screen while checking
   if (isLoading) {
     return (
       <div className="loading-screen">
@@ -38,7 +37,7 @@ const AuthLayout = () => {
     );
   }
 
-  // Allow these paths to render without authentication:
+  //  Allowed without login
   const openPaths = [
     "/login",
     "/register",
@@ -67,9 +66,9 @@ const AuthLayout = () => {
     );
   }
 
-  //  Allow `/request-role` if the user is pending
+  //  Request Role page for Pending
   if (location.pathname === "/request-role" && isPending) {
-    console.log(" Allowing `/request-role` to render for Pending role.");
+    console.log(" Allowing /request-role to render for Pending role.");
     return (
       <div className="auth-layout">
         <img src="/images/just.jpeg" alt="Background" className="auth-background" />
@@ -88,13 +87,13 @@ const AuthLayout = () => {
     );
   }
 
-  //  If not authenticated and not an open path, redirect to login
+  //  Redirect if not authenticated
   if (!isAuthenticated && !isPending) {
-    console.warn(" Not authenticated, redirecting to login.");
+    console.warn(" Not authenticated → redirecting to login.");
     return <Navigate to="/login" />;
   }
 
-  //  Render Layout Normally
+  //  Authenticated → show layout
   console.log(" Authenticated. Rendering layout...");
   return (
     <div className="auth-layout">

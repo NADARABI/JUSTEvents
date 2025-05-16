@@ -1,6 +1,7 @@
+// src/services/api.js
 import axios from 'axios';
 
-// Create axios instance for the whole app
+// Create axios instance
 const api = axios.create({
   baseURL: 'http://localhost:5000',
   headers: {
@@ -10,11 +11,11 @@ const api = axios.create({
 });
 
 // Debug log
-console.log(" AXIOS CONNECTED →", api.defaults.baseURL);
+console.log("AXIOS CONNECTED →", api.defaults.baseURL);
 
-// Smart token injection
+// Token injection for secure routes
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('accessToken'); 
 
   const isPublic =
     config.url.includes('/public') ||

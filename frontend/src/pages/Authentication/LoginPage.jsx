@@ -1,8 +1,7 @@
-// src/pages/Authentication/LoginPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import api from '../../services/api'; 
+import api from '../../services/api';
 import InputField from '../../components/common/InputField';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import SSOButton from '../../components/common/SSOButton';
@@ -15,23 +14,38 @@ const LoginPage = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleLogin = async () => {
     if (!form.email || !form.password) {
       toast.warning('Please enter both email and password');
       return;
     }
+
     try {
       setLoading(true);
-      const { data } = await api.post('/auth/login', form); 
-      console.log("Login Response:", data);
-      // Store data in local storage
-      localStorage.setItem('accessToken', data.data.accessToken);
-      localStorage.setItem('role', data.data.role); 
-      localStorage.setItem('user', JSON.stringify(data.data)); //Storing full user object
+      const response = await api.post('/auth/login', form);
+      console.log(" Login response:", response);
+
+      const user = response.data.data;
+      console.log(" user.id =", user.id);
+      console.log(" typeof user.id =", typeof user.id);
+
+      const accessToken = user.accessToken;
+      const role = user.role;
+
+      //  Store all needed values
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('role', role);
+      localStorage.setItem('userId', String(user.id)); // string for consistency
+      localStorage.setItem('user', JSON.stringify(user));
 
       toast.success('Login successful!');
+      console.log("Full login payload:", response.data);
+      console.log("Data inside data.data:", response.data.data);
+
       navigate('/home');
     } catch (error) {
+      console.error("Login error:", error);
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
@@ -41,7 +55,7 @@ const LoginPage = () => {
   const handleGoogleLogin = () => {
     window.location.href = `${process.env.REACT_APP_API_URL}/auth/google?redirect_uri=${window.location.origin}/sso/callback`;
   };
-  
+
   const handleMicrosoftLogin = () => {
     window.location.href = `${process.env.REACT_APP_API_URL}/auth/microsoft?redirect_uri=${window.location.origin}/sso/callback`;
   };
