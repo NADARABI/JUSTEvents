@@ -11,3 +11,8 @@ export const reviewBooking = async (id, status) => {
   const response = await api.patch(`/booking/bookings/${id}`, { status });
   return response.data.message; // return message for feedback
 };
+
+export const getBookingStats = async () => {
+  const res = await api.get('/booking/bookings/stats');
+  return res.data.data;
+};

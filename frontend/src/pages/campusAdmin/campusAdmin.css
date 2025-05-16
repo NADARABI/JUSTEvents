@@ -137,3 +137,32 @@ tr:hover {
   background-color: #e0e0e0;
   border-color: #ccc;
 }
+
+/* Improve chart section spacing */
+.analytics-section {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Reduce chart height */
+.analytics-chart {
+  height: 250px;
+}
+
+/* Fix spacing between cards */
+.stat-card-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card-grid.row-1 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.stat-card-grid.row-2 {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}

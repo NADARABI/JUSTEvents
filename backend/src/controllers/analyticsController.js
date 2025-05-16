@@ -200,9 +200,14 @@ export const getTotalBookings = async (req, res) => {
 export const getMostUsedRooms = async (req, res) => {
   try {
     const [rows] = await db.execute(`
-      SELECT r.id, r.name, r.building, COUNT(b.id) AS bookings
+      SELECT 
+        r.id, 
+        r.name AS room_name, 
+        bl.name AS building, 
+        COUNT(b.id) AS bookings
       FROM rooms r
       LEFT JOIN room_bookings b ON r.id = b.room_id
+      JOIN buildings bl ON r.building_id = bl.id
       GROUP BY r.id
       ORDER BY bookings DESC
       LIMIT 5
@@ -217,9 +222,9 @@ export const getMostUsedRooms = async (req, res) => {
 export const getBookingTrends = async (req, res) => {
   try {
     const [rows] = await db.execute(`
-      SELECT DATE(start_time) AS date, COUNT(*) AS count
+      SELECT DATE(created_at) AS date, COUNT(*) AS count
       FROM room_bookings
-      GROUP BY DATE(start_time)
+      GROUP BY DATE(created_at)
       ORDER BY date ASC
     `);
     sendResponse(res, 200, 'Booking trends fetched', rows);
@@ -232,11 +237,12 @@ export const getBookingTrends = async (req, res) => {
 export const getBookingsByBuilding = async (req, res) => {
   try {
     const [rows] = await db.execute(`
-      SELECT r.building, COUNT(b.id) AS bookings
+      SELECT bl.name AS building, COUNT(*) AS bookings
       FROM room_bookings b
       JOIN rooms r ON b.room_id = r.id
-      GROUP BY r.building
-      ORDER BY bookings DESC
+      JOIN buildings bl ON r.building_id = bl.id
+      GROUP BY bl.name
+      ORDER BY bookings DESC;
     `);
     sendResponse(res, 200, 'Bookings grouped by building fetched', rows);
   } catch (err) {

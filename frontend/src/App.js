@@ -38,6 +38,7 @@ import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPa
 
 // Campus Admin Panel
 import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
+import CampusRoomAnalyticsPage from './pages/campusAdmin/CampusRoomAnalyticsPage';
 
 function App() {
   return (
@@ -130,6 +131,14 @@ function App() {
             </PrivateRoute>
           }
           />
+          <Route
+          path="/campus-admin/analytics"
+          element={
+          <PrivateRoute role="Campus Admin">
+          <CampusRoomAnalyticsPage />
+          </PrivateRoute>
+        }
+        />
 
           {/* System Admin Panel */}
           <Route path="/admin/*" element={<SystemAdminLayout />}>

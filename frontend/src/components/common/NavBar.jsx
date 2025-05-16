@@ -83,9 +83,10 @@ const NavBar = () => {
             {/* Campus Admin Links */}
             {role === 'Campus Admin' && (
               <>
-              <NavLink to="/campus-admin/dashboard" className="nav-link">Dashboard</NavLink>
+              {/* <NavLink to="/campus-admin/dashboard" className="nav-link">Dashboard</NavLink> */}
               <NavLink to="/campus-admin/room-requests" className="nav-link">Room Requests</NavLink>
-              <NavLink to="/campus-admin/manage-rooms" className="nav-link">Manage Rooms</NavLink>
+              <NavLink to="/campus-admin/analytics" className="nav-link">Analytics</NavLink>
+              {/* <NavLink to="/campus-admin/manage-rooms" className="nav-link">Manage Rooms</NavLink> */}
               </>
             )
             }
