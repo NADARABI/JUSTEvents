@@ -6,6 +6,7 @@ import User from '../models/User.js';
 import sendEmail from '../utils/sendEmail.js';
 import RefreshToken from '../models/RefreshToken.js';
 import { sendResponse } from '../utils/sendResponse.js';
+import db from '../utils/db.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'justevents-secret';
 

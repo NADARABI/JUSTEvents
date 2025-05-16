@@ -7,6 +7,9 @@ const SSOCallbackPage = () => {
   const [isProcessed, setIsProcessed] = useState(false);
 
   useEffect(() => {
+    const isAtCallback = window.location.pathname.includes('/sso/callback');
+    if (!isAtCallback) return;
+
     if (isProcessed) {
       console.log(" Already processed, skipping re-render.");
       return;
@@ -32,11 +35,10 @@ const SSOCallbackPage = () => {
       return;
     }
 
-    //  Sanitize the role
     const cleanRole = role.trim().toLowerCase();
     console.log(" Cleaned Role Value →", cleanRole);
 
-    //  Save to LocalStorage
+    // Save to LocalStorage
     localStorage.setItem('accessToken', token);
     localStorage.setItem('role', cleanRole);
     localStorage.setItem('user', JSON.stringify({ role: cleanRole, name }));
@@ -47,20 +49,15 @@ const SSOCallbackPage = () => {
       user: localStorage.getItem('user')
     });
 
-    //  Prevent double-processing
     setIsProcessed(true);
 
-    // NEW: Navigate without reloading
+    // Redirect user based on role
     if (cleanRole === "pending") {
       toast.info("You need to complete your role request.");
-      console.log(" Role is Pending, navigating to Request Role...");
-
-      //  Remove `/sso/callback` from the history
-      window.history.replaceState(null, '', '/request-role');
+      console.log(" Role is Pending, navigating to /request-role");
       navigate('/request-role', { replace: true });
     } else {
-      console.log(" Role is not Pending, navigating to Home...");
-      window.history.replaceState(null, '', '/home');
+      console.log(" Role is not Pending, navigating to /home");
       navigate('/home', { replace: true });
     }
   }, [navigate, isProcessed]);
