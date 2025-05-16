@@ -100,7 +100,9 @@ export const editFeedback = async (req, res) => {
 
     // Update feedback
     await db.execute(
-      `UPDATE feedback SET comment = ?, rating = ?, updated_at = NOW() WHERE id = ?`,
+      `UPDATE feedback 
+      SET comment = ?, rating = ?, updated_at = NOW(), is_edited = TRUE 
+      WHERE id = ?`,
       [comment, rating, feedback_id]
     );
 

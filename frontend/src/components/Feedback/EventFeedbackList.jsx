@@ -31,7 +31,6 @@ const EventFeedbackList = ({ eventId, refresh }) => {
         const res = await fetchEventFeedback(eventId);
 
         if (res.data && res.data.success) {
-          console.log(" Feedbacks:", res.data.data);
           setFeedbacks(res.data.data);
         } else {
           console.error('Unexpected response format:', res.data);
@@ -84,7 +83,7 @@ const EventFeedbackList = ({ eventId, refresh }) => {
         />
       )}
 
-      {feedbacks.map(({ id, rating, comment, created_at, user_name, user_id }) => {
+      {feedbacks.map(({ id, rating, comment, created_at, updated_at, is_edited, user_name, user_id }) => {
         const isAuthor = Number(user_id) === currentUserId;
 
         return (
@@ -92,7 +91,9 @@ const EventFeedbackList = ({ eventId, refresh }) => {
             <div className="feedback-meta">
               <span className="feedback-user">{user_name || 'Anonymous Attendee'}</span>
               <span className="feedback-date">
-                {created_at ? new Date(created_at).toLocaleDateString('en-GB') : 'N/A'}
+                {is_edited
+                  ? `Edited on ${new Date(updated_at).toLocaleDateString('en-GB')}`
+                  : `Posted on ${new Date(created_at).toLocaleDateString('en-GB')}`}
               </span>
             </div>
 

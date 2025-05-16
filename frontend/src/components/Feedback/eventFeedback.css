@@ -81,3 +81,15 @@
 .feedback-actions button:hover {
   background: #3c7c85;
 }
+
+.edited-badge {
+  font-size: 0.85rem;
+  color: #666;
+  margin-left: 4px;
+}
+
+.feedback-date {
+  font-size: 0.85rem;
+  color: #777;
+  margin-left: 4px;
+}
