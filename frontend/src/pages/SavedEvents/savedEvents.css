@@ -67,3 +67,22 @@
   margin-right: 5px;
   color: #4f959d;
 }
+
+.event-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.event-details-btn {
+  background-color: #4F959D;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.event-details-btn:hover {
+  background-color: #3e7f89;
+}
