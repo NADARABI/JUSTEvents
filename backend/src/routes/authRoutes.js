@@ -93,32 +93,21 @@ router.get(
   passport.authenticate('microsoft', { failureRedirect: '/login', session: false }),
   async (req, res) => {
     try {
-      if (req.user?.id) { 
+      if (req.user?.id) {
         await User.updateLastLogin(req.user.id);
       } else {
         console.warn('Skipping last_login update: No user ID available.');
       }
+
       const token = signToken(req.user);
-      res.json({
-        message: 'Microsoft SSO successful',
-        token,
-        role: req.user.role,
-        name: req.user.name
-      });
+      const redirectUrl = `${process.env.CLIENT_URL}/sso/callback?token=${token}&role=${req.user.role}&name=${encodeURIComponent(req.user.name)}`;
+      console.log("Redirecting to:", redirectUrl);
+
+      res.redirect(redirectUrl);
     } catch (error) {
       console.error('Error in Microsoft callback:', error.message);
       res.status(500).json({ message: 'Server error after Microsoft SSO login' });
     }
-  }
-);
-
-// Protected Route Example (System Admin Only)
-router.get(
-  '/admin',
-  authMiddleware,
-  authorizeRole(['System Admin']),
-  (req, res) => {
-    res.json({ message: 'Welcome, Admin!' });
   }
 );
 
