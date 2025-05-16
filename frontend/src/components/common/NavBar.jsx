@@ -83,17 +83,20 @@ const NavBar = () => {
             {/* Campus Admin Links */}
             {role === 'Campus Admin' && (
               <>
-                {/* <NavLink to="/admin/dashboard" className="nav-link">Dashboard</NavLink> */}
-                {/* <NavLink to="/admin/manage-rooms" className="nav-link">Manage Rooms</NavLink> */}
+              <NavLink to="/campus-admin/dashboard" className="nav-link">Dashboard</NavLink>
+              <NavLink to="/campus-admin/room-requests" className="nav-link">Room Requests</NavLink>
+              <NavLink to="/campus-admin/manage-rooms" className="nav-link">Manage Rooms</NavLink>
               </>
-            )}
+            )
+            }
 
             {/* System Admin Links */}
             {role === 'System Admin' && (
               <>
-                {/* <NavLink to="/admin/dashboard" className="nav-link">Dashboard</NavLink> */}
-                {/* <NavLink to="/admin/panel" className="nav-link">Admin Panel</NavLink> */}
-                {/* <NavLink to="/admin/manage-users" className="nav-link">Manage Users</NavLink> */}
+                {/* <NavLink to="/admin/dashboard" className="nav-link">Dashboard</NavLink>
+                <NavLink to="/admin/pending-users" className="nav-link">Pending Users</NavLink>
+                <NavLink to="/admin/pending-events" className="nav-link">Pending Events</NavLink>
+                <NavLink to="/admin/notifications" className="nav-link">Notifications</NavLink> */}
               </>
             )}
 

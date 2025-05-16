@@ -29,14 +29,15 @@ import EventFeedbackList from './components/Feedback/EventFeedbackList';
 import MyEventsPage from './pages/Organizer/MyEventsPage';
 import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
 
-import CampusAdminRoutes from './routes/campusAdminRoutes';
-
 // System Admin Panel
 import SystemAdminLayout from './pages/AdminSystem/layout/SystemAdminLayout';
 import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
 import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
 import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
+
+// Campus Admin Panel
+import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
 
 function App() {
   return (
@@ -121,7 +122,14 @@ function App() {
           />
 
           {/* Campus Admin Routes */}
-          <Route path="/*" element={<CampusAdminRoutes />} />
+          <Route
+          path="/campus-admin/room-requests"
+          element={
+          <PrivateRoute role="Campus Admin">
+            <CampusBookingRequestsPage />
+            </PrivateRoute>
+          }
+          />
 
           {/* System Admin Panel */}
           <Route path="/admin/*" element={<SystemAdminLayout />}>
@@ -130,6 +138,7 @@ function App() {
             <Route path="pending-events" element={<PendingEventsPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
           </Route>
+
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

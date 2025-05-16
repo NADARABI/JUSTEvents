@@ -68,21 +68,31 @@ const Booking = {
    */
   async getPending() {
     try {
-      const [rows] = await db.execute(
-        `SELECT b.*, r.name AS room_name, r.building, u.name AS user_name
-         FROM room_bookings b
-         JOIN rooms r ON b.room_id = r.id
-         JOIN users u ON b.user_id = u.id
-         WHERE b.status = 'Pending'
-         ORDER BY b.start_time ASC`
-      );
-      return rows;
-    } catch (error) {
-      console.error('Booking.getPending error:', error.message);
-      throw new Error('Failed to fetch pending bookings');
-    }
-  },
-
+      const [rows] = await db.execute(`
+        SELECT 
+        b.id,
+        b.user_id,
+        b.room_id,
+        b.purpose,
+        b.start_time,
+        b.end_time,
+        b.status,
+        u.name AS user_name,
+        r.name AS room_name,
+        bl.name AS building
+        FROM room_bookings b
+        JOIN users u ON b.user_id = u.id
+        JOIN rooms r ON b.room_id = r.id
+        JOIN buildings bl ON r.building_id = bl.id
+        WHERE b.status = 'Pending'
+        ORDER BY b.start_time ASC
+        `);
+        return rows;
+      } catch (error) {
+        console.error('Booking.getPending error:', error.message);
+        throw new Error('Failed to fetch pending bookings');
+      }
+    },
   /**
    * Update booking status (approve or reject)
    */

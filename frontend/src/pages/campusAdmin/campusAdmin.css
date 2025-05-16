@@ -1,0 +1,139 @@
+/* Page Layout */
+.campus-admin-page {
+  padding: 2rem 6%;
+  background-color: #F9F9F9;
+  min-height: 100vh;
+}
+
+/* Back Button */
+.back-btn {
+  background-color: #062743;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background-color: #113A5D;
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th {
+  background-color: #E4F1F1;
+  color: #062743;
+  text-align: left;
+  padding: 12px 16px;
+}
+
+td {
+  padding: 12px 16px;
+  color: #113A5D;
+  border-bottom: 1px solid #eaeaea;
+}
+
+tr:hover {
+  background-color: #f0fdfd;
+}
+
+/* Action Buttons */
+.action-button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.action-button.approve {
+  background-color: #4F959D;
+  color: white;
+}
+
+.action-button.approve:hover {
+  background-color: #3b7f86;
+}
+
+.action-button.reject {
+  background-color: #c0392b;
+  color: white;
+}
+
+.action-button.reject:hover {
+  background-color: #992d22;
+}
+
+.action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Empty Message */
+.empty-row {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 2rem 0;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+/* Center title with icon */
+.admin-title.centered {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Style the title text */
+.admin-title h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #062743;
+  margin: 0;
+}
+
+/* New icon style */
+.title-icon {
+  font-size: 34px;
+  color: #4F959D;
+}
+
+/* Back button (left-aligned) */
+.back-link {
+  background-color: #f0f0f0;
+  color: #062743;
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 999px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid #ddd;
+}
+
+.back-link:hover {
+  background-color: #e0e0e0;
+  border-color: #ccc;
+}
