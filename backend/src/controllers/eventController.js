@@ -248,3 +248,21 @@ export const getMyEvents = async (req, res) => {
     sendResponse(res, 500, 'Server error while fetching events');
   }
 };
+
+export const checkMyRsvp = async (req, res) => {
+  try {
+    const { id: event_id } = req.params;
+    const user_id = req.user.id;
+
+    const [rows] = await db.execute(
+      `SELECT id FROM event_rsvps WHERE event_id = ? AND user_id = ?`,
+      [event_id, user_id]
+    );
+
+    const hasRSVPed = rows.length > 0;
+    sendResponse(res, 200, 'RSVP status checked', { hasRSVPed });
+  } catch (err) {
+    console.error('checkMyRsvp error:', err.message);
+    sendResponse(res, 500, 'Failed to check RSVP status');
+  }
+};

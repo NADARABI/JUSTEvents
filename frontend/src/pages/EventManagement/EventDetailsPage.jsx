@@ -16,17 +16,19 @@ const EventDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // State Definitions
   const [event, setEvent] = useState(null);
   const [organizer, setOrganizer] = useState("Organizer Not Found");
   const [location, setLocation] = useState("Room Not Found");
   const [loading, setLoading] = useState(true);
   const [refreshFeedback, setRefreshFeedback] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [hasRSVPed, setHasRSVPed] = useState(false);
+  const [rsvpLoading, setRsvpLoading] = useState(false);
 
-  /**
-   * Handle Redirect from Login
-   */
+  const token = localStorage.getItem('accessToken');
+  const userRole = (localStorage.getItem('role') || '').toLowerCase();
+  const userId = localStorage.getItem('userId');
+
   useEffect(() => {
     const redirectPath = localStorage.getItem('redirectAfterLogin');
     if (redirectPath === `/events/${id}`) {
@@ -35,49 +37,33 @@ const EventDetailsPage = () => {
     }
   }, [id]);
 
-  /**
-   * Fetch Event, Organizer, and Room Details
-   */
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
         setLoading(true);
-
-        // Fetch Event Data
         const { data: eventRes } = await eventService.getEventById(id);
         setEvent(eventRes.data);
 
-        // Parallel Fetch for Organizer and Room Info
         const [organizerRes, roomRes] = await Promise.allSettled([
           api.get(`/api/users/${eventRes.data.organizer_id}/basic`),
           api.get(`/api/rooms/${eventRes.data.venue_id}/basic`)
         ]);
 
-        // Organizer Fetch Logic
         if (organizerRes.status === "fulfilled") {
           setOrganizer(organizerRes.value.data.data.name);
-        } else {
-          console.warn('Organizer info not found.');
         }
-
-        // Room Fetch Logic
         if (roomRes.status === "fulfilled") {
           const roomData = roomRes.value.data.data;
           setLocation(`${roomData.name}, ${roomData.building}`);
-        } else {
-          console.warn('Room info not found.');
         }
 
-        // Check if the event is already saved (only if logged in)
-        const token = localStorage.getItem('accessToken');
         if (token) {
-          try {
-            const savedEvents = await getSavedEvents();
-            const isAlreadySaved = savedEvents.some(ev => ev.id === parseInt(id));
-            setIsSaved(isAlreadySaved);
-          } catch (error) {
-            console.warn('Could not fetch saved events.');
-          }
+          const savedEvents = await getSavedEvents();
+          const isAlreadySaved = savedEvents.some(ev => ev.id === parseInt(id));
+          setIsSaved(isAlreadySaved);
+
+          const { data } = await api.get(`/api/events/${id}/my-rsvp`);
+          setHasRSVPed(data.data.hasRSVPed);
         }
       } catch (err) {
         console.error('Failed to fetch event details:', err.message);
@@ -88,14 +74,10 @@ const EventDetailsPage = () => {
     };
 
     fetchEventDetails();
-  }, [id, refreshFeedback]);
+  }, [id, refreshFeedback, token, userId, userRole]);
 
-  /**
-   * Handle Save/Unsave Click
-   */
   const handleSaveToggle = async () => {
-    const isLoggedIn = !!localStorage.getItem('accessToken');
-    if (!isLoggedIn) {
+    if (!token) {
       toast.warning('You need to be logged in to save events.');
       localStorage.setItem('redirectAfterLogin', `/events/${id}`);
       navigate('/login');
@@ -117,15 +99,37 @@ const EventDetailsPage = () => {
     }
   };
 
-  /**
-   * Conditional Render Logic
-   */
+  const handleRsvpToggle = async () => {
+    if (!token || !['student', 'visitor'].includes(userRole)) {
+      toast.warning('Login as a Student or Visitor to RSVP.');
+      localStorage.setItem('redirectAfterLogin', `/events/${id}`);
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setRsvpLoading(true);
+      if (hasRSVPed) {
+        await api.delete(`/api/events/${id}/rsvp`);
+        toast.info('You have canceled your RSVP.');
+      } else {
+        await api.post(`/api/events/${id}/rsvp`);
+        toast.success('RSVP successful!');
+      }
+      setHasRSVPed(!hasRSVPed);
+    } catch (error) {
+      console.error('RSVP error:', error.message);
+      toast.error(error.response?.data?.message || 'RSVP action failed.');
+    } finally {
+      setRsvpLoading(false);
+    }
+  };
+
   if (loading) return <p className="loading-text">Loading event details...</p>;
   if (!event) return <p className="loading-text">Event not found.</p>;
 
   return (
     <>
-      {/* Hero Section */}
       <div className="event-hero-full">
         <img
           src={event.image_url ? `/images/${event.image_url}` : DEFAULT_HERO_IMAGE}
@@ -138,7 +142,6 @@ const EventDetailsPage = () => {
         </div>
       </div>
 
-      {/* Event Information Section */}
       <div className="event-info-full">
         <div className="event-meta-full">
           <p>
@@ -155,7 +158,7 @@ const EventDetailsPage = () => {
           </p>
         </div>
 
-        {/* Save/Unsave Button */}
+        {/* Save/Unsave */}
         <button
           className={`save-event-btn ${isSaved ? 'saved' : ''}`}
           onClick={handleSaveToggle}
@@ -163,7 +166,17 @@ const EventDetailsPage = () => {
           {isSaved ? <FaBookmark /> : <FaRegBookmark />} {isSaved ? 'Unsave Event' : 'Save Event'}
         </button>
 
-        {/* Event Description */}
+        {/* RSVP Button */}
+        {event.status === 'Approved' && ['student', 'visitor'].includes(userRole) && (
+          <button
+            className={`rsvp-btn ${hasRSVPed ? 'cancel' : ''}`}
+            onClick={handleRsvpToggle}
+            disabled={rsvpLoading}
+          >
+            {hasRSVPed ? 'Cancel RSVP' : 'RSVP to Event'}
+          </button>
+        )}
+
         <div className="event-description-full">
           <h2>About the Event</h2>
           <div className="description-content">
@@ -175,7 +188,6 @@ const EventDetailsPage = () => {
           </div>
         </div>
 
-        {/* Feedback Section */}
         <div className="feedback-section-full">
           <h2 className="section-title-full">Feedback & Reviews</h2>
           <div className="feedback-container-full">

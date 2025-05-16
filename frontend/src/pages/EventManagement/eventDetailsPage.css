@@ -194,3 +194,22 @@
 .save-event-btn.saved:hover {
   background-color: #3e7d85;
 }
+.rsvp-btn {
+  background-color: #4F959D;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.rsvp-btn.cancel {
+  background-color: #c0392b;
+}
+
+.rsvp-btn:hover {
+  background-color: #387a81;
+}
