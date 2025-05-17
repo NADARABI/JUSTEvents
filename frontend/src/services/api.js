@@ -23,7 +23,7 @@ api.interceptors.request.use((config) => {
     config.url === '/analytics/popular-events-public' ||
     config.url === '/analytics/summary-public' ||
     config.url === '/feedback/recent-public' ||
-    (config.method === 'get' && config.url.startsWith('/events'));
+    (config.method === 'get' && /^\/events(\/\d+)?$/.test(config.url));
 
   if (token && !isPublic) {
     config.headers.Authorization = `Bearer ${token}`;

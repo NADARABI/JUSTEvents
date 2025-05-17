@@ -58,12 +58,21 @@ const EventDetailsPage = () => {
         }
 
         if (token) {
-          const savedEvents = await getSavedEvents();
-          const isAlreadySaved = savedEvents.some(ev => ev.id === parseInt(id));
-          setIsSaved(isAlreadySaved);
+          try {
+            const savedEvents = await getSavedEvents();
+            const isAlreadySaved = savedEvents.some(ev => ev.id === parseInt(id));
+            setIsSaved(isAlreadySaved);
+          } catch (err) {
+            console.warn('Could not fetch saved events.');
+          }
 
-          const { data } = await api.get(`/api/events/${id}/my-rsvp`);
-          setHasRSVPed(data.data.hasRSVPed);
+          try {
+            const { data } = await api.get(`/api/events/${id}/my-rsvp`);
+            setHasRSVPed(data.data.hasRSVPed);
+          } catch (err) {
+            console.warn('Could not fetch RSVP status.');
+            setHasRSVPed(false);
+          }
         }
       } catch (err) {
         console.error('Failed to fetch event details:', err.message);
