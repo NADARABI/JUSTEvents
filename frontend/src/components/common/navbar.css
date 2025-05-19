@@ -1,18 +1,16 @@
-/* === BASE NAVBAR === */
+/* === BASE GRID LAYOUT === */
 .navbar {
-  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
   padding: 12px 40px;
   background-color: #ffffff;
   border-bottom: 1px solid #e6e6e6;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   font-family: 'Segoe UI', sans-serif;
   position: sticky;
   top: 0;
   z-index: 1000;
   gap: 2rem;
-  flex-wrap: nowrap;
   overflow-x: auto;
 }
 
@@ -26,22 +24,27 @@
 
 /* === CENTER: Search Bar === */
 .navbar-center {
-  flex: 1;
   display: flex;
   justify-content: center;
-  min-width: 180px;
+  min-width: 240px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-/* === RIGHT: Nav Links === */
+/* === RIGHT: Navigation Links === */
 .navbar-right {
   display: flex;
   gap: 20px;
-  flex-shrink: 0;
   overflow-x: auto;
   white-space: nowrap;
+  padding-left: 10px;
+  flex-shrink: 0;
+}
+.navbar-right::-webkit-scrollbar {
+  display: none;
 }
 
-/* === Links Style === */
+/* === Nav Link Styling === */
 .navbar-right a {
   text-decoration: none;
   color: #062743;
@@ -51,12 +54,10 @@
   border-radius: 20px;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-
 .navbar-right a:hover {
   background-color: #e8f3f1;
   color: #4f959d;
 }
-
 .navbar-right a.active {
   background-color: #4f959d20;
   color: #4f959d;
@@ -73,36 +74,40 @@
   cursor: pointer;
   font-weight: 600;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-left: 10px;
   white-space: nowrap;
 }
-
 .logout-button:hover {
   background-color: #113a5d;
   transform: translateY(-2px);
 }
-
 .logout-button:focus {
   outline: 2px solid #113a5d;
   outline-offset: 2px;
 }
 
-/* === Mobile Responsive === */
+/* === MOBILE RESPONSIVE === */
 @media (max-width: 768px) {
   .navbar {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
     padding: 10px 20px;
+    gap: 10px;
+  }
+
+  .navbar-left,
+  .navbar-center,
+  .navbar-right {
+    justify-content: center;
+    margin: 4px 0;
   }
 
   .navbar-right {
-    justify-content: start;
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 10px;
   }
 
   .navbar-center {
-    margin-top: 10px;
+    margin-bottom: 10px;
   }
 }
