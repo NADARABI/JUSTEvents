@@ -166,3 +166,72 @@ tr:hover {
 .stat-card-grid.row-2 {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
+
+/* === Section spacing === */
+.campus-admin-page {
+  padding: 2rem 6%;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+section.space-y-12 > div {
+  margin-bottom: 3rem;
+}
+
+/* === Headings === */
+h2.text-2xl {
+  color: #062743;
+}
+
+/* === Action buttons === */
+button.bg-accent {
+  background-color: #4F959D;
+}
+
+button.bg-highlight {
+  background-color: #387a81;
+}
+
+button.bg-accent:hover,
+button.bg-highlight:hover {
+  opacity: 0.9;
+}
+
+/* === Table styling === */
+table {
+  width: 100%;
+  font-size: 0.875rem;
+  border-collapse: collapse;
+}
+
+thead th {
+  font-weight: 600;
+  color: #113A5D;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+tbody td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #eee;
+  color: #062743;
+}
+
+tr:hover {
+  background-color: #f3f8f7;
+}
+
+/* === Modals === */
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

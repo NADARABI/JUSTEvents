@@ -39,6 +39,7 @@ import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPa
 // Campus Admin Panel
 import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
 import CampusRoomAnalyticsPage from './pages/campusAdmin/CampusRoomAnalyticsPage';
+import CampusRoomManagementPage from './pages/campusAdmin/CampusRoomManagementPage';
 
 function App() {
   return (
@@ -135,10 +136,20 @@ function App() {
           path="/campus-admin/analytics"
           element={
           <PrivateRoute role="Campus Admin">
-          <CampusRoomAnalyticsPage />
+            <CampusRoomAnalyticsPage />
+            </PrivateRoute>
+        }
+        />
+
+        <Route
+        path="/campus-admin/manage-rooms"
+        element={
+        <PrivateRoute role="Campus Admin">
+          <CampusRoomManagementPage />
           </PrivateRoute>
         }
         />
+
 
           {/* System Admin Panel */}
           <Route path="/admin/*" element={<SystemAdminLayout />}>
