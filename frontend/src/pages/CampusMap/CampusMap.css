@@ -1,0 +1,76 @@
+/* ===================================
+    Custom Marker Styling
+=================================== */
+.marker {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===================================
+    Info Window (Floating box)
+=================================== */
+.info-window {
+  z-index: 1000;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  padding: 14px 12px;
+  width: 200px;
+  text-align: center;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 14px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.info-window h4 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* ===================================
+    Buttons inside InfoWindow
+=================================== */
+.info-window button {
+  margin-top: 6px;
+  margin-right: 6px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.info-window button:hover {
+  background-color: #43a047;
+  transform: translateY(-1px);
+}
+
+.info-window button:last-child {
+  background-color: #bbb;
+  color: #fff;
+}
+
+.info-window button:last-child:hover {
+  background-color: #999;
+}
+
+/* ===================================
+    Fade Animation
+=================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

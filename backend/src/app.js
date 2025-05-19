@@ -15,6 +15,8 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import roomRoutes from './routes/roomRoutes.js';
+import campusMapRoutes from './routes/campusMapRoutes.js';
+import adminMapRoutes from './routes/adminMapRoutes.js';
 
 import './middlewares/passport.js';
 
@@ -40,9 +42,10 @@ app.use(passport.initialize());
 
 // PUBLIC Routes
 app.use('/auth', authRoutes);
-
 app.use('/api/users', userRoutes);
 app.use('/api/rooms', roomRoutes);
+console.log('/auth routes are active');
+app.use('/api/campus-map', campusMapRoutes);
 
 // Protected API Routes
 app.use('/api', eventRoutes);
@@ -54,6 +57,7 @@ app.use('/analytics', analyticsRoutes);
 app.use('/api', savedEventRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/booking', bookingRoutes);
+app.use('/api/admin/map', adminMapRoutes);
 
 
 // Root Health Check

@@ -25,6 +25,7 @@ import EditEventPage from './pages/EventManagement/EditEventPage';
 import SavedEventsPage from './pages/SavedEvents/SavedEventsPage';
 //import FeedbackPage from './pages/Feedback/FeedbackPage';
 import EventFeedbackList from './components/Feedback/EventFeedbackList';
+import CampusMap from './pages/CampusMap/CampusMap';
 
 import MyEventsPage from './pages/Organizer/MyEventsPage';
 import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
@@ -96,6 +97,7 @@ function App() {
             }
           />
 
+<<<<<<< HEAD
           <Route
             path="/events/edit/:id"
             element={
@@ -165,6 +167,14 @@ function App() {
         </Routes>
       </BrowserRouter>
     </UserProvider>
+=======
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" />} />
+
+        <Route path="/campus-map" element={<CampusMap />} />
+      </Routes>
+    </BrowserRouter>
+>>>>>>> 017334182f9f58d8e135caad4823bf730cf4802e
   );
 }
 
