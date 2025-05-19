@@ -23,7 +23,7 @@ import CreateEventPage from './pages/EventManagement/CreateEventPage';
 import EditEventPage from './pages/EventManagement/EditEventPage';
 
 import SavedEventsPage from './pages/SavedEvents/SavedEventsPage';
-//import FeedbackPage from './pages/Feedback/FeedbackPage';
+// import FeedbackPage from './pages/Feedback/FeedbackPage';
 import EventFeedbackList from './components/Feedback/EventFeedbackList';
 import CampusMap from './pages/CampusMap/CampusMap';
 
@@ -47,13 +47,13 @@ function App() {
     <UserProvider>
       <BrowserRouter>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />
-
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<SplashScreen />} />
           <Route path="/home" element={<LandingPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/:id" element={<EventDetailsPage />} />
+          <Route path="/campus-map" element={<CampusMap />} />
           <Route path="/mock-feedback" element={<EventFeedbackList eventId={1} />} />
 
           {/* Auth Routes */}
@@ -83,7 +83,7 @@ function App() {
             path="/feedback"
             element={
               <PrivateRoute role={["Student", "Organizer"]}>
-               {/* <FeedbackPage /> */}
+                {/* <FeedbackPage /> */}
               </PrivateRoute>
             }
           />
@@ -97,7 +97,6 @@ function App() {
             }
           />
 
-<<<<<<< HEAD
           <Route
             path="/events/edit/:id"
             element={
@@ -127,31 +126,29 @@ function App() {
 
           {/* Campus Admin Routes */}
           <Route
-          path="/campus-admin/room-requests"
-          element={
-          <PrivateRoute role="Campus Admin">
-            <CampusBookingRequestsPage />
-            </PrivateRoute>
-          }
+            path="/campus-admin/room-requests"
+            element={
+              <PrivateRoute role="Campus Admin">
+                <CampusBookingRequestsPage />
+              </PrivateRoute>
+            }
           />
           <Route
-          path="/campus-admin/analytics"
-          element={
-          <PrivateRoute role="Campus Admin">
-            <CampusRoomAnalyticsPage />
-            </PrivateRoute>
-        }
-        />
-
-        <Route
-        path="/campus-admin/manage-rooms"
-        element={
-        <PrivateRoute role="Campus Admin">
-          <CampusRoomManagementPage />
-          </PrivateRoute>
-        }
-        />
-
+            path="/campus-admin/analytics"
+            element={
+              <PrivateRoute role="Campus Admin">
+                <CampusRoomAnalyticsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/campus-admin/manage-rooms"
+            element={
+              <PrivateRoute role="Campus Admin">
+                <CampusRoomManagementPage />
+              </PrivateRoute>
+            }
+          />
 
           {/* System Admin Panel */}
           <Route path="/admin/*" element={<SystemAdminLayout />}>
@@ -161,20 +158,11 @@ function App() {
             <Route path="notifications" element={<NotificationsPage />} />
           </Route>
 
-
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </UserProvider>
-=======
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
-
-        <Route path="/campus-map" element={<CampusMap />} />
-      </Routes>
-    </BrowserRouter>
->>>>>>> 017334182f9f58d8e135caad4823bf730cf4802e
   );
 }
 

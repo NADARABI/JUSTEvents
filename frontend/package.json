@@ -13,11 +13,8 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
-<<<<<<< HEAD
     "lucide-react": "^0.507.0",
-=======
     "google-map-react": "^2.2.1",
->>>>>>> 017334182f9f58d8e135caad4823bf730cf4802e
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.56.1",
