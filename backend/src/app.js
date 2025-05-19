@@ -15,6 +15,7 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import roomRoutes from './routes/roomRoutes.js';
+import buildingRoutes from './routes/buildingRoutes.js';
 import campusMapRoutes from './routes/campusMapRoutes.js';
 import adminMapRoutes from './routes/adminMapRoutes.js';
 
@@ -44,6 +45,7 @@ app.use(passport.initialize());
 app.use('/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/rooms', roomRoutes);
+app.use('/api/buildings', buildingRoutes);
 console.log('/auth routes are active');
 app.use('/api/campus-map', campusMapRoutes);
 

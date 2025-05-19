@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { addBuilding, updateBuilding } from '../../services/campus/buildingService';
 import { toast } from 'react-toastify';
+  import './buildingFormModal.css';
 
 const BuildingFormModal = ({ open, onClose, onSuccess, existing }) => {
   const [name, setName] = useState('');
@@ -23,8 +24,8 @@ const BuildingFormModal = ({ open, onClose, onSuccess, existing }) => {
       }
       onSuccess();
       onClose();
-    } catch (error) {
-      toast.error('Failed to submit.');
+    } catch {
+      toast.error('Failed to save building.');
     } finally {
       setSubmitting(false);
     }
@@ -32,45 +33,38 @@ const BuildingFormModal = ({ open, onClose, onSuccess, existing }) => {
 
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-fadeIn"
-      >
-        <h3 className="text-xl font-semibold text-primary mb-4">
-          {existing ? 'Edit Building' : 'Add Building'}
-        </h3>
 
+
+return (
+  <div className="modal-overlay">
+    <form onSubmit={handleSubmit} className="modal-form">
+      <h3 className="modal-title">{existing ? 'Edit Building' : 'Add Building'}</h3>
+
+      <div className="input-wrapper">
         <input
           type="text"
-          className="w-full px-4 py-2 border rounded-lg mb-4"
-          placeholder="Building Name"
+          id="buildingName"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
+          placeholder=" "
+          className="input-field"
         />
+        <label htmlFor="buildingName" className="input-label">Building Name</label>
+      </div>
 
-        <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg"
-            disabled={submitting}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-secondary transition"
-          >
-            {submitting ? 'Saving...' : 'Save'}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+      <div className="modal-buttons">
+        <button type="button" onClick={onClose} className="modal-button cancel-btn" disabled={submitting}>
+          Cancel
+        </button>
+        <button type="submit" disabled={submitting} className="modal-button submit-btn">
+          {submitting ? 'Saving...' : 'Save'}
+        </button>
+      </div>
+    </form>
+  </div>
+);
+
 };
 
 export default BuildingFormModal;

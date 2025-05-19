@@ -235,3 +235,117 @@ tr:hover {
     transform: scale(1);
   }
 }
+/* ====== Shared Section Layout ====== */
+.admin-section {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2.5rem;
+  border: 1px solid #e5e5e5;
+}
+
+.admin-section h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #062743;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ====== Table Styling ====== */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  color: #113a5d;
+}
+
+.admin-table thead {
+  background-color: #f5f9fa;
+  border-bottom: 2px solid #ddd;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* ====== Buttons ====== */
+.admin-action-button {
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.admin-action-button.edit {
+  color: #1d4ed8;
+}
+
+.admin-action-button.edit:hover {
+  text-decoration: underline;
+}
+
+.admin-action-button.delete {
+  color: #b91c1c;
+}
+
+.admin-action-button.delete:hover {
+  text-decoration: underline;
+}
+
+/* ====== Add Button ====== */
+.add-button {
+  background-color: #4f959d;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.3s ease;
+}
+
+.add-button:hover {
+  background-color: #3d7e84;
+}
+
+.add-button svg {
+  stroke-width: 2;
+}
+
+/* ====== Empty State ====== */
+.admin-empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 2rem 0;
+  font-size: 0.95rem;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 768px) {
+  .admin-section {
+    padding: 1.2rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .add-button {
+    padding: 8px 14px;
+  }
+}

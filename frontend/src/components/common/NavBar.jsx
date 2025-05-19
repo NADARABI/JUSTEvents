@@ -85,6 +85,7 @@ const NavBar = () => {
               <>
               <NavLink to="/campus-admin/room-requests" className="nav-link">Room Requests</NavLink>
               <NavLink to="/campus-admin/analytics" className="nav-link">Analytics</NavLink>
+              <NavLink to="/campus-admin/manage-buildings" className="nav-link">Manage Buildings</NavLink>
               <NavLink to="/campus-admin/manage-rooms" className="nav-link">Manage Rooms</NavLink>
               </>
             )

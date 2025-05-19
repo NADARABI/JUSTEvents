@@ -40,7 +40,8 @@ import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPa
 // Campus Admin Panel
 import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
 import CampusRoomAnalyticsPage from './pages/campusAdmin/CampusRoomAnalyticsPage';
-import CampusRoomManagementPage from './pages/campusAdmin/CampusRoomManagementPage';
+import ManageBuildingsPage from './pages/campusAdmin/ManageBuildingsPage';
+import ManageRoomsPage from './pages/campusAdmin/ManageRoomsPage';
 
 function App() {
   return (
@@ -142,10 +143,18 @@ function App() {
             }
           />
           <Route
+            path="/campus-admin/manage-buildings"
+            element={
+              <PrivateRoute role="Campus Admin">
+                <ManageBuildingsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/campus-admin/manage-rooms"
             element={
               <PrivateRoute role="Campus Admin">
-                <CampusRoomManagementPage />
+                <ManageRoomsPage />
               </PrivateRoute>
             }
           />
