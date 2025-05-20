@@ -1,11 +1,28 @@
-/* Main Container */
 .my-events-container {
   background-color: #F9F9F9;
   min-height: 100vh;
   padding: 40px 20px;
 }
 
-/* Header Styling */
+/* Back Button */
+.back-btn {
+  background: none;
+  border: none;
+  color: #113a5d;
+  font-size: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+  color: #4f959d;
+}
+
+/* Heading */
 .my-events-heading {
   color: #062743;
   font-size: 32px;
@@ -14,7 +31,7 @@
   text-align: center;
 }
 
-/* Filter Button Styling */
+/* Filters */
 .filter-buttons {
   display: flex;
   justify-content: center;
@@ -37,7 +54,7 @@
   color: white;
 }
 
-/* Card Layout */
+/* Card List */
 .event-card-list {
   display: grid;
   gap: 20px;
@@ -54,14 +71,12 @@
   box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Image Styling */
 .event-image img {
   width: 150px;
   height: 150px;
   object-fit: cover;
 }
 
-/* Details and Actions */
 .event-details {
   padding: 16px;
   flex: 1;
@@ -88,7 +103,7 @@
   background-color: #D9534F;
 }
 
-/* Status Styling */
+/* Status Colors */
 .status-approved {
   color: #4F959D;
 }
@@ -101,8 +116,9 @@
   color: #D9534F;
 }
 
-/* Message Styling */
-.no-events-message, .loading-message {
+/* Messages */
+.no-events-message,
+.loading-message {
   text-align: center;
   color: #062743;
   margin-top: 20px;
