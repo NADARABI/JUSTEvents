@@ -113,18 +113,22 @@ static async checkConflict(date, time, venue_id, excludeId = null) {
 
   // Update event by ID with fields
   static async update(id, fields) {
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
-
-    const setClause = keys.map(key => `${key} = ?`).join(', ');
-    values.push(id); // push id for WHERE clause
-
-    const [result] = await db.execute(
-      `UPDATE events SET ${setClause} WHERE id = ?`,
-      values
-    );
-    return result.affectedRows;
+  const keys = Object.keys(fields).filter(key => fields[key] !== undefined && fields[key] !== null);
+  if (keys.length === 0) {
+    return 0; // Nothing to update
   }
+
+  const setClause = keys.map(key => `${key} = ?`).join(', ');
+  const values = keys.map(key => fields[key]);
+  values.push(id); // for WHERE clause
+
+  const [result] = await db.execute(
+    `UPDATE events SET ${setClause} WHERE id = ?`,
+    values
+  );
+  return result.affectedRows;
+}
+
 
   // Delete event by ID
   static async delete(id) {
