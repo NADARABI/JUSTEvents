@@ -1,116 +1,175 @@
-/* src/pages/Organizer/OrganizerDashboardPage.css */
-.dashboard-container {
+.org-dashboard {
   padding: 40px 20px;
-  background-color: #F9F9F9;
+  background-color: #f9f9f9;
   min-height: 100vh;
+  text-align: center;
 }
 
-.dashboard-heading {
-  text-align: center;
-  font-size: 30px;
-  font-weight: 700;
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #113a5d;
+}
+
+.org-title {
+  font-size: 32px;
   color: #062743;
   margin-bottom: 30px;
+  font-weight: bold;
 }
 
-.dashboard-stats {
+.back-btn {
+  background: none;
+  border: none;
+  color: #113a5d;
+  font-size: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+  color: #4f959d;
+}
+
+.org-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 16px;
-  max-width: 800px;
-  margin: 0 auto 40px;
+  gap: 20px;
+  margin-bottom: 40px;
 }
 
 .stat-card {
-  padding: 16px;
-  border-radius: 12px;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   text-align: center;
-  font-weight: 600;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+  color: #ffffff;
 }
 
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.stat-card p {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #ffffff !important;
+}
+
+.stat-card h3 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.stat-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+/* JUSTEvents Color Palette Cards */
 .stat-card.total {
-  background-color: #113A5D;
-  color: white;
+  background-color: #113a5d;
 }
 
 .stat-card.approved {
-  background-color: #98D2C0;
-  color: #062743;
+  background-color: #98d2c0;
 }
 
 .stat-card.pending {
-  background-color: #4F959D;
-  color: white;
+  background-color: #4f959d;
 }
 
 .stat-card.rejected {
-  background-color: #FECACA;
-  color: #7F1D1D;
+  background-color: #062743;
 }
 
-.upcoming-section {
+/* Upcoming Section */
+.org-upcoming h2 {
+  margin-bottom: 10px;
+  color: #113a5d;
+}
+
+.upcoming-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   max-width: 600px;
   margin: 0 auto 40px;
-  text-align: center;
 }
 
-.upcoming-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 10px;
-}
-
-.upcoming-list li {
+.upcoming-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   background: white;
-  margin: 6px auto;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
 }
 
-.quick-links {
+.upcoming-icon {
+  font-size: 28px;
+  color: #4f959d;
+}
+
+.upcoming-card p {
+  font-size: 14px;
+  color: #113a5d;
+}
+
+.muted-text {
+  color: #113a5d;
+  font-size: 14px;
+}
+
+/* Quick Action Buttons */
+.org-actions {
   display: flex;
   justify-content: center;
   gap: 20px;
   flex-wrap: wrap;
 }
 
-.quick-btn {
-  padding: 12px 20px;
-  border-radius: 8px;
-  text-decoration: none;
+.action-btn {
+  padding: 12px 18px;
   font-weight: 500;
-  transition: 0.3s ease;
+  text-decoration: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
 }
 
-.quick-btn.primary {
-  background-color: #113A5D;
+.action-btn.primary {
+  background-color: #113a5d;
   color: white;
 }
 
-.quick-btn.primary:hover {
-  background-color: #4F959D;
+.action-btn.primary:hover {
+  background-color: #4f959d;
 }
 
-.quick-btn.secondary {
+.action-btn.secondary {
   background-color: white;
-  color: #113A5D;
-  border: 2px solid #113A5D;
+  border: 2px solid #113a5d;
+  color: #113a5d;
 }
 
-.quick-btn.secondary:hover {
-  background-color: #F0F0F0;
-}
-
-.muted-text {
-  color: gray;
-  font-size: 14px;
-}
-
-.dashboard-loading {
-  text-align: center;
-  color: #113A5D;
-  font-size: 18px;
-  margin-top: 50px;
+.action-btn.secondary:hover {
+  background-color: #f3f4f6;
 }

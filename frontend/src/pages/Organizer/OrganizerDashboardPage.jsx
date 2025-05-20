@@ -1,15 +1,27 @@
 // src/pages/Organizer/OrganizerDashboardPage.jsx
 import React, { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import NavBar from '../../components/common/NavBar';
+import Footer from '../../components/common/Footer';
+import {
+  FaCheckCircle,
+  FaHourglassHalf,
+  FaTimesCircle,
+  FaCalendarAlt,
+  FaArrowLeft,
+  FaPlus,
+  FaClipboardList
+} from 'react-icons/fa';
 import './OrganizerDashboardPage.css';
 
 const OrganizerDashboardPage = () => {
+  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMyEvents = async () => {
+    const fetchData = async () => {
       try {
         const res = await axios.get('/api/events?sort=latest');
         const userId = JSON.parse(localStorage.getItem('user'))?.id;
@@ -22,7 +34,7 @@ const OrganizerDashboardPage = () => {
       }
     };
 
-    fetchMyEvents();
+    fetchData();
   }, []);
 
   const total = events.length;
@@ -36,55 +48,85 @@ const OrganizerDashboardPage = () => {
     .slice(0, 3);
 
   if (loading) {
-    return <div className="dashboard-loading">Loading...</div>;
+    return (
+      <>
+        <NavBar />
+        <div className="org-dashboard loading-state">
+          <p className="loading-text">Loading dashboard...</p>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
   return (
-    <div className="dashboard-container">
-      <h1 className="dashboard-heading">Organizer Dashboard</h1>
+    <>
+      <NavBar />
+      <div className="org-dashboard">
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          <FaArrowLeft /> Back
+        </button>
 
-      {/* Stats */}
-      <div className="dashboard-stats">
-        <div className="stat-card total">
-          <p>Total Events</p>
-          <h3>{total}</h3>
+        <h1 className="org-title">Organizer Dashboard</h1>
+
+        {/* Stats Grid */}
+        <div className="org-stats">
+          <div className="stat-card total">
+            <FaClipboardList className="stat-icon" />
+            <p>Total Events</p>
+            <h3>{total}</h3>
+          </div>
+          <div className="stat-card approved">
+            <FaCheckCircle className="stat-icon" />
+            <p>Approved</p>
+            <h3>{approved}</h3>
+          </div>
+          <div className="stat-card pending">
+            <FaHourglassHalf className="stat-icon" />
+            <p>Pending</p>
+            <h3>{pending}</h3>
+          </div>
+          <div className="stat-card rejected">
+            <FaTimesCircle className="stat-icon" />
+            <p>Rejected</p>
+            <h3>{rejected}</h3>
+          </div>
         </div>
-        <div className="stat-card approved">
-          <p>Approved</p>
-          <h3>{approved}</h3>
+
+        {/* Upcoming Events */}
+        <div className="org-upcoming">
+          <h2>Upcoming Events</h2>
+          {upcoming.length === 0 ? (
+            <p className="muted-text">No upcoming events.</p>
+          ) : (
+            <div className="upcoming-cards">
+              {upcoming.map((e) => (
+                <div className="upcoming-card" key={e.id}>
+                  <FaCalendarAlt className="upcoming-icon" />
+                  <div>
+                    <h4>{e.title}</h4>
+                    <p>
+                      {new Date(e.date).toLocaleDateString()} at {e.time}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="stat-card pending">
-          <p>Pending</p>
-          <h3>{pending}</h3>
-        </div>
-        <div className="stat-card rejected">
-          <p>Rejected</p>
-          <h3>{rejected}</h3>
+
+        {/* Quick Links */}
+        <div className="org-actions">
+          <Link to="/events/create" className="action-btn primary">
+            <FaPlus /> Create New Event
+          </Link>
+          <Link to="/organizer/my-events" className="action-btn secondary">
+            <FaClipboardList /> View My Events
+          </Link>
         </div>
       </div>
-
-      {/* Upcoming Events */}
-      <div className="upcoming-section">
-        <h2>Upcoming Events</h2>
-        {upcoming.length === 0 ? (
-          <p className="muted-text">No upcoming events.</p>
-        ) : (
-          <ul className="upcoming-list">
-            {upcoming.map((e) => (
-              <li key={e.id}>
-                <strong>{e.title}</strong> — {new Date(e.date).toLocaleDateString()} at {e.time}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Quick Links */}
-      <div className="quick-links">
-        <Link to="/events/create" className="quick-btn primary">+ Create New Event</Link>
-        <Link to="/organizer/my-events" className="quick-btn secondary">View My Events</Link>
-      </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 
