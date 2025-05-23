@@ -1,7 +1,13 @@
 // src/services/api.js
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
-// Create axios instance
+let navigateHandler = null;
+
+export const setNavigateHandler = (fn) => {
+  navigateHandler = fn;
+};
+
 const api = axios.create({
   baseURL: 'http://localhost:5000',
   headers: {
@@ -15,7 +21,7 @@ console.log("AXIOS CONNECTED →", api.defaults.baseURL);
 
 // Token injection for secure routes
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken'); 
+  const token = localStorage.getItem('accessToken');
 
   const isPublic =
     config.url.includes('/public') ||
@@ -31,5 +37,25 @@ api.interceptors.request.use((config) => {
 
   return config;
 });
+
+// Session expiration handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      toast.error('Session expired. Please log in again.');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('user');
+
+      if (navigateHandler) {
+        navigateHandler('/login');
+      } else {
+        window.location.href = '/login'; // fallback
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default api;

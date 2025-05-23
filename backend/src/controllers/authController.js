@@ -98,7 +98,7 @@ export const login = async (req, res) => {
     const accessToken = jwt.sign(
       { id: user.id, email: user.email, role: user.role, name: user.name },
       JWT_SECRET,
-      { expiresIn: '15m' } // 15 minutes
+      { expiresIn: '12s' } // 15 minutes
     );
     
     const refreshToken = jwt.sign(

@@ -5,9 +5,12 @@ import api from '../../services/api';
 import InputField from '../../components/common/InputField';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import SSOButton from '../../components/common/SSOButton';
+import { useUser } from '../../context/UserContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useUser(); // use context login method
+
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
 
@@ -24,28 +27,28 @@ const LoginPage = () => {
     try {
       setLoading(true);
       const response = await api.post('/auth/login', form);
-      console.log(" Login response:", response);
-
       const user = response.data.data;
-      console.log(" user.id =", user.id);
-      console.log(" typeof user.id =", typeof user.id);
 
-      const accessToken = user.accessToken;
-      const role = user.role;
+      if (!user?.accessToken) {
+        toast.error('No token received. Login failed.');
+        return;
+      }
 
-      //  Store all needed values
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('role', role);
-      localStorage.setItem('userId', String(user.id)); // string for consistency
-      localStorage.setItem('user', JSON.stringify(user));
+      //  Log and call centralized login()
+      console.log('Login response:', user);
+
+      login({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: user.accessToken,
+      });
 
       toast.success('Login successful!');
-      console.log("Full login payload:", response.data);
-      console.log("Data inside data.data:", response.data.data);
-
       navigate('/home');
     } catch (error) {
-      console.error("Login error:", error);
+      console.error('Login error:', error);
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
