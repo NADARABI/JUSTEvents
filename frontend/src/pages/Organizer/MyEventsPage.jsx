@@ -1,6 +1,6 @@
 // src/pages/EventManagement/MyEventsPage.jsx
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { deleteEvent } from '../../services/eventService';
@@ -9,6 +9,7 @@ import Footer from '../../components/common/Footer';
 import './MyEventsPage.css';
 
 const MyEventsPage = () => {
+  const location = useLocation(); // ✅ React Router hook
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('All');
@@ -38,7 +39,7 @@ const MyEventsPage = () => {
     };
 
     fetchMyEvents();
-  }, []);
+  }, [location.key]); // ✅ re-fetch when navigating back
 
   const handleDelete = async (eventId) => {
     const confirm = window.confirm("Are you sure you want to delete this event?");

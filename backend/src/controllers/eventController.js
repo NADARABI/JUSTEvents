@@ -46,11 +46,21 @@ export const createEvent = async (req, res) => {
 export const editEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+
+    // Manually extract fields from FormData
+    const updates = {
+      ...(req.body.title && { title: req.body.title }),
+      ...(req.body.description && { description: req.body.description }),
+      ...(req.body.date && { date: req.body.date }),
+      ...(req.body.time && { time: req.body.time }),
+      ...(req.body.venue_id && { venue_id: req.body.venue_id }),
+      ...(req.file?.filename && { image_url: req.file.filename }),
+    };
 
     const existing = await Event.findById(id);
     if (!existing) return sendResponse(res, 404, 'Event not found');
-    if (existing.organizer_id !== req.user.id) return sendResponse(res, 403, 'Unauthorized');
+    if (existing.organizer_id !== req.user.id)
+      return sendResponse(res, 403, 'Unauthorized');
 
     const dateToCheck = updates.date || existing.date;
     const timeToCheck = updates.time || existing.time;
@@ -60,13 +70,15 @@ export const editEvent = async (req, res) => {
       return sendResponse(res, 409, 'Venue already booked at this date and time');
     }
 
+    
+    console.log("Update payload:", updates);
+
     await Event.update(id, updates);
     sendResponse(res, 200, 'Event updated successfully');
 
     const rsvps = await EventRsvp.getByEvent(id);
-    const rsvpUserIds = rsvps.map(r => r.user_id);
+    const rsvpUserIds = rsvps.map((r) => r.user_id);
 
-    // Send notifications to all RSVP'd users
     for (const userId of rsvpUserIds) {
       if (userId !== req.user.id) {
         await createNotification(
@@ -81,6 +93,7 @@ export const editEvent = async (req, res) => {
     sendResponse(res, 500, 'Server error while editing event');
   }
 };
+
 
 // Delete event
 export const deleteEvent = async (req, res) => {

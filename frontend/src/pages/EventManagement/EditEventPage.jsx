@@ -29,10 +29,12 @@ const EditEventPage = () => {
         const res = await getEventById(id);
         const event = res.data.data;
 
+        const formattedDate = event.date?.split('T')[0]; // ✅ Fix date format
+
         setFormValues({
           title: event.title,
           description: event.description,
-          date: event.date,
+          date: formattedDate || '',
           time: event.time,
           venue_id: event.venue_id,
           image: null,
