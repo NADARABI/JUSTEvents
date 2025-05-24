@@ -1,29 +1,19 @@
 // src/components/common/NavBar.jsx
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import SearchBar from '../Landing/SearchBar';
 import { FaBookmark, FaSignOutAlt } from 'react-icons/fa';
+import SearchBar from '../Landing/SearchBar';
+import { useUser } from '../../context/UserContext';
 import './navbar.css';
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('accessToken'));
-  const [role, setRole] = useState(localStorage.getItem('role'));
+  const { isLoggedIn, role, logout, loading } = useUser();
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setIsLoggedIn(!!localStorage.getItem('accessToken'));
-      setRole(localStorage.getItem('role'));
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  if (loading) return null; // Prevent UI flicker before session is loaded
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('role');
-    localStorage.removeItem('user');
-    setIsLoggedIn(false);
+    logout();
     navigate('/login');
   };
 
@@ -72,14 +62,11 @@ const NavBar = () => {
 
             {role === 'System Admin' && (
               <>
-                {/* Future system admin links here */}
+                {/* Add System Admin links here if needed */}
               </>
             )}
 
-            <button
-              className="btn logout-button"
-              onClick={handleLogout}
-            >
+            <button className="btn logout-button" onClick={handleLogout}>
               <FaSignOutAlt style={{ marginRight: '5px' }} /> Logout
             </button>
           </>

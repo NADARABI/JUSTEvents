@@ -6,30 +6,36 @@ import { toast } from 'react-toastify';
 const PrivateRoute = ({ children, roles = [] }) => {
   const { isLoggedIn, role, isTokenValid, logout } = useUser();
   const location = useLocation();
-  const [redirect, setRedirect] = useState(false);
+
+  const [checked, setChecked] = useState(false);
+  const [redirectPath, setRedirectPath] = useState(null);
 
   useEffect(() => {
-    if (!isTokenValid()) {
-      toast.error('Session expired. Please log in again.');
-      logout(); 
-      setRedirect(true);
-    }
-  }, [isTokenValid, logout]);
+    const validateAccess = async () => {
+      const tokenStillValid = isTokenValid();
 
-  if (redirect) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+      if (!tokenStillValid) {
+        toast.error('Session expired. Please log in again.');
+        logout();
+        setRedirectPath('/login');
+      } else if (
+        (Array.isArray(roles) && roles.length > 0 && !roles.includes(role)) ||
+        (typeof roles === 'string' && role !== roles)
+      ) {
+        toast.error('Access denied: insufficient role.');
+        setRedirectPath('/login');
+      }
 
-  if (!isLoggedIn) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+      setChecked(true);
+    };
 
-  if (
-    (Array.isArray(roles) && roles.length > 0 && !roles.includes(role)) ||
-    (typeof roles === 'string' && role !== roles)
-  ) {
-    toast.error('Access denied: insufficient role.');
-    return <Navigate to="/login" replace />;
+    validateAccess();
+  }, [isLoggedIn, role, roles, isTokenValid, logout]);
+
+  if (!checked) return null; // wait for validation
+
+  if (redirectPath) {
+    return <Navigate to={redirectPath} state={{ from: location }} replace />;
   }
 
   return children;

@@ -80,7 +80,7 @@ function AppRoutes() {
         <Route
           path="/saved"
           element={
-            <PrivateRoute roles={["Student", "Organizer"]}>
+            <PrivateRoute>
               <SavedEventsPage />
             </PrivateRoute>
           }

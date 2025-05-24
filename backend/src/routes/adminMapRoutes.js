@@ -7,7 +7,7 @@ import {
   createBuilding,
   updateBuilding,
   deleteBuilding
-} from '../controllers/BuildingController.js';
+} from '../controllers/buildingController.js';
 
 import {
   createCoordinate,

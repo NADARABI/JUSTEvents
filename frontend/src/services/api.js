@@ -1,4 +1,3 @@
-// src/services/api.js
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -10,16 +9,13 @@ export const setNavigateHandler = (fn) => {
 
 const api = axios.create({
   baseURL: 'http://localhost:5000',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
   timeout: 10000,
 });
 
-// Debug log
 console.log("AXIOS CONNECTED →", api.defaults.baseURL);
 
-// Token injection for secure routes
+// Request Interceptor: Inject Access Token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
 
@@ -38,22 +34,56 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Session expiration handling
+// Response Interceptor: Refresh on 401
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      toast.error('Session expired. Please log in again.');
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('user');
+  async (error) => {
+    const originalRequest = error.config;
 
-      if (navigateHandler) {
-        navigateHandler('/login');
-      } else {
-        window.location.href = '/login'; // fallback
+    // Attempt refresh token only once
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes('/auth/refresh')
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) throw new Error('Missing refresh token');
+
+        const res = await axios.post('http://localhost:5000/auth/refresh', {
+          token: refreshToken,
+        });
+
+        const newAccessToken = res.data?.data?.accessToken;
+        if (newAccessToken) {
+          localStorage.setItem('accessToken', newAccessToken);
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return api(originalRequest);
+        }
+
+        throw new Error('Invalid refresh response');
+      } catch (refreshErr) {
+        toast.dismiss();
+        toast.error('Session expired. Please log in again.', { toastId: 'session-expired' });
+
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        localStorage.removeItem('role');
+
+        if (navigateHandler) {
+          navigateHandler('/login');
+        } else {
+          window.location.href = '/login';
+        }
+
+        return Promise.reject(refreshErr);
       }
     }
 
+    // Other error types (optional logging or UI feedback)
     return Promise.reject(error);
   }
 );

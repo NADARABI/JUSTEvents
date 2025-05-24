@@ -9,7 +9,7 @@ import { useUser } from '../../context/UserContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useUser(); // use context login method
+  const { login } = useUser();
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -29,20 +29,19 @@ const LoginPage = () => {
       const response = await api.post('/auth/login', form);
       const user = response.data.data;
 
-      if (!user?.accessToken) {
-        toast.error('No token received. Login failed.');
+      if (!user?.accessToken || !user?.refreshToken) {
+        toast.error('Missing tokens. Login failed.');
         return;
       }
 
-      //  Log and call centralized login()
-      console.log('Login response:', user);
-
+      // Pass refreshToken into login()
       login({
         id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
         token: user.accessToken,
+        refreshToken: user.refreshToken,
       });
 
       toast.success('Login successful!');

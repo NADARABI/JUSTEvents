@@ -98,13 +98,13 @@ export const login = async (req, res) => {
     const accessToken = jwt.sign(
       { id: user.id, email: user.email, role: user.role, name: user.name },
       JWT_SECRET,
-      { expiresIn: '12s' } // 15 minutes
+      { expiresIn: '15m' } // 15 minutes
     );
     
     const refreshToken = jwt.sign(
       { id: user.id, email: user.email },
       JWT_SECRET,
-      { expiresIn: '7d' } // 7 days
+      { expiresIn: '15s' } // 7 days
     );
     
     await RefreshToken.save(user.id, refreshToken);

@@ -7,29 +7,23 @@ export const useUser = () => useContext(UserContext);
 
 let logoutTimer = null;
 
-// Handles session expiration
 const startSessionTimer = (token, logoutFn) => {
   try {
     const decoded = jwtDecode(token);
     const expiryTime = decoded.exp * 1000;
-    const currentTime = Date.now();
-    const delay = expiryTime - currentTime;
+    const delay = expiryTime - Date.now();
 
-    console.log('⏱JWT Expiration Delay (ms):', delay);
-    console.log('Token Expires At:', new Date(expiryTime).toLocaleTimeString());
+    console.log('JWT Expiration Delay (ms):', delay);
 
     if (logoutTimer) clearTimeout(logoutTimer);
 
     if (delay > 0) {
       logoutTimer = setTimeout(() => {
-        console.log('Timer triggered: Session expired.');
-        toast.error('Session expired. Please log in again.');
+        console.log('Session timer expired');
+        toast.dismiss();
+        toast.error('Session expired. Please log in again.', { toastId: 'session-expired' });
         logoutFn();
-
-        // Give toast a moment to show before redirect
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 200);
+        setTimeout(() => (window.location.href = '/login'), 200);
       }, delay);
     }
   } catch (err) {
@@ -42,7 +36,6 @@ export const UserProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Validity check for token
   const isTokenValid = () => {
     const token = localStorage.getItem('accessToken');
     try {
@@ -54,57 +47,71 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // Check localStorage and set session
   useEffect(() => {
-    try {
+    const initializeUserSession = async () => {
       const savedUser = localStorage.getItem('user');
       const savedRole = localStorage.getItem('role');
       const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
 
-      if (savedUser && accessToken) {
-        const decoded = jwtDecode(accessToken);
-        const isExpired = decoded.exp * 1000 < Date.now();
+      if (!savedUser) return;
 
-        if (isExpired) {
-          toast.error('Session expired. Please log in again.');
-          logout();
-          setTimeout(() => {
-            window.location.href = '/login';
-          }, 200);
-        } else {
+      try {
+        if (accessToken) {
+          const decoded = jwtDecode(accessToken);
+          if (decoded.exp * 1000 < Date.now()) throw new Error('Expired');
+
           setUser(JSON.parse(savedUser));
           setRole(savedRole);
           setIsLoggedIn(true);
-          console.log('Calling startSessionTimer on app load');
           startSessionTimer(accessToken, logout);
+        } else {
+          const res = await fetch('http://localhost:5000/auth/refresh', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: refreshToken }),
+          });
+
+          const data = await res.json();
+          const newToken = data?.data?.accessToken;
+
+          if (newToken) {
+            localStorage.setItem('accessToken', newToken);
+            setUser(JSON.parse(savedUser));
+            setRole(savedRole);
+            setIsLoggedIn(true);
+            startSessionTimer(newToken, logout);
+          } else {
+            throw new Error('No new access token returned');
+          }
         }
+      } catch (err) {
+        toast.dismiss();
+        toast.error('Session expired. Please log in again.', { toastId: 'session-expired' });
+        logout();
+        setTimeout(() => (window.location.href = '/login'), 200);
       }
-    } catch (error) {
-      console.error('Token init decode error:', error.message);
-      logout();
-    }
+    };
+
+    initializeUserSession();
   }, []);
 
-  // Login handler
   const login = (userData) => {
-    console.log('Calling startSessionTimer on login');
-    console.log('Token value:', userData.token);
-
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('accessToken', userData.token);
+    localStorage.setItem('refreshToken', userData.refreshToken);
     localStorage.setItem('role', userData.role);
 
     setUser(userData);
     setRole(userData.role);
     setIsLoggedIn(true);
-
     startSessionTimer(userData.token, logout);
   };
 
-  //  Logout handler
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('role');
 
     setUser(null);
@@ -118,7 +125,6 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // Sync logout across browser tabs
   useEffect(() => {
     const syncLogout = (event) => {
       if (event.key === 'logout') {
@@ -133,9 +139,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider
-      value={{ user, role, isLoggedIn, login, logout, isTokenValid }}
-    >
+    <UserContext.Provider value={{ user, role, isLoggedIn, login, logout, isTokenValid }}>
       {children}
     </UserContext.Provider>
   );

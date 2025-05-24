@@ -1,13 +1,19 @@
+// src/pages/SavedEvents/SavedEventsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { getSavedEvents, unsaveEvent } from '../../services/savedEventsService';
 import { toast } from 'react-toastify';
 import SavedEventCard from '../../components/SavedEvents/SavedEventCard';
 import Footer from '../../components/common/Footer';
+import { useUser } from '../../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 import './savedEvents.css';
 
 const SavedEventsPage = () => {
   const [savedEvents, setSavedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { logout } = useUser();
+  const navigate = useNavigate();
 
   /**
    * Fetch Saved Events on Mount
@@ -16,25 +22,35 @@ const SavedEventsPage = () => {
     const fetchSavedEvents = async () => {
       try {
         const events = await getSavedEvents();
-        
+
         if (Array.isArray(events)) {
           setSavedEvents(events);
         } else {
           console.error('Expected an array but got:', events);
           toast.error('Failed to load saved events');
-          setSavedEvents([]); // Set it to an empty array if it fails
+          setSavedEvents([]);
         }
       } catch (error) {
         console.error(error.message);
-        toast.error('Failed to load saved events');
-        setSavedEvents([]); // Set it to an empty array if it fails
+
+        if (error.message.toLowerCase().includes('unauthorized')) {
+          toast.error('Session expired. Please log in again.');
+          logout();
+          setTimeout(() => {
+            navigate('/login');
+          }, 200);
+        } else {
+          toast.error('Failed to load saved events');
+        }
+
+        setSavedEvents([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchSavedEvents();
-  }, []);
+  }, [logout, navigate]);
 
   /**
    * Handle Unsave Event
