@@ -85,9 +85,12 @@ export const UserProvider = ({ children }) => {
       const savedRole = localStorage.getItem('role');
       const accessToken = localStorage.getItem('accessToken');
       const refreshToken = localStorage.getItem('refreshToken');
+    
+
+      console.log('[UserContext Init] Access Token:', accessToken);
+      console.log('[UserContext Init] Refresh Token:', refreshToken);
 
       if (!savedUser) return;
-
       try {
         if (accessToken) {
           const decoded = jwtDecode(accessToken);
@@ -98,39 +101,40 @@ export const UserProvider = ({ children }) => {
           startSessionTimer(accessToken, logout);
         } else {
           const res = await fetch('http://localhost:5000/auth/refresh', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: refreshToken }),
-          });
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: refreshToken }),
+        });
 
-          const data = await res.json();
-          const newToken = data?.data?.accessToken;
+        const data = await res.json();
+        const newToken = data?.data?.accessToken;
 
-          if (newToken) {
-            localStorage.setItem('accessToken', newToken);
-            setUser(JSON.parse(savedUser));
-            setRole(savedRole);
-            setIsLoggedIn(true);
-            startSessionTimer(newToken, logout);
-          } else {
-            throw new Error('No access token returned');
-          }
+        if (newToken) {
+          console.log('[UserContext] Received new access token:', newToken);
+          localStorage.setItem('accessToken', newToken);
+          setUser(JSON.parse(savedUser));
+          setRole(savedRole);
+          setIsLoggedIn(true);
+          startSessionTimer(newToken, logout);
+        } else {
+          throw new Error('No access token returned');
         }
-      } catch (err) {
-        console.warn('Silent refresh failed:', err.message);
-        toast.dismiss();
-        toast.error('Session expired. Please log in again.', { toastId: 'session-expired' });
-        logout();
-        setTimeout(() => {
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
-          }
-        }, 200);
       }
-    };
+    } catch (err) {
+      console.warn('[UserContext] Silent refresh failed:', err.message);
+      toast.dismiss();
+      toast.error('Session expired. Please log in again.', { toastId: 'session-expired' });
+      logout();
+      setTimeout(() => {
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+      }, 200);
+    }
+  };
 
-    init();
-  }, []);
+  init();
+}, []);
 
   // Cross-tab sync
   useEffect(() => {
