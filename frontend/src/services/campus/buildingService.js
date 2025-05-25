@@ -1,22 +1,37 @@
 import api from '../api';
 
-// Get all buildings
+/**
+ * Fetch all buildings
+ */
 export const getBuildings = async () => {
-  const res = await api.get('/api/buildings');
-  return res.data.data;
+  const response = await api.get('/api/buildings');
+  return response.data.data;
 };
 
-// Create a building
+/**
+ * Add a new building
+ * @param {object} building - { name, description, ... }
+ */
 export const addBuilding = async (building) => {
-  return api.post('/api/buildings', building);
+  const response = await api.post('/api/buildings', building);
+  return response.data;
 };
 
-// Update a building
+/**
+ * Update an existing building
+ * @param {number} id - Building ID
+ * @param {object} updates - Updated building data
+ */
 export const updateBuilding = async (id, updates) => {
-  return api.put(`/api/buildings/${id}`, updates);
+  const response = await api.put(`/api/buildings/${id}`, updates);
+  return response.data;
 };
 
-// Delete a building
+/**
+ * Delete a building
+ * @param {number} id - Building ID
+ */
 export const deleteBuilding = async (id) => {
-  return api.delete(`/api/buildings/${id}`);
+  const response = await api.delete(`/api/buildings/${id}`);
+  return response.data;
 };

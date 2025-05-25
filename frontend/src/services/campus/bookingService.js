@@ -1,18 +1,34 @@
-import api from '../api'; 
+import api from '../api';
 
-// GET /bookings/pending → fetch all pending booking requests
+// GET all pending booking requests (Campus Admin)
 export const getPendingBookings = async () => {
-  const response = await api.get('/booking/bookings/pending');
-  return response.data.data; // Extract the data array
+  try {
+    const response = await api.get('/booking/bookings/pending');
+    return response.data.data;
+  } catch (err) {
+    console.error('Failed to fetch pending bookings:', err.message);
+    throw new Error('Could not load booking requests');
+  }
 };
 
-// PATCH /bookings/:id → approve or reject a booking
+// PATCH approve/reject booking by ID
 export const reviewBooking = async (id, status) => {
-  const response = await api.patch(`/booking/bookings/${id}`, { status });
-  return response.data.message; // return message for feedback
+  try {
+    const response = await api.patch(`/booking/bookings/${id}`, { status });
+    return response.data.message;
+  } catch (err) {
+    console.error(`Failed to update booking status for ID ${id}:`, err.message);
+    throw new Error('Booking review failed');
+  }
 };
 
+// GET booking stats (for analytics/dashboard)
 export const getBookingStats = async () => {
-  const res = await api.get('/booking/bookings/stats');
-  return res.data.data;
+  try {
+    const response = await api.get('/booking/bookings/stats');
+    return response.data.data;
+  } catch (err) {
+    console.error('Failed to fetch booking stats:', err.message);
+    throw new Error('Could not load booking statistics');
+  }
 };

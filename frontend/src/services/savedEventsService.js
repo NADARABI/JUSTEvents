@@ -1,46 +1,43 @@
-// src/services/savedEventsService.js
 import api from './api';
 
 /**
- * Get All Saved Events for the Logged-In User
+ * Fetch all saved events for the logged-in user
  */
 export const getSavedEvents = async () => {
   try {
     const response = await api.get('/api/saved-events');
     return response.data.data;
-  } catch (error) {
-    console.error('Failed to fetch saved events:', error.message);
-    throw new Error('Failed to fetch saved events');
+  } catch (err) {
+    console.error('Failed to load saved events:', err.message);
+    throw new Error('Could not load saved events');
   }
 };
 
 /**
- * Save Event
- * Adds an event to the user's saved list
+ * Save a specific event
  */
 export const saveEvent = async (eventId) => {
   try {
     const response = await api.post(`/api/events/${eventId}/save`);
     return response.data.message;
-  } catch (error) {
-    if (error.response?.status === 409) {
-      console.error('Event already saved');
+  } catch (err) {
+    if (err.response?.status === 409) {
+      console.warn('Event already saved');
       throw new Error('Event already saved');
     }
-    console.error('Failed to save event:', error.message);
-    throw new Error('Failed to save event');
+    console.error(`Failed to save event ID ${eventId}:`, err.message);
+    throw new Error('Could not save event');
   }
 };
 
 /**
- * Unsave Event
- * Removes an event from the user's saved list
+ * Remove a saved event
  */
 export const unsaveEvent = async (eventId) => {
   try {
     await api.delete(`/api/events/${eventId}/save`);
-  } catch (error) {
-    console.error('Failed to unsave event:', error.message);
-    throw new Error('Failed to unsave event');
+  } catch (err) {
+    console.error(`Failed to unsave event ID ${eventId}:`, err.message);
+    throw new Error('Could not unsave event');
   }
 };
