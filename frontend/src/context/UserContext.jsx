@@ -80,27 +80,30 @@ export const UserProvider = ({ children }) => {
 
   // Initial check or refresh on app load
   useEffect(() => {
-    const init = async () => {
-      const savedUser = localStorage.getItem('user');
-      const savedRole = localStorage.getItem('role');
-      const accessToken = localStorage.getItem('accessToken');
-      const refreshToken = localStorage.getItem('refreshToken');
-    
+  const init = async () => {
+    const savedUser = localStorage.getItem('user');
+    const savedRole = localStorage.getItem('role');
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
 
-      console.log('[UserContext Init] Access Token:', accessToken);
-      console.log('[UserContext Init] Refresh Token:', refreshToken);
+    console.log('[UserContext Init] Access Token:', accessToken);
+    console.log('[UserContext Init] Refresh Token:', refreshToken);
 
-      if (!savedUser) return;
+    if (!savedUser) return;
+
+    const tokenExpired = (() => {
       try {
-        if (accessToken) {
-          const decoded = jwtDecode(accessToken);
-          if (decoded.exp * 1000 < Date.now()) throw new Error('Expired');
-          setUser(JSON.parse(savedUser));
-          setRole(savedRole);
-          setIsLoggedIn(true);
-          startSessionTimer(accessToken, logout);
-        } else {
-          const res = await fetch('http://localhost:5000/auth/refresh', {
+        const decoded = jwtDecode(accessToken);
+        return decoded.exp * 1000 < Date.now();
+      } catch {
+        return true; // invalid or missing token
+      }
+    })();
+
+    try {
+      if (!accessToken || tokenExpired) {
+        // Try refresh token
+        const res = await fetch('http://localhost:5000/auth/refresh-token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: refreshToken }),
@@ -110,18 +113,25 @@ export const UserProvider = ({ children }) => {
         const newToken = data?.data?.accessToken;
 
         if (newToken) {
-          console.log('[UserContext] Received new access token:', newToken);
+          console.log('[UserContext] Refreshed access token:', newToken);
           localStorage.setItem('accessToken', newToken);
           setUser(JSON.parse(savedUser));
           setRole(savedRole);
           setIsLoggedIn(true);
           startSessionTimer(newToken, logout);
-        } else {
-          throw new Error('No access token returned');
+          return;
         }
+
+        throw new Error('Refresh failed or empty token');
       }
+
+      // Access token is valid, use it
+      setUser(JSON.parse(savedUser));
+      setRole(savedRole);
+      setIsLoggedIn(true);
+      startSessionTimer(accessToken, logout);
     } catch (err) {
-      console.warn('[UserContext] Silent refresh failed:', err.message);
+      console.warn('[UserContext] Token handling failed:', err.message);
       toast.dismiss();
       toast.error('Session expired. Please log in again.', { toastId: 'session-expired' });
       logout();
