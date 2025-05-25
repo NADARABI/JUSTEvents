@@ -2,7 +2,6 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 let navigateHandler = null;
-
 export const setNavigateHandler = (fn) => {
   navigateHandler = fn;
 };
@@ -13,9 +12,9 @@ const api = axios.create({
   timeout: 10000,
 });
 
-console.log("AXIOS CONNECTED →", api.defaults.baseURL);
+console.log('AXIOS CONNECTED →', api.defaults.baseURL);
 
-// Request Interceptor: Inject Access Token
+// Request Interceptor: Inject access token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
 
@@ -34,13 +33,12 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response Interceptor: Refresh on 401
+// Response Interceptor: Attempt token refresh on 401
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Attempt refresh token only once
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -52,18 +50,18 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken');
         if (!refreshToken) throw new Error('Missing refresh token');
 
-        const res = await axios.post('http://localhost:5000/auth/refresh', {
+        const refreshResponse = await axios.post('http://localhost:5000/auth/refresh', {
           token: refreshToken,
         });
 
-        const newAccessToken = res.data?.data?.accessToken;
+        const newAccessToken = refreshResponse.data?.data?.accessToken;
         if (newAccessToken) {
           localStorage.setItem('accessToken', newAccessToken);
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return api(originalRequest);
+          return api(originalRequest); // retry original request
         }
 
-        throw new Error('Invalid refresh response');
+        throw new Error('No new token returned');
       } catch (refreshErr) {
         toast.dismiss();
         toast.error('Session expired. Please log in again.', { toastId: 'session-expired' });
@@ -83,7 +81,6 @@ api.interceptors.response.use(
       }
     }
 
-    // Other error types (optional logging or UI feedback)
     return Promise.reject(error);
   }
 );

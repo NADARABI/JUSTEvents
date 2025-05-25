@@ -11,18 +11,18 @@ const PrivateRoute = ({ children, roles = [] }) => {
   const [redirectPath, setRedirectPath] = useState(null);
 
   useEffect(() => {
-    const validateAccess = async () => {
-      const tokenStillValid = isTokenValid();
-
-      if (!tokenStillValid) {
-        toast.error('Session expired. Please log in again.');
+    const validateAccess = () => {
+      if (!isTokenValid()) {
+        toast.dismiss();
+        toast.error('Session expired. Please log in again.', { toastId: 'session-expired' });
         logout();
         setRedirectPath('/login');
       } else if (
         (Array.isArray(roles) && roles.length > 0 && !roles.includes(role)) ||
         (typeof roles === 'string' && role !== roles)
       ) {
-        toast.error('Access denied: insufficient role.');
+        toast.dismiss();
+        toast.error('Access denied: insufficient role.', { toastId: 'access-denied' });
         setRedirectPath('/login');
       }
 
@@ -32,7 +32,7 @@ const PrivateRoute = ({ children, roles = [] }) => {
     validateAccess();
   }, [isLoggedIn, role, roles, isTokenValid, logout]);
 
-  if (!checked) return null; // wait for validation
+  if (!checked) return null;
 
   if (redirectPath) {
     return <Navigate to={redirectPath} state={{ from: location }} replace />;

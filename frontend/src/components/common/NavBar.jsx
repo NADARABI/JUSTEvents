@@ -1,5 +1,4 @@
-// src/components/common/NavBar.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FaBookmark, FaSignOutAlt } from 'react-icons/fa';
 import SearchBar from '../Landing/SearchBar';
@@ -8,9 +7,14 @@ import './navbar.css';
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, role, logout, loading } = useUser();
+  const { isLoggedIn, role, logout, loading, user } = useUser();
 
-  if (loading) return null; // Prevent UI flicker before session is loaded
+  // Debug Context
+  useEffect(() => {
+    console.log('[NavBar] Context →', { isLoggedIn, role, user });
+  }, [isLoggedIn, role, user]);
+
+  if (loading) return null;
 
   const handleLogout = () => {
     logout();
