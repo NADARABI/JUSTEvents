@@ -1,0 +1,21 @@
+.notifications-page {
+  padding: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.mark-all-btn {
+  background: #4f959d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s ease;
+}
+
+.mark-all-btn:hover {
+  background: #3b7d83;
+}

@@ -38,13 +38,16 @@ import SystemAdminLayout from './pages/AdminSystem/layout/SystemAdminLayout';
 import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
 import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
-import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
+import NotificationsPageAdmin from './pages/AdminSystem/Notifications/NotificationsPage';
 
 // Campus Admin Panel
 import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
 import CampusRoomAnalyticsPage from './pages/campusAdmin/CampusRoomAnalyticsPage';
 import ManageBuildingsPage from './pages/campusAdmin/ManageBuildingsPage';
 import ManageRoomsPage from './pages/campusAdmin/ManageRoomsPage';
+
+// Public Notifications Page
+import NotificationsPage from './pages/notifications/NotificationsPage';
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -90,6 +93,14 @@ function AppRoutes() {
           element={
             <PrivateRoute roles={["Student", "Organizer"]}>
               {/* <FeedbackPage /> */}
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <PrivateRoute>
+              <NotificationsPage />
             </PrivateRoute>
           }
         />
@@ -167,7 +178,7 @@ function AppRoutes() {
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="pending-users" element={<PendingUsersPage />} />
           <Route path="pending-events" element={<PendingEventsPage />} />
-          <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="notifications" element={<NotificationsPageAdmin />} />
         </Route>
 
         {/* Fallback */}
