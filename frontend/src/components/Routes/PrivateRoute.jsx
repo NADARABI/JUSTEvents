@@ -18,8 +18,10 @@ const PrivateRoute = ({ children, roles = [] }) => {
         logout();
         setRedirectPath('/login');
       } else if (
-        (Array.isArray(roles) && roles.length > 0 && !roles.includes(role)) ||
-        (typeof roles === 'string' && role !== roles)
+        (Array.isArray(roles) &&
+          roles.length > 0 &&
+          !roles.map((r) => r.toLowerCase()).includes(role?.toLowerCase())) ||
+        (typeof roles === 'string' && role?.toLowerCase() !== roles.toLowerCase())
       ) {
         toast.dismiss();
         toast.error('Access denied: insufficient role.', { toastId: 'access-denied' });
