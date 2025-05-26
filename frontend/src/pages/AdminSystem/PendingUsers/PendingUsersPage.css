@@ -1,5 +1,12 @@
 .pending-users-page {
   padding: 2rem;
+  min-height: 70vh;
+}
+
+.pending-users-loading {
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  color: #555;
 }
 
 .empty-message {

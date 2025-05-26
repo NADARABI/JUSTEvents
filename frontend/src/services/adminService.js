@@ -5,7 +5,11 @@ import api from './api'; // Axios instance with token + baseURL
  * User Management
  * =====================
  */
-export const fetchPendingUsers = () => api.get('/admin/pending-users');
+export const fetchPendingUsers = () => {
+  console.log("Calling GET /admin/pending-users");
+  return api.get('/admin/pending-users');
+};
+
 
 export const approveUser = (id) => api.patch(`/admin/approve/${id}`);
 

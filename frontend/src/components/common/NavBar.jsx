@@ -86,7 +86,9 @@ const NavBar = () => {
             {/* System Admin */}
             {role === 'System Admin' && (
               <>
-                {/* Add System Admin links here if needed */}
+                {
+                  <NavLink to="/admin/pending-users">Pending Users</NavLink>
+                }
               </>
             )}
 

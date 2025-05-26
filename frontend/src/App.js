@@ -34,11 +34,11 @@ import MyEventsPage from './pages/Organizer/MyEventsPage';
 import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
 
 // System Admin Panel
-import SystemAdminLayout from './pages/AdminSystem/layout/SystemAdminLayout';
-import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
+//import SystemAdminLayout from './pages/AdminSystem/layout/SystemAdminLayout';
+//import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
-import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
-import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
+//import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
+//import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
 
 // Campus Admin Panel
 //import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
@@ -171,12 +171,16 @@ function AppRoutes() {
         />
 
         {/* System Admin */}
-        <Route path="/admin/*" element={<SystemAdminLayout />}>
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="pending-users" element={<PendingUsersPage />} />
-          <Route path="pending-events" element={<PendingEventsPage />} />
-          <Route path="notifications" element={<NotificationsPage />} />
-        </Route>
+        <Route
+        path="/admin/pending-users"
+        element={
+        <PrivateRoute allowedRoles={['System Admin']}>
+          {/*<SystemAdminLayout>*/}
+            <PendingUsersPage />
+           {/*</SystemAdminLayout> */} 
+            </PrivateRoute>
+          }
+          />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
