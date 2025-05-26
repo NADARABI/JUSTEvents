@@ -46,10 +46,12 @@ import CampusRoomAnalyticsPage from './pages/campusAdmin/CampusRoomAnalyticsPage
 import ManageBuildingsPage from './pages/campusAdmin/ManageBuildingsPage';
 import ManageRoomsPage from './pages/campusAdmin/ManageRoomsPage';
 
+// Room Booking 
 import MyBookingsPage from './pages/Booking/MyBookingsPage';
 import BookingForm from './pages/Booking/BookingForm';
 import PendingBookingsPage from './pages/Booking/PendingBookingsPage';
 import BookingDetails from './pages/Booking/BookingDetails';
+import RoomCalendarView from './pages/Calendar/RoomCalendarView';
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -205,6 +207,14 @@ function AppRoutes() {
       </PrivateRoute>
     }
     />
+    <Route
+    path="/calendar"
+    element={
+    <PrivateRoute roles={["Student", "Organizer", "Visitor", "Campus Admin"]}>
+      <RoomCalendarView />
+    </PrivateRoute>
+  }
+/>
 
       </Routes>
       </>

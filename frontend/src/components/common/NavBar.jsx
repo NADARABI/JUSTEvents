@@ -50,13 +50,17 @@ const NavBar = () => {
             {/* Booking Related Links */}
             {['student', 'organizer', 'visitor'].includes(role?.toLowerCase()) && (
               <>
-              <NavLink to="/bookings/me" className="nav-link">
-              <FaCalendarAlt style={{ marginRight: '5px' }} /> My Bookings
-              </NavLink>
+                <NavLink to="/bookings/me" className="nav-link">
+                  <FaCalendarAlt style={{ marginRight: '5px' }} /> My Bookings
+                </NavLink>
 
-              <NavLink to="/bookings/new" className="nav-link">
-              <FaCalendarAlt style={{ marginRight: '5px' }} /> Book a Room
-              </NavLink>
+                <NavLink to="/bookings/new" className="nav-link">
+                  <FaCalendarAlt style={{ marginRight: '5px' }} /> Book a Room
+                </NavLink>
+
+                <NavLink to="/calendar" className="nav-link">
+                  Room Calendar
+                </NavLink>
               </>
             )}
 

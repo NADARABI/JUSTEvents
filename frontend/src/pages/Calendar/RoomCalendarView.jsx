@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
-import axios from 'axios';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
-import "./styles/RoomCalendarView.css";
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+import api from '../../services/api';
+import NavBar from '../../components/common/NavBar';
+import Footer from '../../components/common/Footer';
+
+import './styles/RoomCalendarView.css';
 
 const localizer = momentLocalizer(moment);
 
@@ -14,51 +18,23 @@ const RoomCalendarView = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        //Get the token from localStorage
-        const token = localStorage.getItem('token');
-        
-        if (!token) {
-          console.error("Token not found. Please login first.");
-          alert("You must be logged in to view this page.");
-          setLoading(false);
-          return;
-        }
+        const res = await api.get('/booking/bookings/me');
+        const bookings = res.data.data || [];
 
-        // Call the API with Authorization header
-        const response = await axios.get('http://localhost:5000/booking/bookings/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const formatted = bookings
+          .filter(b => b.start_time && b.end_time)
+          .map(b => ({
+            id: b.id,
+            title: `📍 ${b.room_name} – ${b.purpose}`,
+            start: new Date(b.start_time),
+            end: new Date(b.end_time),
+            status: b.status,
+            className: `${b.status.toLowerCase()}-event` // Add class for CSS targeting
+          }));
 
-        // Print the data for debugging
-        console.log("Response Data from API:", response.data);
-
-        // Check if the data is an array
-        if (Array.isArray(response.data.data)) {
-          // Filter out the events and format them for the calendar
-          const formattedEvents = response.data.data
-            .filter((booking) => booking.start_time && booking.end_time)
-            .map((booking) => ({
-              id: booking.id,
-              title: `${booking.room_name || "No Room"} - ${booking.purpose || "No Purpose"}`,
-              start: new Date(booking.start_time),
-              end: new Date(booking.end_time),
-              allDay: false,
-            }));
-
-          // Debugging: Check formatted events
-          console.log("Formatted Events for Calendar:", formattedEvents);
-
-          // Update the state with formatted events
-          setEvents(formattedEvents);
-        } else {
-          console.error("The data returned is not an array:", response.data.data);
-          alert("Failed to load bookings. Please try again later.");
-        }
-      } catch (error) {
-        console.error('Failed to fetch bookings for calendar view:', error.message);
-        alert("Failed to fetch bookings. Please check the console for errors.");
+        setEvents(formatted);
+      } catch (err) {
+        console.error('RoomCalendar error:', err.message);
       } finally {
         setLoading(false);
       }
@@ -67,21 +43,71 @@ const RoomCalendarView = () => {
     fetchBookings();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  const eventStyleGetter = (event) => {
+    let bgColor = '#4F959D';
+    let textColor = '#062743';
+
+    if (event.status === 'Pending') {
+      bgColor = '#113A5D';
+      textColor = '#ffffff';
+    }
+    if (event.status === 'Approved') {
+      bgColor = '#98D2C0';
+      textColor = '#062743';
+    }
+    if (event.status === 'Rejected') {
+      bgColor = '#d9534f';
+      textColor = '#ffffff';
+    }
+
+    return {
+      className: event.className,
+      style: {
+        backgroundColor: bgColor,
+        color: textColor,
+        borderRadius: '10px',
+        padding: '4px 8px',
+        fontWeight: 600,
+        fontSize: '14px',
+        border: 'none',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.08)'
+      }
+    };
+  };
 
   return (
-    <div className="room-calendar">
-      <h1>Room Booking Calendar</h1>
-      <div className="calendar-container">
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 600 }}
-        />
+    <>
+      <NavBar />
+      <div className="room-calendar">
+        <button className="back-button" onClick={() => window.history.back()}>
+          ← Back
+        </button>
+        <h1>Room Booking Calendar</h1>
+
+        <div className="legend">
+          <span className="badge approved">Approved</span>
+          <span className="badge pending">Pending</span>
+          <span className="badge rejected">Rejected</span>
+        </div>
+
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="calendar-container">
+            <Calendar
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              defaultView="month"
+              eventPropGetter={eventStyleGetter}
+              style={{ height: 600 }}
+            />
+          </div>
+        )}
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

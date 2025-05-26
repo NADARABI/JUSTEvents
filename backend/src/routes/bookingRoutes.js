@@ -21,16 +21,13 @@ router.use(authMiddleware);
 router.post('/bookings', authorizeRole(['Student', 'Organizer', 'Visitor']), createBooking);
 router.get('/bookings/me', authorizeRole(['Student', 'Organizer', 'Visitor']), getMyBookings);
 router.delete('/bookings/:id', authorizeRole(['Student', 'Organizer', 'Visitor']), cancelBooking);
-router.get('/bookings/:id', authorizeRole(['Student', 'Organizer', 'Campus Admin']), getBookingById);
 
-// Admin: Review pending bookings
+// Static admin routes — place above dynamic ones
 router.get('/bookings/pending', authorizeRole(['Campus Admin']), getPendingBookings);
 router.patch('/bookings/:id', authorizeRole(['Campus Admin']), reviewBooking);
+router.get('/bookings/stats', authorizeRole(['Campus Admin']), getBookingStats);
 
-router.get(
-  '/bookings/stats',
-  authorizeRole(['Campus Admin']),
-  getBookingStats
-);
+// Dynamic route LAST
+router.get('/bookings/:id', authorizeRole(['Student', 'Organizer', 'Campus Admin']), getBookingById);
 
 export default router;

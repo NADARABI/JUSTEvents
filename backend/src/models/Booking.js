@@ -70,6 +70,7 @@ const Booking = {
    */
   async getPending() {
     try {
+      console.log('[DEBUG] Fetching pending bookings...');
       const [rows] = await db.execute(`
         SELECT 
         b.id,
@@ -89,6 +90,7 @@ const Booking = {
         WHERE b.status = 'Pending'
         ORDER BY b.start_time ASC
         `);
+        console.log('[DEBUG] Pending bookings:', rows);
         return rows;
       } catch (error) {
         console.error('Booking.getPending error:', error.message);
