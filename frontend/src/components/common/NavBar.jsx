@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FaBookmark, FaSignOutAlt } from 'react-icons/fa';
+import { FaBookmark, FaSignOutAlt, FaCalendarAlt } from 'react-icons/fa';
 import SearchBar from '../Landing/SearchBar';
 import { useUser } from '../../context/UserContext';
 import './navbar.css';
@@ -47,6 +47,14 @@ const NavBar = () => {
               <FaBookmark style={{ marginRight: '5px' }} /> Saved Events
             </NavLink>
 
+            {/* My Bookings Link */}
+            {['Student', 'Organizer', 'Visitor'].includes(role) && (
+              <NavLink to="/bookings/me" className="nav-link">
+                <FaCalendarAlt style={{ marginRight: '5px' }} /> My Bookings
+              </NavLink>
+            )}
+
+            {/* Organizer */}
             {role === 'Organizer' && (
               <>
                 <NavLink to="/organizer/dashboard" className="nav-link">Dashboard</NavLink>
@@ -55,6 +63,7 @@ const NavBar = () => {
               </>
             )}
 
+            {/* Campus Admin */}
             {role === 'Campus Admin' && (
               <>
                 <NavLink to="/campus-admin/room-requests" className="nav-link">Room Requests</NavLink>
@@ -64,6 +73,7 @@ const NavBar = () => {
               </>
             )}
 
+            {/* System Admin */}
             {role === 'System Admin' && (
               <>
                 {/* Add System Admin links here if needed */}

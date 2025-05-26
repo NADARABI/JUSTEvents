@@ -46,6 +46,9 @@ import CampusRoomAnalyticsPage from './pages/campusAdmin/CampusRoomAnalyticsPage
 import ManageBuildingsPage from './pages/campusAdmin/ManageBuildingsPage';
 import ManageRoomsPage from './pages/campusAdmin/ManageRoomsPage';
 
+import MyBookingsPage from './pages/Booking/MyBookingsPage';
+import BookingForm from './pages/Booking/BookingForm';
+
 function AppRoutes() {
   const navigate = useNavigate();
 
@@ -172,10 +175,28 @@ function AppRoutes() {
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
+
+        <Route
+        path="/bookings/me"
+        element={
+        <PrivateRoute roles={["Student", "Organizer", "Visitor"]}>
+          <MyBookingsPage />
+        </PrivateRoute>
+      }
+      />
+
+      <Route
+      path="/bookings/new"
+      element={
+      <PrivateRoute roles={["Student", "Organizer", "Visitor"]}>
+        <BookingForm />
+        </PrivateRoute>
+      }
+      />
       </Routes>
-    </>
-  );
-}
+      </>
+      );
+    }
 
 function App() {
   return (

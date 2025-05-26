@@ -25,13 +25,15 @@ const Booking = {
   async getByUser(user_id) {
     try {
       const [rows] = await db.execute(
-        `SELECT b.*, r.name AS room_name, r.building
-         FROM room_bookings b
-         JOIN rooms r ON b.room_id = r.id
-         WHERE b.user_id = ?
-         ORDER BY b.start_time DESC`,
+        `SELECT b.*, r.name AS room_name, bl.name AS building
+        FROM room_bookings b
+        JOIN rooms r ON b.room_id = r.id
+        JOIN buildings bl ON r.building_id = bl.id
+        WHERE b.user_id = ?
+        ORDER BY b.start_time DESC`,
         [user_id]
       );
+
       return rows;
     } catch (error) {
       console.error('Booking.getByUser error:', error.message);
