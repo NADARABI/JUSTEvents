@@ -1,6 +1,7 @@
 .booking-form {
   padding: 40px;
   background-color: #F9F9F9;
+  min-height: 80vh;
 }
 
 .booking-form h1 {
@@ -32,4 +33,20 @@
 
 .booking-form button:hover {
   background-color: #062743;
+}
+
+.back-button {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: #4F959D;
+  margin-bottom: 15px;
+  cursor: pointer;
+  padding-left: 4px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.back-button:hover {
+  color: #113A5D;
 }
