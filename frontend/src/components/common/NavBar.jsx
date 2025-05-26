@@ -48,7 +48,7 @@ const NavBar = () => {
             </NavLink>
 
             {/* My Bookings Link */}
-            {['Student', 'Organizer', 'Visitor'].includes(role) && (
+            {['student', 'organizer', 'visitor'].includes(role?.toLowerCase()) && (
               <NavLink to="/bookings/me" className="nav-link">
                 <FaCalendarAlt style={{ marginRight: '5px' }} /> My Bookings
               </NavLink>
