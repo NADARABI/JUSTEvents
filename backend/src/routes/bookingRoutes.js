@@ -8,7 +8,8 @@ import {
   cancelBooking,
   getPendingBookings,
   reviewBooking,
-  getBookingStats
+  getBookingStats,
+  getBookingById
 } from '../controllers/bookingController.js';
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.use(authMiddleware);
 router.post('/bookings', authorizeRole(['Student', 'Organizer', 'Visitor']), createBooking);
 router.get('/bookings/me', authorizeRole(['Student', 'Organizer', 'Visitor']), getMyBookings);
 router.delete('/bookings/:id', authorizeRole(['Student', 'Organizer', 'Visitor']), cancelBooking);
+router.get('/bookings/:id', authorizeRole(['Student', 'Organizer', 'Campus Admin']), getBookingById);
 
 // Admin: Review pending bookings
 router.get('/bookings/pending', authorizeRole(['Campus Admin']), getPendingBookings);

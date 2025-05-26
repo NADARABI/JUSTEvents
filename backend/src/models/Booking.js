@@ -188,7 +188,28 @@ const Booking = {
       console.error('Booking.getBookingStats error:', error.message);
       throw new Error('Failed to retrieve booking stats');
     }
-  }
-};
+  },
 
+  /**
+ * Get a single booking by ID
+ */
+async getById(id) {
+  try {
+    const [rows] = await db.execute(
+      `SELECT b.*, r.name AS room_name, bl.name AS building, u.name AS user_name, u.email AS user_email
+       FROM room_bookings b
+       JOIN rooms r ON b.room_id = r.id
+       JOIN buildings bl ON r.building_id = bl.id
+       JOIN users u ON b.user_id = u.id
+       WHERE b.id = ?`,
+      [id]
+    );
+    return rows.length > 0 ? rows[0] : null;
+  } catch (error) {
+    console.error('Booking.getById error:', error.message);
+    throw new Error('Failed to fetch booking');
+  }
+}
+
+};
 export default Booking;

@@ -149,3 +149,21 @@ export const getBookingStats = async (req, res) => {
     sendResponse(res, 500, 'Failed to fetch booking summary stats');
   }
 };
+
+// Get a single booking by ID (for BookingDetails page)
+export const getBookingById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const booking = await Booking.getById(id);
+
+    if (!booking) {
+      return sendResponse(res, 404, 'Booking not found');
+    }
+
+    return sendResponse(res, 200, 'Booking retrieved', booking);
+  } catch (err) {
+    console.error('getBookingById error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch booking');
+  }
+};
