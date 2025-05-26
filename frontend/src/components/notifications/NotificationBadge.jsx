@@ -1,6 +1,8 @@
+// src/components/notifications/NotificationBadge.jsx
 import React, { useEffect, useState } from 'react';
 import { fetchNotifications } from '../../services/notificationService';
 import { NavLink } from 'react-router-dom';
+import { FaBell } from 'react-icons/fa';
 import './notifications.css';
 
 const NotificationBadge = () => {
@@ -22,7 +24,8 @@ const NotificationBadge = () => {
   }, []);
 
   return (
-    <NavLink to="/notifications" className="notification-bell">
+    <NavLink to="/notifications" className="notification-icon-link">
+      <FaBell className="notification-bell" />
       {count > 0 && <span className="notification-badge">{count}</span>}
     </NavLink>
   );

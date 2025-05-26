@@ -4,6 +4,7 @@ import { FaBookmark, FaSignOutAlt, FaCalendarAlt } from 'react-icons/fa';
 import SearchBar from '../Landing/SearchBar';
 import { useUser } from '../../context/UserContext';
 import './navbar.css';
+import NotificationBadge from '../notifications/NotificationBadge'; 
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -46,6 +47,8 @@ const NavBar = () => {
             <NavLink to="/saved" className="nav-link">
               <FaBookmark style={{ marginRight: '5px' }} /> Saved Events
             </NavLink>
+            {/* Show NotificationBadge if not System Admin */}
+            {role !== 'System Admin' && <NotificationBadge />}
 
             {/* Booking Related Links */}
             {['student', 'organizer', 'visitor'].includes(role?.toLowerCase()) && (

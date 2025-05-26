@@ -1,8 +1,9 @@
+// src/pages/notifications/NotificationsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { fetchNotifications, markAllAsRead } from '../../services/notificationService';
 import NotificationItem from '../../components/notifications/NotificationItem';
-import './notificationsPage.css';
 import { toast } from 'react-toastify';
+import './notificationsPage.css';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -46,7 +47,7 @@ const NotificationsPage = () => {
         <p>🎉 You're all caught up!</p>
       ) : (
         notifications.map((n) => (
-          <NotificationItem key={n.id} notification={n} />
+          <NotificationItem key={n.id} notification={n} onUpdate={loadNotifications} />
         ))
       )}
     </div>

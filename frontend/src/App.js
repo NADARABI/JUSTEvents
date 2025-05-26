@@ -33,25 +33,22 @@ import CampusMap from './pages/CampusMap/CampusMap';
 import MyEventsPage from './pages/Organizer/MyEventsPage';
 import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
 
-// System Admin Panel
-//import SystemAdminLayout from './pages/AdminSystem/layout/SystemAdminLayout';
 import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
 import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
 import NotificationsPageAdmin from './pages/AdminSystem/Notifications/NotificationsPage';
 
-// Campus Admin Panel
-//import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
 import CampusRoomAnalyticsPage from './pages/campusAdmin/CampusRoomAnalyticsPage';
 import ManageBuildingsPage from './pages/campusAdmin/ManageBuildingsPage';
 import ManageRoomsPage from './pages/campusAdmin/ManageRoomsPage';
 
-// Room Booking 
 import MyBookingsPage from './pages/Booking/MyBookingsPage';
 import BookingForm from './pages/Booking/BookingForm';
 import PendingBookingsPage from './pages/Booking/PendingBookingsPage';
 import BookingDetails from './pages/Booking/BookingDetails';
 import RoomCalendarView from './pages/Calendar/RoomCalendarView';
+
+import NotificationsPage from './pages/notifications/NotificationsPage';
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -83,23 +80,10 @@ function AppRoutes() {
         <Route path="/sso/callback" element={<SSOCallbackPage />} />
         <Route path="/request-role" element={<RequestRolePage />} />
 
-        {/* Student/Organizer */}
-        <Route
-          path="/saved"
-          element={
-            <PrivateRoute>
-              <SavedEventsPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/feedback"
-          element={
-            <PrivateRoute roles={["Student", "Organizer"]}>
-              {/* <FeedbackPage /> */}
-            </PrivateRoute>
-          }
-        />
+        {/* Protected Pages */}
+        <Route path="/saved" element={<PrivateRoute><SavedEventsPage /></PrivateRoute>} />
+        <Route path="/feedback" element={<PrivateRoute roles={['Student', 'Organizer']}><></></PrivateRoute>} />
+        <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
 
         {/* Organizer */}
         <Route path="/events/create" element={<PrivateRoute roles="Organizer"><CreateEventPage /></PrivateRoute>} />
@@ -108,119 +92,29 @@ function AppRoutes() {
         <Route path="/organizer/dashboard" element={<PrivateRoute roles="Organizer"><OrganizerDashboardPage /></PrivateRoute>} />
 
         {/* Campus Admin */}
-        <Route
-          path="/campus-admin/room-requests"
-          element={
-            <PrivateRoute roles="Campus Admin">
-            {/*<CampusBookingRequestsPage />*/}
-              <PendingBookingsPage/>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/campus-admin/analytics"
-          element={
-            <PrivateRoute roles="Campus Admin">
-              <CampusRoomAnalyticsPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/campus-admin/manage-buildings"
-          element={
-            <PrivateRoute roles="Campus Admin">
-              <ManageBuildingsPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/campus-admin/manage-rooms"
-          element={
-            <PrivateRoute roles="Campus Admin">
-              <ManageRoomsPage />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/campus-admin/room-requests" element={<PrivateRoute roles="Campus Admin"><PendingBookingsPage /></PrivateRoute>} />
+        <Route path="/campus-admin/analytics" element={<PrivateRoute roles="Campus Admin"><CampusRoomAnalyticsPage /></PrivateRoute>} />
+        <Route path="/campus-admin/manage-buildings" element={<PrivateRoute roles="Campus Admin"><ManageBuildingsPage /></PrivateRoute>} />
+        <Route path="/campus-admin/manage-rooms" element={<PrivateRoute roles="Campus Admin"><ManageRoomsPage /></PrivateRoute>} />
 
         {/* System Admin */}
-        <Route
-        path="/admin/pending-users"
-        element={
-        <PrivateRoute allowedRoles={['System Admin']}>
-          {/*<SystemAdminLayout>*/}
-            <PendingUsersPage />
-           {/*</SystemAdminLayout> */} 
-            </PrivateRoute>
-          }
-          />
+        <Route path="/admin/pending-users" element={<PrivateRoute roles={['System Admin']}><PendingUsersPage /></PrivateRoute>} />
+        <Route path="/admin/pending-events" element={<PrivateRoute roles={['System Admin']}><PendingEventsPage /></PrivateRoute>} />
+        <Route path="/admin/dashboard" element={<PrivateRoute roles={['System Admin']}><DashboardPage /></PrivateRoute>} />
+        <Route path="/admin/notifications" element={<PrivateRoute roles={['System Admin']}><NotificationsPageAdmin /></PrivateRoute>} />
 
-        <Route
-        path="/admin/pending-events"
-        element={
-        <PrivateRoute allowedRoles={['System Admin']}>
-          <PendingEventsPage />
-          </PrivateRoute>
-        }
-        />
-        <Route
-        path="/admin/dashboard"
-        element={
-        <PrivateRoute allowedRoles={['System Admin']}>
-          <DashboardPage />
-          </PrivateRoute>
-        }
-        />
-        <Route
-        path="/admin/notifications"
-        element={
-        <PrivateRoute allowedRoles={['System Admin']}>
-          <NotificationsPage />
-          </PrivateRoute>
-        }
-        />
+        {/* Booking Routes */}
+        <Route path="/bookings/me" element={<PrivateRoute roles={['Student', 'Organizer', 'Visitor']}><MyBookingsPage /></PrivateRoute>} />
+        <Route path="/bookings/new" element={<PrivateRoute roles={['Student', 'Organizer', 'Visitor']}><BookingForm /></PrivateRoute>} />
+        <Route path="/booking/details/:id" element={<PrivateRoute roles={['Campus Admin', 'Organizer', 'Student']}><BookingDetails /></PrivateRoute>} />
+        <Route path="/calendar" element={<PrivateRoute roles={['Student', 'Organizer', 'Visitor', 'Campus Admin']}><RoomCalendarView /></PrivateRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
-
-        <Route
-        path="/bookings/me"
-        element={
-        <PrivateRoute roles={["Student", "Organizer", "Visitor"]}>
-          <MyBookingsPage />
-        </PrivateRoute>
-      }
-      />
-
-      <Route
-      path="/bookings/new"
-      element={
-      <PrivateRoute roles={["Student", "Organizer", "Visitor"]}>
-        <BookingForm />
-        </PrivateRoute>
-      }
-      />
-
-      <Route
-      path="/booking/details/:id"
-      element={
-      <PrivateRoute roles={["Campus Admin", "Organizer", "Student"]}>
-      <BookingDetails />
-      </PrivateRoute>
-    }
-    />
-    <Route
-    path="/calendar"
-    element={
-    <PrivateRoute roles={["Student", "Organizer", "Visitor", "Campus Admin"]}>
-      <RoomCalendarView />
-    </PrivateRoute>
-  }
-/>
-
       </Routes>
-      </>
-      );
-    }
+    </>
+  );
+}
 
 function App() {
   return (
