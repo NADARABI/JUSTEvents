@@ -38,7 +38,7 @@ import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
 import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
 import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
-//import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
+import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
 
 // Campus Admin Panel
 //import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
@@ -198,8 +198,14 @@ function AppRoutes() {
           </PrivateRoute>
         }
         />
-
-
+        <Route
+        path="/admin/notifications"
+        element={
+        <PrivateRoute allowedRoles={['System Admin']}>
+          <NotificationsPage />
+          </PrivateRoute>
+        }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

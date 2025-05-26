@@ -89,6 +89,7 @@ const NavBar = () => {
               <NavLink to="/admin/dashboard">Dashboard</NavLink>
               <NavLink to="/admin/pending-users">Pending Users</NavLink>
               <NavLink to="/admin/pending-events">Pending Events</NavLink>
+              <NavLink to="/admin/notifications">Notifications</NavLink>
               </>
             )}
 
