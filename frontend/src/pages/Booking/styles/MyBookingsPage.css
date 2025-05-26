@@ -101,3 +101,26 @@
 .back-button:hover {
   color: #113A5D;
 }
+
+.details-link {
+  display: block;
+  margin-left: auto;
+  width: fit-content;
+  text-align: right;
+  background: none;
+  border: none;
+  color: #4F959D;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: color 0.2s ease;
+}
+
+.details-link:hover {
+  color: #113A5D;
+  text-decoration: underline;
+}
+
+
+

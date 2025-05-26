@@ -41,14 +41,15 @@ import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsP
 import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
 
 // Campus Admin Panel
-import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
+//import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
 import CampusRoomAnalyticsPage from './pages/campusAdmin/CampusRoomAnalyticsPage';
 import ManageBuildingsPage from './pages/campusAdmin/ManageBuildingsPage';
 import ManageRoomsPage from './pages/campusAdmin/ManageRoomsPage';
 
 import MyBookingsPage from './pages/Booking/MyBookingsPage';
 import BookingForm from './pages/Booking/BookingForm';
-//import PendingBookingsPage from './pages/Booking/PendingBookingsPage';
+import PendingBookingsPage from './pages/Booking/PendingBookingsPage';
+import BookingDetails from './pages/Booking/BookingDetails';
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -137,8 +138,8 @@ function AppRoutes() {
           path="/campus-admin/room-requests"
           element={
             <PrivateRoute roles="Campus Admin">
-            <CampusBookingRequestsPage />
-              {/*<PendingBookingsPage/>*/} 
+            {/*<CampusBookingRequestsPage />*/}
+              <PendingBookingsPage/>
             </PrivateRoute>
           }
         />
@@ -195,6 +196,16 @@ function AppRoutes() {
         </PrivateRoute>
       }
       />
+
+      <Route
+      path="/booking/details/:id"
+      element={
+      <PrivateRoute roles={["Campus Admin", "Organizer", "Student"]}>
+      <BookingDetails />
+      </PrivateRoute>
+    }
+    />
+
       </Routes>
       </>
       );

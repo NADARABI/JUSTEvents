@@ -50,12 +50,19 @@ const PendingBookingsPage = () => {
           <div className="booking-grid">
             {pendingBookings.map((booking) => (
               <div key={booking.id} className="booking-card">
+                <button
+                  className="details-link"
+                  onClick={() => navigate(`/booking/details/${booking.id}`)}
+                >
+                  View Details →
+                </button>
                 <h2>{booking.room_name}</h2>
                 <p><strong>Purpose:</strong> {booking.purpose}</p>
                 <p><strong>Start:</strong> {new Date(booking.start_time).toLocaleString()}</p>
                 <p><strong>End:</strong> {new Date(booking.end_time).toLocaleString()}</p>
                 <p><strong>Requested by:</strong> {booking.user_name}</p>
                 <p><strong>Building:</strong> {booking.building}</p>
+
                 <div className="buttons">
                   <button onClick={() => handleReview(booking.id, 'Approved')} className="approve-button">
                     Approve

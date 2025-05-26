@@ -42,13 +42,7 @@ const MyBookingsPage = () => {
       <NavBar />
 
       <div className="my-bookings">
-        <button
-          className="back-button"
-          onClick={() => navigate(-1)} // or navigate('/home')
-        >
-          ← Back
-        </button>
-
+        <button className="back-button" onClick={() => navigate(-1)}>← Back</button>
         <h1>My Room Bookings</h1>
 
         {loading ? (
@@ -59,6 +53,12 @@ const MyBookingsPage = () => {
           <div className="booking-grid">
             {bookings.map((booking) => (
               <div key={booking.id} className="booking-card">
+                <button
+                  className="details-link"
+                  onClick={() => navigate(`/booking/details/${booking.id}`)}
+                >
+                  View Details →
+                </button>
                 <h2>{booking.room_name}</h2>
                 <p><strong>Building:</strong> {booking.building}</p>
                 <p><strong>Purpose:</strong> {booking.purpose}</p>
@@ -70,6 +70,7 @@ const MyBookingsPage = () => {
                     {booking.status}
                   </span>
                 </p>
+
 
                 {booking.status === 'Pending' && (
                   <button onClick={() => handleCancel(booking.id)} className="cancel-button">
