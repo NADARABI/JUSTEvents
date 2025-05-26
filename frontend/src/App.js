@@ -48,6 +48,7 @@ import ManageRoomsPage from './pages/campusAdmin/ManageRoomsPage';
 
 import MyBookingsPage from './pages/Booking/MyBookingsPage';
 import BookingForm from './pages/Booking/BookingForm';
+//import PendingBookingsPage from './pages/Booking/PendingBookingsPage';
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -136,7 +137,8 @@ function AppRoutes() {
           path="/campus-admin/room-requests"
           element={
             <PrivateRoute roles="Campus Admin">
-              <CampusBookingRequestsPage />
+            <CampusBookingRequestsPage />
+              {/*<PendingBookingsPage/>*/} 
             </PrivateRoute>
           }
         />
