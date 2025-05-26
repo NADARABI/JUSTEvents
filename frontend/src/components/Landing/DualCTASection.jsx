@@ -1,4 +1,3 @@
-// src/components/Landing/DualCTASection.jsx
 import React from 'react';
 import './dualCTASection.css';
 import { PlusCircle, CalendarClock } from 'lucide-react';
@@ -18,10 +17,10 @@ const DualCTASection = () => {
         Create engaging events, reserve campus rooms, and empower your student journey - all in one place.
       </p>
       <div className="cta-button-group">
-        <button onClick={() => handleNavigate('/login')}>
+        <button onClick={() => handleNavigate('/events/create')}>
           <PlusCircle size={18} /> Start Hosting
         </button>
-        <button onClick={() => handleNavigate('/login')}>
+        <button onClick={() => handleNavigate('/bookings/new')}>
           <CalendarClock size={18} /> Book a Room
         </button>
       </div>

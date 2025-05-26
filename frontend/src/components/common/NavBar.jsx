@@ -47,11 +47,17 @@ const NavBar = () => {
               <FaBookmark style={{ marginRight: '5px' }} /> Saved Events
             </NavLink>
 
-            {/* My Bookings Link */}
+            {/* Booking Related Links */}
             {['student', 'organizer', 'visitor'].includes(role?.toLowerCase()) && (
+              <>
               <NavLink to="/bookings/me" className="nav-link">
-                <FaCalendarAlt style={{ marginRight: '5px' }} /> My Bookings
+              <FaCalendarAlt style={{ marginRight: '5px' }} /> My Bookings
               </NavLink>
+
+              <NavLink to="/bookings/new" className="nav-link">
+              <FaCalendarAlt style={{ marginRight: '5px' }} /> Book a Room
+              </NavLink>
+              </>
             )}
 
             {/* Organizer */}

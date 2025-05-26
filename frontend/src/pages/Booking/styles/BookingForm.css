@@ -11,7 +11,8 @@
   margin-bottom: 20px;
 }
 
-.booking-form input {
+.booking-form input,
+.booking-form-select {
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
@@ -20,7 +21,8 @@
   font-size: 16px;
 }
 
-.booking-form button {
+/* ✅ Only targets the submit button */
+.submit-button {
   background-color: #113A5D;
   color: white;
   padding: 12px;
@@ -31,22 +33,27 @@
   width: 100%;
 }
 
-.booking-form button:hover {
+.submit-button:hover {
   background-color: #062743;
 }
 
+/* Fully fixed small back button */
 .back-button {
-  background: transparent;
+  display: inline-block;
+  width: auto;
+  background: none;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
   color: #4F959D;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  padding: 0;
+  font-weight: 400;
   cursor: pointer;
-  padding-left: 4px;
-  font-weight: 500;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
+  text-align: left;
 }
 
 .back-button:hover {
   color: #113A5D;
+  text-decoration: underline;
 }
