@@ -86,6 +86,7 @@ const NavBar = () => {
             {/* System Admin */}
             {role === 'System Admin' && (
               <>
+              <NavLink to="/admin/dashboard">Dashboard</NavLink>
               <NavLink to="/admin/pending-users">Pending Users</NavLink>
               <NavLink to="/admin/pending-events">Pending Events</NavLink>
               </>

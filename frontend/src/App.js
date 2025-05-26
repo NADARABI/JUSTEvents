@@ -35,7 +35,7 @@ import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
 
 // System Admin Panel
 //import SystemAdminLayout from './pages/AdminSystem/layout/SystemAdminLayout';
-//import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
+import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
 import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
 //import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
@@ -190,6 +190,15 @@ function AppRoutes() {
           </PrivateRoute>
         }
         />
+        <Route
+        path="/admin/dashboard"
+        element={
+        <PrivateRoute allowedRoles={['System Admin']}>
+          <DashboardPage />
+          </PrivateRoute>
+        }
+        />
+
 
 
         {/* Fallback */}
