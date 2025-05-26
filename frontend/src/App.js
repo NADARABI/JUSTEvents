@@ -38,7 +38,7 @@ import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
 import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
 import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
-import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
+import NotificationsPageAdmin from './pages/AdminSystem/Notifications/NotificationsPage';
 
 // Campus Admin Panel
 //import CampusBookingRequestsPage from './pages/campusAdmin/CampusBookingRequestsPage';
@@ -57,7 +57,7 @@ function AppRoutes() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setNavigateHandler(navigate); // Sync navigate to axios interceptors
+    setNavigateHandler(navigate);
   }, [navigate]);
 
   return (
@@ -102,38 +102,10 @@ function AppRoutes() {
         />
 
         {/* Organizer */}
-        <Route
-          path="/events/create"
-          element={
-            <PrivateRoute roles="Organizer">
-              <CreateEventPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/events/edit/:id"
-          element={
-            <PrivateRoute roles="Organizer">
-              <EditEventPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/organizer/my-events"
-          element={
-            <PrivateRoute roles="Organizer">
-              <MyEventsPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/organizer/dashboard"
-          element={
-            <PrivateRoute roles="Organizer">
-              <OrganizerDashboardPage />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/events/create" element={<PrivateRoute roles="Organizer"><CreateEventPage /></PrivateRoute>} />
+        <Route path="/events/edit/:id" element={<PrivateRoute roles="Organizer"><EditEventPage /></PrivateRoute>} />
+        <Route path="/organizer/my-events" element={<PrivateRoute roles="Organizer"><MyEventsPage /></PrivateRoute>} />
+        <Route path="/organizer/dashboard" element={<PrivateRoute roles="Organizer"><OrganizerDashboardPage /></PrivateRoute>} />
 
         {/* Campus Admin */}
         <Route
