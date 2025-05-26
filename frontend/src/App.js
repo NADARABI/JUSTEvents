@@ -37,7 +37,7 @@ import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
 //import SystemAdminLayout from './pages/AdminSystem/layout/SystemAdminLayout';
 //import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
-//import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
+import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
 //import NotificationsPage from './pages/AdminSystem/Notifications/NotificationsPage';
 
 // Campus Admin Panel
@@ -181,6 +181,16 @@ function AppRoutes() {
             </PrivateRoute>
           }
           />
+
+        <Route
+        path="/admin/pending-events"
+        element={
+        <PrivateRoute allowedRoles={['System Admin']}>
+          <PendingEventsPage />
+          </PrivateRoute>
+        }
+        />
+
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
