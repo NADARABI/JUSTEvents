@@ -25,7 +25,7 @@ const NavBar = () => {
   return (
     <header className="navbar">
       <div className="navbar-left">
-        <NavLink to="/" className="logo-text">
+        <NavLink to="/home" className="logo-text">
           <img src="/logo.jpg" alt="JUSTEvents Logo" className="navbar-logo-img" />
         </NavLink>
       </div>
