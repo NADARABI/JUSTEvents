@@ -4,6 +4,7 @@ import { getSavedEvents, unsaveEvent } from '../../services/savedEventsService';
 import { toast } from 'react-toastify';
 import SavedEventCard from '../../components/SavedEvents/SavedEventCard';
 import Footer from '../../components/common/Footer';
+import NavBar from '../../components/common/NavBar'; 
 import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import './savedEvents.css';
@@ -15,9 +16,6 @@ const SavedEventsPage = () => {
   const { logout } = useUser();
   const navigate = useNavigate();
 
-  /**
-   * Fetch Saved Events on Mount
-   */
   useEffect(() => {
     const fetchSavedEvents = async () => {
       try {
@@ -52,9 +50,6 @@ const SavedEventsPage = () => {
     fetchSavedEvents();
   }, [logout, navigate]);
 
-  /**
-   * Handle Unsave Event
-   */
   const handleUnsave = async (eventId) => {
     try {
       await unsaveEvent(eventId);
@@ -66,11 +61,10 @@ const SavedEventsPage = () => {
     }
   };
 
-  /**
-   * Render Logic
-   */
   return (
     <>
+      <NavBar /> 
+
       <div className="saved-events-container">
         <h2 className="saved-title">Your Saved Events</h2>
 
