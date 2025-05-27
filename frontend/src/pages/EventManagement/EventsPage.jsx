@@ -6,6 +6,7 @@ import EventCard from '../../components/Events/EventCard.jsx';
 import SearchBar from '../../components/Landing/SearchBar';
 import CategoryFilterStrip from '../../components/Landing/CategoryFilterStrip';
 import Footer from '../../components/common/Footer.jsx';
+import NavBar from '../../components/common/NavBar.jsx'; 
 import './eventsPage.css';
 
 const EventsPage = () => {
@@ -16,12 +17,10 @@ const EventsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Get the search query, category, and upcoming flag from the URL
   const searchQuery = new URLSearchParams(location.search).get('search');
   const categoryQuery = new URLSearchParams(location.search).get('category') || 'All';
   const isUpcoming = new URLSearchParams(location.search).get('upcoming') === 'true';
 
-  // Restore the dynamic title
   const capitalize = (str) =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
@@ -31,7 +30,6 @@ const EventsPage = () => {
     ? 'Discover Events at JUST'
     : `Explore ${capitalize(categoryQuery)} Events at JUST`;
 
-  // Fetch events from backend
   useEffect(() => {
     setUpcomingActive(isUpcoming);
 
@@ -57,19 +55,15 @@ const EventsPage = () => {
     fetchEvents();
   }, [categoryQuery, sort, searchQuery, isUpcoming]);
 
-  // Handle Sort Change
   const handleSortChange = (e) => {
     setSort(e.target.value);
   };
 
-  // Handle Category Change
   const handleCategoryClick = (category) => {
-    console.log("Category clicked:", category);
     const query = category === 'All' ? '' : `?category=${category}`;
     navigate(`/events${query}`);
   };
 
-  // Handle Upcoming Toggle Click
   const toggleUpcoming = () => {
     if (upcomingActive) {
       navigate('/events');
@@ -81,13 +75,12 @@ const EventsPage = () => {
 
   return (
     <>
+      <NavBar /> {/* Added NavBar */}
       <div className="events-page-container">
         <h1 className="events-title">{title}</h1>
 
-        {/* Search + Filter Bar */}
         <div className="filter-bar">
           <SearchBar fromNav={false} />
-
           <select value={sort} onChange={handleSortChange} className="filter-dropdown">
             <option value="latest">Latest</option>
             <option value="popular">Most Popular</option>
@@ -95,10 +88,8 @@ const EventsPage = () => {
           </select>
         </div>
 
-        {/* Category Strip */}
         <CategoryFilterStrip onCategoryClick={handleCategoryClick} />
 
-        {/* Upcoming Events Toggle Button */}
         <button 
           className={`upcoming-events-button ${upcomingActive ? 'active' : ''}`}
           onClick={toggleUpcoming}
