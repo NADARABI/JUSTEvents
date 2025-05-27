@@ -1,16 +1,14 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FaBookmark, FaSignOutAlt, FaCalendarAlt } from 'react-icons/fa';
-import SearchBar from '../Landing/SearchBar';
 import { useUser } from '../../context/UserContext';
+import NotificationBadge from '../notifications/NotificationBadge';
 import './navbar.css';
-import NotificationBadge from '../notifications/NotificationBadge'; 
 
 const NavBar = () => {
   const navigate = useNavigate();
   const { isLoggedIn, role, logout, loading, user } = useUser();
 
-  // Debug Context
   useEffect(() => {
     console.log('[NavBar] Context →', { isLoggedIn, role, user });
   }, [isLoggedIn, role, user]);
@@ -30,10 +28,6 @@ const NavBar = () => {
         </NavLink>
       </div>
 
-      <div className="navbar-center">
-        <SearchBar fromNav={true} />
-      </div>
-
       <nav className="navbar-right">
         <NavLink to="/events" className="nav-link">Browse Events</NavLink>
 
@@ -44,30 +38,25 @@ const NavBar = () => {
           </>
         ) : (
           <>
+            {/* Common to all users */}
             <NavLink to="/saved" className="nav-link">
               <FaBookmark style={{ marginRight: '5px' }} /> Saved Events
             </NavLink>
-            {/* Show NotificationBadge if not System Admin */}
+
             {role !== 'System Admin' && <NotificationBadge />}
 
-            {/* Booking Related Links */}
+            {/* Room Booking Roles */}
             {['student', 'organizer', 'visitor'].includes(role?.toLowerCase()) && (
               <>
                 <NavLink to="/bookings/me" className="nav-link">
                   <FaCalendarAlt style={{ marginRight: '5px' }} /> My Bookings
                 </NavLink>
-
-                <NavLink to="/bookings/new" className="nav-link">
-                  <FaCalendarAlt style={{ marginRight: '5px' }} /> Book a Room
-                </NavLink>
-
-                <NavLink to="/calendar" className="nav-link">
-                  Room Calendar
-                </NavLink>
+                <NavLink to="/bookings/new" className="nav-link">Book a Room</NavLink>
+                <NavLink to="/calendar" className="nav-link">Room Calendar</NavLink>
               </>
             )}
 
-            {/* Organizer */}
+            {/* Role-Specific Sections */}
             {role === 'Organizer' && (
               <>
                 <NavLink to="/organizer/dashboard" className="nav-link">Dashboard</NavLink>
@@ -76,23 +65,21 @@ const NavBar = () => {
               </>
             )}
 
-            {/* Campus Admin */}
             {role === 'Campus Admin' && (
               <>
                 <NavLink to="/campus-admin/room-requests" className="nav-link">Pending Bookings</NavLink>
+                <NavLink to="/campus-admin/manage-buildings" className="nav-link">Buildings</NavLink>
+                <NavLink to="/campus-admin/manage-rooms" className="nav-link">Rooms</NavLink>
                 <NavLink to="/campus-admin/analytics" className="nav-link">Analytics</NavLink>
-                <NavLink to="/campus-admin/manage-buildings" className="nav-link">Manage Buildings</NavLink>
-                <NavLink to="/campus-admin/manage-rooms" className="nav-link">Manage Rooms</NavLink>
               </>
             )}
 
-            {/* System Admin */}
             {role === 'System Admin' && (
               <>
-              <NavLink to="/admin/dashboard">Dashboard</NavLink>
-              <NavLink to="/admin/pending-users">Pending Users</NavLink>
-              <NavLink to="/admin/pending-events">Pending Events</NavLink>
-              <NavLink to="/admin/notifications">Notifications</NavLink>
+                <NavLink to="/admin/dashboard" className="nav-link">Dashboard</NavLink>
+                <NavLink to="/admin/pending-users" className="nav-link">Pending Users</NavLink>
+                <NavLink to="/admin/pending-events" className="nav-link">Pending Events</NavLink>
+                <NavLink to="/admin/notifications" className="nav-link">Notifications</NavLink>
               </>
             )}
 
