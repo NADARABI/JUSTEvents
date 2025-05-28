@@ -60,9 +60,10 @@ const BookingForm = () => {
       <div className="booking-form">
         <button className="back-button" onClick={() => navigate(-1)}>← Back</button>
 
-        <h1 style={{ marginTop: '0' }}>Create New Booking</h1>
+        {/* <h1 style={{ marginTop: '0' }}>Create New Booking</h1> */}
 
         <form onSubmit={handleSubmit}>
+          <h1>Create New Booking</h1>
           <select
             value={roomId}
             onChange={(e) => setRoomId(e.target.value)}
