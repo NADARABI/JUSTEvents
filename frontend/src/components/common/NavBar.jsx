@@ -22,12 +22,12 @@ const NavBar = () => {
 
   return (
     <header className="navbar">
-      <div className="navbar-left">
-        <NavLink to="/home" className="logo-text">
-          <img src="/logo.jpg" alt="JUSTEvents Logo" className="navbar-logo-img" />
+      <div className="navbar-left brand-name">
+        <NavLink to="/home" className="brand-link">
+        <span className="brand-navy">JUST</span><span className="brand-teal">Events</span>
         </NavLink>
-      </div>
-
+        </div>
+        
       <nav className="navbar-right">
         <NavLink to="/events" className="nav-link">Browse Events</NavLink>
 
@@ -38,14 +38,12 @@ const NavBar = () => {
           </>
         ) : (
           <>
-            {/* Common to all users */}
             <NavLink to="/saved" className="nav-link">
               <FaBookmark style={{ marginRight: '5px' }} /> Saved Events
             </NavLink>
 
             {role !== 'System Admin' && <NotificationBadge />}
 
-            {/* Room Booking Roles */}
             {['student', 'organizer', 'visitor'].includes(role?.toLowerCase()) && (
               <>
                 <NavLink to="/bookings/me" className="nav-link">
@@ -56,7 +54,6 @@ const NavBar = () => {
               </>
             )}
 
-            {/* Role-Specific Sections */}
             {role === 'Organizer' && (
               <>
                 <NavLink to="/organizer/dashboard" className="nav-link">Dashboard</NavLink>
