@@ -15,6 +15,8 @@ const EventFeedbackList = ({ eventId, refresh }) => {
   const storedId = localStorage.getItem('userId');
   const currentUserId = storedId ? Number(storedId) : null;
 
+  console.log('CurrentUserID:', currentUserId);
+
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
@@ -86,15 +88,20 @@ const EventFeedbackList = ({ eventId, refresh }) => {
       {feedbacks.map(({ id, rating, comment, created_at, updated_at, is_edited, user_name, user_id }) => {
         const isAuthor = Number(user_id) === currentUserId;
 
+        // Debug logs for each feedback item
+        console.log(`Feedback ID: ${id}`);
+        console.log(`Feedback UserID: ${user_id}`);
+        console.log(`Match (isAuthor):`, isAuthor);
+
         return (
           <div key={id} className="feedback-item">
             <div className="feedback-meta">
               <span className="feedback-user">{user_name || 'Anonymous Attendee'}</span>
               <span className="feedback-date">
-                {is_edited
-                  ? `Edited on ${new Date(updated_at).toLocaleDateString('en-GB')}`
-                  : `Posted on ${new Date(created_at).toLocaleDateString('en-GB')}`}
-              </span>
+                {Number(is_edited) === 1
+                ? `Edited on ${new Date(updated_at).toLocaleDateString('en-GB')}`
+                : `Posted on ${new Date(created_at).toLocaleDateString('en-GB')}`}
+                </span>
             </div>
 
             <p className="feedback-comment">“{comment}”</p>

@@ -67,7 +67,7 @@
 }
 
 .star-rating .star.active {
-  color: #f7b42c; /* Gold */
+  color: #f7b42c;
 }
 
 .star-rating .star:hover,
@@ -75,7 +75,7 @@
   color: #f9d57e;
 }
 
-/* --- Button Styling --- */
+/* --- Submit Button --- */
 .feedback-form button {
   background-color: #062743;
   color: white;
@@ -97,15 +97,40 @@
   cursor: not-allowed;
 }
 
+/* --- Edit/Delete Buttons --- */
+.feedback-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.feedback-actions button {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  background-color: #4F959D;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-actions button:hover {
+  background-color: #113A5D;
+}
+
 /* --- Responsive Layout --- */
 @media (max-width: 768px) {
   .feedback-form {
     padding: 2rem;
     max-width: 90%;
   }
+
   .feedback-form h3 {
     font-size: 1.6rem;
   }
+
   .feedback-form textarea {
     height: 120px;
   }
@@ -115,7 +140,13 @@
   .feedback-form {
     gap: 1rem;
   }
+
   .feedback-form textarea {
     height: 100px;
+  }
+
+  .feedback-actions {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
