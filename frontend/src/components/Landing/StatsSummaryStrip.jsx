@@ -49,17 +49,17 @@ const StatsSummaryStrip = () => {
       ) : (
         <>
           <div className="stat-card">
-            <div className="stat-icon"><CalendarCheck size={28} /></div>
+            <div className="stat-icon"><CalendarCheck size={28} color="#062743"/></div>
             <div className="stat-value">{stats.eventsHosted}</div>
             <div className="stat-label">Events Hosted</div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon"><Users size={28} /></div>
+            <div className="stat-icon"><Users size={28} color="#062743"/></div>
             <div className="stat-value">{stats.activeUsers}</div>
             <div className="stat-label">Active Users</div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon"><MessageSquare size={28} /></div>
+            <div className="stat-icon"><MessageSquare size={28} color="#062743"/></div>
             <div className="stat-value">{stats.feedbackReceived}</div>
             <div className="stat-label">Feedback Received</div>
           </div>
