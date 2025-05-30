@@ -1,5 +1,4 @@
 /* src/components/notifications/notifications.css */
-
 .notification-card {
   background: #f9f9f9;
   padding: 1rem;
@@ -11,7 +10,7 @@
 }
 
 .notification-card.unread {
-  border-left: 4px solid #4f959d;
+  border-left: 4px solid #4F959D; /* Base Teal */
 }
 
 .notification-card.read {
@@ -19,19 +18,19 @@
 }
 
 .notification-card.success {
-  border-left-color: #28a745;
+  border-left-color: #A8D5BA; /* Pastel green */
 }
 
 .notification-card.info {
-  border-left-color: #007bff;
+  border-left-color: #A8C5E2; /* Pastel blue */
 }
 
 .notification-card.warning {
-  border-left-color: #ffc107;
+  border-left-color: #FFE3A3; /* Pastel yellow-orange */
 }
 
 .notification-card.error {
-  border-left-color: #dc3545;
+  border-left-color: #F7A8A8; /* Pastel red/pink */
 }
 
 .message {

@@ -1,4 +1,3 @@
-// src/pages/notifications/NotificationsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { fetchNotifications, markAllAsRead } from '../../services/notificationService';
 import NotificationItem from '../../components/notifications/NotificationItem';
@@ -40,23 +39,25 @@ const NotificationsPage = () => {
   return (
     <>
       <NavBar />
-      <div className="notifications-page">
-        <h2><FaBell style={{ marginRight: '10px' }} /> Notifications</h2>
+      <div className="notifications-wrapper">
+        <div className="notifications-page">
+          <h2><FaBell style={{ marginRight: '10px' }} /> Notifications</h2>
 
-        <button className="mark-all-btn" onClick={handleMarkAll}>
-          <FaCheckDouble style={{ marginRight: '8px' }} />
-          Mark All as Read
-        </button>
+          <button className="mark-all-btn" onClick={handleMarkAll}>
+            <FaCheckDouble style={{ marginRight: '8px' }} />
+            Mark All as Read
+          </button>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : notifications.length === 0 ? (
-          <p>You’re all caught up!</p>
-        ) : (
-          notifications.map((n) => (
-            <NotificationItem key={n.id} notification={n} onUpdate={loadNotifications} />
-          ))
-        )}
+          {loading ? (
+            <p>Loading...</p>
+          ) : notifications.length === 0 ? (
+            <p>🎉 You’re all caught up!</p>
+          ) : (
+            notifications.map((n) => (
+              <NotificationItem key={n.id} notification={n} onUpdate={loadNotifications} />
+            ))
+          )}
+        </div>
       </div>
       <Footer />
     </>

@@ -1,9 +1,30 @@
+/* Outer background wrapper */
+.notifications-wrapper {
+  background-color: #F9F9F9;
+  min-height: 100vh;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/* White card layout for the notification content */
 .notifications-page {
+  background-color: white;
   padding: 2rem;
   max-width: 700px;
   margin: 0 auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* Title */
+.notifications-page h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #062743;
+}
+
+/* Button */
 .mark-all-btn {
   background: #4f959d;
   color: white;
@@ -18,11 +39,4 @@
 
 .mark-all-btn:hover {
   background: #3b7d83;
-}
-
-.notifications-page h2 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #062743;
 }
