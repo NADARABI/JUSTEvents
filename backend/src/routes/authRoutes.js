@@ -71,7 +71,7 @@ router.get(
 
       // Redirect to the frontend with the necessary data
       const token = signToken(userData);
-      const redirectUrl = `${process.env.CLIENT_URL}/sso/callback?token=${token}&role=${userData.role}&name=${userData.name}`;
+      const redirectUrl = `${process.env.CLIENT_URL}/sso/callback?token=${token}&role=${userData.role}&name=${userData.name}&id=${userData.id}`;
       console.log("Redirecting to:", redirectUrl);
 
       res.redirect(redirectUrl);
@@ -100,7 +100,7 @@ router.get(
       }
 
       const token = signToken(req.user);
-      const redirectUrl = `${process.env.CLIENT_URL}/sso/callback?token=${token}&role=${req.user.role}&name=${encodeURIComponent(req.user.name)}`;
+      const redirectUrl = `${process.env.CLIENT_URL}/sso/callback?token=${token}&role=${req.user.role}&name=${encodeURIComponent(req.user.name)}&id=${req.user.id}`;
       console.log("Redirecting to:", redirectUrl);
 
       res.redirect(redirectUrl);

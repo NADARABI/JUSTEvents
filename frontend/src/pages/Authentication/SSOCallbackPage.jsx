@@ -11,60 +11,58 @@ const SSOCallbackPage = () => {
     if (!isAtCallback) return;
 
     if (isProcessed) {
-      console.log(" Already processed, skipping re-render.");
+      console.log("Already processed, skipping re-render.");
       return;
     }
-
-    console.log(" Full Callback URL →", window.location.href);
 
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     const role = params.get('role');
     const name = params.get('name');
+    const id = params.get('id'); // Optional: only set if available
 
-    console.log(" Received SSO Callback Data →", {
+    console.log("Received SSO Callback Data →", {
       token,
       role,
-      name
+      name,
+      id
     });
 
     if (!token || !role || !name) {
-      console.error(" One or more parameters are missing");
-      toast.error("Google SSO failed. Missing data.");
+      console.error("Missing required SSO parameters.");
+      toast.error("SSO failed. Missing user data.");
       navigate('/login');
       return;
     }
 
     const cleanRole = role.trim().toLowerCase();
-    console.log(" Cleaned Role Value →", cleanRole);
 
     // Save to LocalStorage
     localStorage.setItem('accessToken', token);
     localStorage.setItem('role', cleanRole);
+    if (id) localStorage.setItem('userId', id); // Only store if provided
     localStorage.setItem('user', JSON.stringify({ role: cleanRole, name }));
 
-    console.log(" Local Storage Saved: ", {
+    console.log("Local Storage Saved: ", {
       accessToken: localStorage.getItem('accessToken'),
       role: localStorage.getItem('role'),
-      user: localStorage.getItem('user')
+      userId: localStorage.getItem('userId'),
+      user: localStorage.getItem('user'),
     });
 
     setIsProcessed(true);
 
-    // Redirect user based on role
     if (cleanRole === "pending") {
       toast.info("You need to complete your role request.");
-      console.log(" Role is Pending, navigating to /request-role");
       navigate('/request-role', { replace: true });
     } else {
-      console.log(" Role is not Pending, navigating to /home");
       navigate('/home', { replace: true });
     }
   }, [navigate, isProcessed]);
 
   return (
     <div>
-      <h2>Processing Google SSO...</h2>
+      <h2>Processing SSO...</h2>
     </div>
   );
 };

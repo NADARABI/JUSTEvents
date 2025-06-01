@@ -12,8 +12,9 @@ const EventFeedbackList = ({ eventId, refresh, onFeedbackSubmitted }) => {
   const [error, setError] = useState(false);
   const [editFeedback, setEditFeedback] = useState(null);
 
+  // ✅ Parse userId once and use string for strict match
   const storedId = localStorage.getItem('userId');
-  const currentUserId = storedId ? Number(storedId) : null;
+  const currentUserId = storedId ? String(storedId) : null;
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
@@ -84,7 +85,7 @@ const EventFeedbackList = ({ eventId, refresh, onFeedbackSubmitted }) => {
       )}
 
       {feedbacks.map(({ id, rating, comment, created_at, updated_at, is_edited, user_name, user_id }) => {
-        const isAuthor = Number(user_id) === currentUserId;
+        const isAuthor = String(user_id) === currentUserId;
 
         return (
           <div key={id} className="feedback-item">

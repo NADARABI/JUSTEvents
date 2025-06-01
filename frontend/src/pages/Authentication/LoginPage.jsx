@@ -34,7 +34,7 @@ const LoginPage = () => {
         return;
       }
 
-      // Pass refreshToken into login()
+      // Save tokens and user data
       login({
         id: user.id,
         name: user.name,
@@ -43,6 +43,9 @@ const LoginPage = () => {
         token: user.accessToken,
         refreshToken: user.refreshToken,
       });
+
+      // Store userId for ownership checks
+      localStorage.setItem('userId', user.id);
 
       toast.success('Login successful!');
       navigate('/home');
