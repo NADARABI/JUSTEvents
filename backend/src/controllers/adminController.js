@@ -1,14 +1,15 @@
 // src/controllers/adminController.js
 import User from '../models/User.js';
+import { sendResponse } from '../utils/sendResponse.js'; 
 
 // GET /admin/pending-users
 export const getPendingUsers = async (req, res) => {
   try {
     const users = await User.getPendingUsers();
-    res.status(200).json({ success: true, users });
-  } catch (error) {
-    console.error('Error fetching pending users:', error.message);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    sendResponse(res, 200, 'Pending users fetched successfully', users);
+  } catch (err) {
+    console.error('getPendingUsers error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch pending users');
   }
 };
 
@@ -16,21 +17,24 @@ export const getPendingUsers = async (req, res) => {
 export const approveUser = async (req, res) => {
   try {
     const { id } = req.params;
-
     const user = await User.findById(id);
-    if (!user || user.role !== 'Pending') {
-      return res.status(404).json({ success: false, message: 'Pending user not found' });
+
+    if (!user) {
+      return sendResponse(res, 404, 'User not found');
+    }
+    if (user.role !== 'Pending') {
+      return sendResponse(res, 400, 'User is not pending approval');
     }
 
     if (!user.requested_role) {
-      return res.status(400).json({ success: false, message: 'User has no requested role' });
+      return sendResponse(res, 400, 'User has no requested role');
     }
 
     await User.updateRole(id, user.requested_role);
-    res.status(200).json({ success: true, message: `User approved as ${user.requested_role}` });
-  } catch (error) {
-    console.error('Error approving user:', error.message);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    sendResponse(res, 200, `User approved as ${user.requested_role}`);
+  } catch (err) {
+    console.error('approveUser error:', err.message);
+    sendResponse(res, 500, 'Failed to approve user');
   }
 };
 
@@ -38,16 +42,19 @@ export const approveUser = async (req, res) => {
 export const rejectUser = async (req, res) => {
   try {
     const { id } = req.params;
-
     const user = await User.findById(id);
-    if (!user || user.role !== 'Pending') {
-      return res.status(404).json({ success: false, message: 'Pending user not found' });
+    
+    if (!user) {
+      return sendResponse(res, 404, 'User not found');
+    }
+    if (user.role !== 'Pending') {
+      return sendResponse(res, 400, 'User is not pending approval');
     }
 
     await User.updateRole(id, 'Visitor');
-    res.status(200).json({ success: true, message: 'User rejected and set as Visitor' });
-  } catch (error) {
-    console.error('Error rejecting user:', error.message);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    sendResponse(res, 200, 'User rejected and set as Visitor');
+  } catch (err) {
+    console.error('rejectUser error:', err.message);
+    sendResponse(res, 500, 'Failed to reject user');
   }
 };

@@ -1,0 +1,58 @@
+.pending-events-page {
+  padding: 2rem;
+  min-height: 70vh;
+}
+
+.empty-message {
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  color: #777;
+}
+
+.event-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+.event-table th,
+.event-table td {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.event-table th {
+  background-color: #113A5D;
+  color: white;
+}
+
+.event-table td {
+  background-color: white;
+}
+
+.event-table input {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.approve-btn {
+  background-color: #4F959D;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.reject-btn {
+  background-color: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

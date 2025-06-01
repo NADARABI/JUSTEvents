@@ -15,7 +15,7 @@ import {
   resetPassword,
   requestRole
 } from '../controllers/authController.js';
-import User from '../models/User.js'; // ✅ Added to update last_login
+import User from '../models/User.js'; // Added to update last_login
 
 const router = express.Router();
 
@@ -48,18 +48,33 @@ router.get(
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
   async (req, res) => {
     try {
-      if (req.user?.id) { 
-        await User.updateLastLogin(req.user.id);
+      console.log("Google Callback → Received User Object:", req.user);
+
+      // Fallback if ID is missing, fetch by email
+      let userData;
+      if (req.user.id) {
+        userData = await User.findById(req.user.id);
+      } else if (req.user.email) {
+        console.log("No ID found, fetching by email...");
+        userData = await User.findByEmail(req.user.email);
       } else {
-        console.warn('Skipping last_login update: No user ID available.');
+        console.error("No ID or email found for Google SSO.");
+        return res.status(404).json({ message: "Google SSO failed: No ID or email." });
       }
-      const token = signToken(req.user);
-      res.json({
-        message: 'Google SSO successful',
-        token,
-        role: req.user.role,
-        name: req.user.name
-      });
+
+      if (!userData) {
+        console.error("User not found in the database after Google SSO.");
+        return res.status(404).json({ message: "User not found in the database." });
+      }
+
+      console.log("Full User Data →", userData);
+
+      // Redirect to the frontend with the necessary data
+      const token = signToken(userData);
+      const redirectUrl = `${process.env.CLIENT_URL}/sso/callback?token=${token}&role=${userData.role}&name=${userData.name}&id=${userData.id}`;
+      console.log("Redirecting to:", redirectUrl);
+
+      res.redirect(redirectUrl);
     } catch (error) {
       console.error('Error in Google callback:', error.message);
       res.status(500).json({ message: 'Server error after Google SSO login' });
@@ -78,18 +93,17 @@ router.get(
   passport.authenticate('microsoft', { failureRedirect: '/login', session: false }),
   async (req, res) => {
     try {
-      if (req.user?.id) { 
+      if (req.user?.id) {
         await User.updateLastLogin(req.user.id);
       } else {
         console.warn('Skipping last_login update: No user ID available.');
       }
+
       const token = signToken(req.user);
-      res.json({
-        message: 'Microsoft SSO successful',
-        token,
-        role: req.user.role,
-        name: req.user.name
-      });
+      const redirectUrl = `${process.env.CLIENT_URL}/sso/callback?token=${token}&role=${req.user.role}&name=${encodeURIComponent(req.user.name)}&id=${req.user.id}`;
+      console.log("Redirecting to:", redirectUrl);
+
+      res.redirect(redirectUrl);
     } catch (error) {
       console.error('Error in Microsoft callback:', error.message);
       res.status(500).json({ message: 'Server error after Microsoft SSO login' });
@@ -97,6 +111,7 @@ router.get(
   }
 );
 
+<<<<<<< HEAD
 
 // Protected Route Example (System Admin Only)
 router.get(
@@ -108,6 +123,8 @@ router.get(
   }
 );
 
+=======
+>>>>>>> a75d0bcf407b53ff0281e16f92e631c9bd665c3c
 // Request Role (For Pending Users)
 router.post(
   '/request-role',

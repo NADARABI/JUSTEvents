@@ -1,6 +1,20 @@
 import db from '../utils/db.js';
 
 class Event {
+  // Check for event conflict
+static async checkConflict(date, time, venue_id, excludeId = null) {
+  let query = `SELECT id FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
+  const params = [date, time, venue_id];
+
+  if (excludeId) {
+    query += ` AND id != ?`; // Exclude self when editing
+    params.push(excludeId);
+  }
+
+  const [rows] = await db.execute(query, params);
+  return rows.length > 0;
+}
+
   // Create new event
   static async create({ title, description, date, time, organizer_id, venue_id, image_url }) {
 
@@ -99,18 +113,22 @@ class Event {
 
   // Update event by ID with fields
   static async update(id, fields) {
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
-
-    const setClause = keys.map(key => `${key} = ?`).join(', ');
-    values.push(id); // push id for WHERE clause
-
-    const [result] = await db.execute(
-      `UPDATE events SET ${setClause} WHERE id = ?`,
-      values
-    );
-    return result.affectedRows;
+  const keys = Object.keys(fields).filter(key => fields[key] !== undefined && fields[key] !== null);
+  if (keys.length === 0) {
+    return 0; // Nothing to update
   }
+
+  const setClause = keys.map(key => `${key} = ?`).join(', ');
+  const values = keys.map(key => fields[key]);
+  values.push(id); // for WHERE clause
+
+  const [result] = await db.execute(
+    `UPDATE events SET ${setClause} WHERE id = ?`,
+    values
+  );
+  return result.affectedRows;
+}
+
 
   // Delete event by ID
   static async delete(id) {
@@ -151,14 +169,19 @@ class Event {
       SELECT id, title, date, time, category, status
       FROM events
       WHERE date BETWEEN ? AND ?
+        AND status = 'Approved'
       ORDER BY date ASC, time ASC
     `, [startDate, endDate]);
     return rows;
+<<<<<<< HEAD
   }
   
   static async checkConflict(date, time, venue_id, excludeId = null) {
     let query = `SELECT * FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
     let params = [date, time, venue_id];
+=======
+  }  
+>>>>>>> a75d0bcf407b53ff0281e16f92e631c9bd665c3c
   
     if (excludeId) {
       query += ` AND id != ?`;

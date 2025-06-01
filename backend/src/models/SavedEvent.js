@@ -18,16 +18,25 @@ class SavedEvent {
 
   // Get all saved events for a user
   static async getSavedByUser(user_id) {
-    const [rows] = await db.execute(
-      `SELECT e.*, s.created_at AS saved_at
-       FROM saved_events s
-       JOIN events e ON e.id = s.event_id
-       WHERE s.user_id = ?
-       ORDER BY s.created_at DESC`,
-       [user_id]
-    );
-    return rows;
-  }
+  const [rows] = await db.execute(
+    `SELECT 
+        e.id, 
+        e.title, 
+        e.date, 
+        e.time, 
+        e.category, 
+        e.image_url,
+        r.name AS venue_name,
+        s.created_at AS saved_at
+     FROM saved_events s
+     JOIN events e ON e.id = s.event_id
+     JOIN rooms r ON e.venue_id = r.id
+     WHERE s.user_id = ?
+     ORDER BY s.created_at DESC`,
+    [user_id]
+  );
+  return rows;
+}
 
   // Remove a saved event
   static async remove(user_id, event_id) {
