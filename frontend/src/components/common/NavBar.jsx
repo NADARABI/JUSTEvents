@@ -24,10 +24,11 @@ const NavBar = () => {
     <header className="navbar">
       <div className="navbar-left brand-name">
         <NavLink to="/home" className="brand-link">
-        <span className="brand-navy">JUST</span><span className="brand-teal">Events</span>
+          <span className="brand-navy">JUST</span>
+          <span className="brand-teal">Events</span>
         </NavLink>
-        </div>
-        
+      </div>
+
       <nav className="navbar-right">
         <NavLink to="/events" className="nav-link">Browse Events</NavLink>
 
@@ -46,6 +47,11 @@ const NavBar = () => {
 
             {['student', 'organizer', 'visitor'].includes(role?.toLowerCase()) && (
               <>
+                {['student', 'visitor'].includes(role?.toLowerCase()) && (
+                  <NavLink to="/rsvps/me" className="nav-link">
+                    <FaBookmark style={{ marginRight: '5px' }} /> My RSVPs
+                  </NavLink>
+                )}
                 <NavLink to="/bookings/me" className="nav-link">
                   <FaCalendarAlt style={{ marginRight: '5px' }} /> My Bookings
                 </NavLink>

@@ -49,6 +49,7 @@ import BookingDetails from './pages/Booking/BookingDetails';
 import RoomCalendarView from './pages/Calendar/RoomCalendarView';
 
 import NotificationsPage from './pages/notifications/NotificationsPage';
+import MyRsvpsPage from './pages/MyRsvpsPage';
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -84,6 +85,7 @@ function AppRoutes() {
         <Route path="/saved" element={<PrivateRoute><SavedEventsPage /></PrivateRoute>} />
         <Route path="/feedback" element={<PrivateRoute roles={['Student', 'Organizer']}><></></PrivateRoute>} />
         <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
+        <Route path="/rsvps/me" element={<PrivateRoute roles={['Student', 'Visitor']}><MyRsvpsPage /></PrivateRoute>}/>
 
         {/* Organizer */}
         <Route path="/events/create" element={<PrivateRoute roles="Organizer"><CreateEventPage /></PrivateRoute>} />
@@ -111,6 +113,7 @@ function AppRoutes() {
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </>
   );

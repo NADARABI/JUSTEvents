@@ -279,3 +279,23 @@ export const checkMyRsvp = async (req, res) => {
     sendResponse(res, 500, 'Failed to check RSVP status');
   }
 };
+
+export const getMyRsvps = async (req, res) => {
+  try {
+    const user_id = req.user.id;
+
+    const [rows] = await db.execute(
+      `SELECT e.id, e.title, e.description, e.category, e.date, e.time, e.image_url, r.name AS room_name
+       FROM event_rsvps er
+       JOIN events e ON er.event_id = e.id
+       JOIN rooms r ON e.venue_id = r.id
+       WHERE er.user_id = ? AND er.status = 'Going'`,
+      [user_id]
+    );
+
+    sendResponse(res, 200, 'RSVPed events retrieved successfully', rows);
+  } catch (err) {
+    console.error('getMyRsvps error:', err.message);
+    sendResponse(res, 500, 'Failed to retrieve RSVPed events');
+  }
+};
