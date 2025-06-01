@@ -80,3 +80,21 @@ export const getSavedEvents = async (req, res) => {
     sendResponse(res, 500, 'Server error while fetching saved events');
   }
 };
+
+export const getSavedEventsCount = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const [rows] = await db.execute(
+      `SELECT COUNT(*) AS count FROM saved_events WHERE user_id = ?`,
+      [userId]
+    );
+
+    const count = rows[0]?.count || 0;
+
+    sendResponse(res, 200, 'Saved events count fetched successfully', { count });
+  } catch (err) {
+    console.error('getSavedEventsCount error:', err.message);
+    sendResponse(res, 500, 'Server error while fetching saved events count');
+  }
+};

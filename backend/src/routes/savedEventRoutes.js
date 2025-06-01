@@ -3,7 +3,8 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 import {
   saveEvent,
   getSavedEvents,
-  unsaveEvent
+  unsaveEvent,
+  getSavedEventsCount
 } from '../controllers/savedEventController.js';
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.delete('/events/:id/save', unsaveEvent);
 
 // Get all saved events for user
 router.get('/saved-events', getSavedEvents);
+router.get('/count/:userId', getSavedEventsCount);
 
 export default router;
