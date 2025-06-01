@@ -63,10 +63,15 @@ const SavedEventsPage = () => {
 
   return (
     <>
-      <NavBar /> 
+      <NavBar />
 
       <div className="saved-events-container">
-        <h2 className="saved-title">Your Saved Events</h2>
+        <div className="saved-header">
+          <div className="saved-count-container">
+            <span className="saved-count-label">{savedEvents.length} Saved</span>
+            </div>
+            <h2 className="saved-title">Your Saved Events</h2>
+            </div>
 
         {loading ? (
           <p className="text-center">Loading...</p>
