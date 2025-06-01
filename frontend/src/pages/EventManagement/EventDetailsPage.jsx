@@ -214,7 +214,7 @@ const EventDetailsPage = () => {
               />
             </div>
             <div className="feedback-list-wrapper">
-              <EventFeedbackList eventId={id} refresh={refreshFeedback} />
+              <EventFeedbackList eventId={id} refresh={refreshFeedback} onFeedbackSubmitted={() => setRefreshFeedback(!refreshFeedback)} />
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ import FeedbackForm from './FeedbackForm';
 import { toast } from 'react-toastify';
 import './eventFeedback.css';
 
-const EventFeedbackList = ({ eventId, refresh }) => {
+const EventFeedbackList = ({ eventId, refresh, onFeedbackSubmitted }) => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -14,8 +14,6 @@ const EventFeedbackList = ({ eventId, refresh }) => {
 
   const storedId = localStorage.getItem('userId');
   const currentUserId = storedId ? Number(storedId) : null;
-
-  console.log('CurrentUserID:', currentUserId);
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
@@ -56,7 +54,7 @@ const EventFeedbackList = ({ eventId, refresh }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Feedback deleted');
-      setFeedbacks((prev) => prev.filter((f) => f.id !== id));
+      onFeedbackSubmitted(); // ✅ refetch parent
     } catch (err) {
       toast.error('Failed to delete feedback');
     }
@@ -80,7 +78,7 @@ const EventFeedbackList = ({ eventId, refresh }) => {
           existingFeedback={editFeedback}
           onFeedbackSubmitted={() => {
             setEditFeedback(null);
-            setTimeout(refresh, 300);
+            onFeedbackSubmitted(); // ✅ trigger parent refresh
           }}
         />
       )}
@@ -88,20 +86,15 @@ const EventFeedbackList = ({ eventId, refresh }) => {
       {feedbacks.map(({ id, rating, comment, created_at, updated_at, is_edited, user_name, user_id }) => {
         const isAuthor = Number(user_id) === currentUserId;
 
-        // Debug logs for each feedback item
-        console.log(`Feedback ID: ${id}`);
-        console.log(`Feedback UserID: ${user_id}`);
-        console.log(`Match (isAuthor):`, isAuthor);
-
         return (
           <div key={id} className="feedback-item">
             <div className="feedback-meta">
               <span className="feedback-user">{user_name || 'Anonymous Attendee'}</span>
               <span className="feedback-date">
                 {Number(is_edited) === 1
-                ? `Edited on ${new Date(updated_at).toLocaleDateString('en-GB')}`
-                : `Posted on ${new Date(created_at).toLocaleDateString('en-GB')}`}
-                </span>
+                  ? `Edited on ${new Date(updated_at).toLocaleDateString('en-GB')}`
+                  : `Posted on ${new Date(created_at).toLocaleDateString('en-GB')}`}
+              </span>
             </div>
 
             <p className="feedback-comment">“{comment}”</p>
