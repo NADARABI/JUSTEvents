@@ -233,6 +233,7 @@ export const getRsvps = async (req, res) => {
   }
 };
 
+
 // Get Event Statistics
 export const getStats = async (req, res) => {
   try {
@@ -261,14 +262,13 @@ export const getMyEvents = async (req, res) => {
     sendResponse(res, 500, 'Server error while fetching events');
   }
 };
-
 export const checkMyRsvp = async (req, res) => {
   try {
     const { id: event_id } = req.params;
     const user_id = req.user.id;
 
     const [rows] = await db.execute(
-      `SELECT id FROM event_rsvps WHERE event_id = ? AND user_id = ?`,
+      `SELECT id FROM event_rsvps WHERE event_id = ? AND user_id = ? AND status = 'Going'`,
       [event_id, user_id]
     );
 

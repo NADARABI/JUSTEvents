@@ -27,7 +27,6 @@ const EventDetailsPage = () => {
 
   const token = localStorage.getItem('accessToken');
   const userRole = (localStorage.getItem('role') || '').toLowerCase();
-  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     const redirectPath = localStorage.getItem('redirectAfterLogin');
@@ -83,7 +82,7 @@ const EventDetailsPage = () => {
     };
 
     fetchEventDetails();
-  }, [id, refreshFeedback, token, userId, userRole]);
+  }, [id, refreshFeedback, token]);
 
   const handleSaveToggle = async () => {
     if (!token) {
@@ -118,6 +117,7 @@ const EventDetailsPage = () => {
 
     try {
       setRsvpLoading(true);
+
       if (hasRSVPed) {
         await api.delete(`/api/events/${id}/rsvp`);
         toast.info('You have canceled your RSVP.');
@@ -125,7 +125,16 @@ const EventDetailsPage = () => {
         await api.post(`/api/events/${id}/rsvp`);
         toast.success('RSVP successful!');
       }
-      setHasRSVPed(!hasRSVPed);
+
+      // Re-fetch actual status from backend to stay accurate
+      try {
+        const { data } = await api.get(`/api/events/${id}/my-rsvp`);
+        setHasRSVPed(data.data.hasRSVPed);
+      } catch (err) {
+        console.warn('Failed to refresh RSVP status after toggle.');
+        setHasRSVPed(false);
+      }
+
     } catch (error) {
       console.error('RSVP error:', error.message);
       toast.error(error.response?.data?.message || 'RSVP action failed.');
@@ -167,7 +176,6 @@ const EventDetailsPage = () => {
           </p>
         </div>
 
-        {/* Save/Unsave */}
         <button
           className={`save-event-btn ${isSaved ? 'saved' : ''}`}
           onClick={handleSaveToggle}
@@ -175,7 +183,6 @@ const EventDetailsPage = () => {
           {isSaved ? <FaBookmark /> : <FaRegBookmark />} {isSaved ? 'Unsave Event' : 'Save Event'}
         </button>
 
-        {/* RSVP Button */}
         {event.status === 'Approved' && ['student', 'visitor'].includes(userRole) && (
           <button
             className={`rsvp-btn ${hasRSVPed ? 'cancel' : ''}`}
