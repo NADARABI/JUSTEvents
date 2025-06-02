@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './eventCard.css';
 
-const EventCard = ({ event }) => {
+const EventCard = ({ event, actions }) => {
   const { id, title, date, description, image_url, category } = event;
 
   const formattedDate = new Date(date).toLocaleDateString('en-US', {
@@ -22,7 +22,9 @@ const EventCard = ({ event }) => {
           loading="lazy"
         />
       ) : (
-        <div className="event-image placeholder">No Image Available</div>
+        <div className="event-image placeholder">
+          <span>No Image</span>
+        </div>
       )}
 
       <div className="event-body">
@@ -31,12 +33,14 @@ const EventCard = ({ event }) => {
         <span className="event-category">{category || 'General'}</span>
 
         <p className="event-description">
-          {description.length > 100 ? `${description.slice(0, 100)}...` : description}
+          {description?.length > 100 ? `${description.slice(0, 100)}...` : description}
         </p>
 
         <Link to={`/events/${id}`} className="event-button">
           View Details
         </Link>
+
+        {actions && <div className="event-actions">{actions}</div>}
       </div>
     </div>
   );
