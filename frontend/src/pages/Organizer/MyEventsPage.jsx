@@ -9,7 +9,7 @@ import Footer from '../../components/common/Footer';
 import './MyEventsPage.css';
 
 const MyEventsPage = () => {
-  const location = useLocation(); // ✅ React Router hook
+  const location = useLocation();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('All');
@@ -39,7 +39,7 @@ const MyEventsPage = () => {
     };
 
     fetchMyEvents();
-  }, [location.key]); // ✅ re-fetch when navigating back
+  }, [location.key]);
 
   const handleDelete = async (eventId) => {
     const confirm = window.confirm("Are you sure you want to delete this event?");
@@ -132,6 +132,14 @@ const MyEventsPage = () => {
                       >
                         Delete
                       </button>
+                      {event.status === 'Approved' && (
+                        <Link
+                          to={`/events/${event.id}/rsvps`}
+                          className="action-btn view-btn"
+                        >
+                          View RSVPs
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -123,3 +123,16 @@
   color: #062743;
   margin-top: 20px;
 }
+.view-btn {
+  background-color: #4F959D;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 5px;
+  display: inline-block;
+  transition: background 0.3s;
+}
+.view-btn:hover {
+  background-color: #3c7d84;
+}

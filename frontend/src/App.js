@@ -32,6 +32,7 @@ import CampusMap from './pages/CampusMap/CampusMap';
 
 import MyEventsPage from './pages/Organizer/MyEventsPage';
 import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
+import ViewRsvpsPage from './pages/Organizer/ViewRsvpsPage';
 
 import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
@@ -92,6 +93,7 @@ function AppRoutes() {
         <Route path="/events/edit/:id" element={<PrivateRoute roles="Organizer"><EditEventPage /></PrivateRoute>} />
         <Route path="/organizer/my-events" element={<PrivateRoute roles="Organizer"><MyEventsPage /></PrivateRoute>} />
         <Route path="/organizer/dashboard" element={<PrivateRoute roles="Organizer"><OrganizerDashboardPage /></PrivateRoute>} />
+        <Route path="/events/:id/rsvps" element={<PrivateRoute roles="Organizer"><ViewRsvpsPage /></PrivateRoute>}/>
 
         {/* Campus Admin */}
         <Route path="/campus-admin/room-requests" element={<PrivateRoute roles="Campus Admin"><PendingBookingsPage /></PrivateRoute>} />
