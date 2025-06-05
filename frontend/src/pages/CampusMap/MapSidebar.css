@@ -49,3 +49,10 @@
 .building-item:hover {
   background-color: #e1f5e5;
 }
+
+/* Highlight selected */
+.building-item.active {
+  background-color: #c8e6c9;
+  font-weight: 600;
+  color: #2e7d32;
+}

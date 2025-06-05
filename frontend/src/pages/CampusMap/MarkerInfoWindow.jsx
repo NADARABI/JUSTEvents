@@ -1,9 +1,11 @@
+// src/components/CampusMap/MarkerInfoWindow.jsx
 import React from 'react';
 import { InfoWindow } from '@react-google-maps/api';
 
 const MarkerInfoWindow = ({ marker, onClose, onNavigate }) => {
   const handleViewDetails = () => {
-    alert(`Details for ${marker.name} will appear here.`);
+    alert(`More details for "${marker.name}" will be shown here.`);
+    // TODO: Replace with real modal or routing later
   };
 
   return (
@@ -13,7 +15,7 @@ const MarkerInfoWindow = ({ marker, onClose, onNavigate }) => {
     >
       <div className="info-window">
         <h4>{marker.name}</h4>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+        <div className="info-buttons">
           <button onClick={onNavigate}>Navigate Here</button>
           <button onClick={handleViewDetails}>View Details</button>
           <button onClick={onClose}>Close</button>

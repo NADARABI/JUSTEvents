@@ -1,8 +1,10 @@
 // src/components/CampusMap/MapSidebar.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import './MapSidebar.css';
 
 const MapSidebar = ({ buildings, onSelect }) => {
+  const [selectedId, setSelectedId] = useState(null);
+
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     const items = document.querySelectorAll('.building-item');
@@ -12,9 +14,18 @@ const MapSidebar = ({ buildings, onSelect }) => {
     });
   };
 
+  const handleClick = (building) => {
+    setSelectedId(building.id);
+    onSelect(building);
+  };
+
+  const sortedBuildings = [...buildings].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+
   return (
     <div className="map-sidebar">
-      <h3> Campus Buildings</h3>
+      <h3>Campus Buildings</h3>
       <input
         type="text"
         className="map-search"
@@ -22,11 +33,11 @@ const MapSidebar = ({ buildings, onSelect }) => {
         onChange={handleSearch}
       />
       <ul className="building-list">
-        {buildings.map((b) => (
+        {sortedBuildings.map((b) => (
           <li
             key={b.id}
-            className="building-item"
-            onClick={() => onSelect(b)}
+            className={`building-item ${selectedId === b.id ? 'active' : ''}`}
+            onClick={() => handleClick(b)}
             title={`Go to ${b.name}`}
           >
             {b.name}

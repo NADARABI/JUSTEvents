@@ -1,6 +1,5 @@
-// src/routes/mapRoutes.js
 import express from 'express';
-import authMiddleware, { optionalAuth } from '../middlewares/authMiddleware.js';
+// import authMiddleware, { optionalAuth } from '../middlewares/authMiddleware.js';
 import {
   getAllBuildings,
   getRoomsByBuilding,
@@ -10,16 +9,16 @@ import {
 
 const router = express.Router();
 
-// GET /buildings → All buildings with coordinates
+//  Public route: Get all buildings with coordinates
 router.get('/buildings', getAllBuildings);
 
-// GET /buildings/:id/rooms → Rooms by building, optional auth for filtering
-router.get('/buildings/:id/rooms', optionalAuth, getRoomsByBuilding);
+// Public route: Get rooms for a building (no role filtering now)
+router.get('/buildings/:id/rooms', getRoomsByBuilding);
 
-// GET /events/:id/location → Event location (room + building)
+// Public route: Get event location (for event details map)
 router.get('/events/:id/location', getEventLocation);
 
-// GET /navigate?origin=lat,lng OR startId&type=room|building&endId=ID
+// Public route: Google Maps walking directions from point A → B
 router.get('/navigate', getNavigationPath);
 
 export default router;

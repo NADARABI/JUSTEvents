@@ -1,15 +1,10 @@
-// src/pages/CampusMap.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import { GoogleMap, LoadScript, Polyline } from '@react-google-maps/api';
 import { decode } from '@googlemaps/polyline-codec';
-import axios from 'axios';
+import api from '../../services/api'; // Use custom axios instance
 import './CampusMap.css';
 import MarkerInfoWindow from './MarkerInfoWindow';
 import MapSidebar from './MapSidebar';
-
-const MAP_ID = process.env.REACT_APP_MAP_ID;
-const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-const MAP_LIBRARIES = ['marker'];
 
 const mapContainerStyle = { height: '80vh', width: '100%' };
 const center = { lat: 32.496, lng: 35.991 };
@@ -18,10 +13,12 @@ const polylineOptions = {
   strokeOpacity: 0.9,
   strokeWeight: 5,
   geodesic: true,
-  zIndex: 10,
+  zIndex: 10
 };
+const MAP_LIBRARIES = ['marker'];
+const MAP_ID = process.env.REACT_APP_MAP_ID;
 
-function createLabel(text, bgColor) {
+function createLabel(text, bgColor, isActive = false) {
   const div = document.createElement('div');
   div.style.background = bgColor;
   div.style.color = 'white';
@@ -35,6 +32,9 @@ function createLabel(text, bgColor) {
   div.style.display = 'flex';
   div.style.alignItems = 'center';
   div.style.justifyContent = 'center';
+  if (isActive) {
+    div.style.boxShadow = '0 0 12px rgba(255, 82, 82, 0.8)';
+  }
   div.innerText = text;
   return div;
 }
@@ -44,21 +44,25 @@ const CampusMap = () => {
   const [pathCoordinates, setPathCoordinates] = useState([]);
   const [mapInstance, setMapInstance] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
+
   const markerElementsRef = useRef([]);
   const routeStartRef = useRef(null);
   const routeEndRef = useRef(null);
 
+  // Fetch markers from public endpoint
   useEffect(() => {
     const fetchMarkers = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/campus-map/markers`);
+        const res = await api.get('/api/campus-map/buildings'); // Public route
         if (res.data.success) {
-          const formatted = res.data.data.map(m => ({
-            id: m.building_id,
-            name: m.name || `Building ${m.building_id}`,
-            lat: m.x,
-            lng: m.y
-          }));
+          const formatted = res.data.data
+            .filter(b => b.map_coordinates)
+            .map(b => ({
+              id: b.id,
+              name: b.name,
+              lat: b.map_coordinates.x,
+              lng: b.map_coordinates.y
+            }));
           setMarkers(formatted);
         }
       } catch (err) {
@@ -68,20 +72,31 @@ const CampusMap = () => {
     fetchMarkers();
   }, []);
 
+  // Load Advanced Markers
   useEffect(() => {
     if (!mapInstance || markers.length === 0) return;
 
     const loadMarkers = () => {
       if (!window.google?.maps?.marker?.AdvancedMarkerElement) return false;
-      markerElementsRef.current.forEach(m => (m.map = null));
+
+      markerElementsRef.current.forEach(m => m.map = null);
       markerElementsRef.current = [];
 
       markers.forEach(marker => {
+        const isActive = marker.id === selectedMarker?.id;
+        const content = createLabel(marker.name.charAt(0), isActive ? '#FF5252' : '#4CAF50', isActive);
+
         const advancedMarker = new window.google.maps.marker.AdvancedMarkerElement({
           map: mapInstance,
           position: { lat: marker.lat, lng: marker.lng },
           title: marker.name,
+          content,
+          zIndex: isActive ? 999 : 1
         });
+
+        if (isActive) {
+          advancedMarker.element.style.animation = 'markerBounce 0.4s infinite alternate';
+        }
 
         advancedMarker.addListener('gmp-click', () => {
           setSelectedMarker(marker);
@@ -91,13 +106,14 @@ const CampusMap = () => {
 
         markerElementsRef.current.push(advancedMarker);
       });
+
       return true;
     };
 
     const interval = setInterval(() => {
       if (loadMarkers()) clearInterval(interval);
     }, 500);
-  }, [mapInstance, markers]);
+  }, [mapInstance, markers, selectedMarker]);
 
   const clearRouteMarkers = () => {
     if (routeStartRef.current) routeStartRef.current.map = null;
@@ -106,51 +122,56 @@ const CampusMap = () => {
     routeEndRef.current = null;
   };
 
+  // Navigation button handler
   const handleNavigate = async () => {
-    if (!selectedMarker || !navigator.geolocation) {
-      alert('Please select a marker and allow geolocation.');
+    if (!selectedMarker) return;
+
+    if (!navigator.geolocation) {
+      alert('Your browser does not support geolocation.');
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
-      async ({ coords }) => {
-        const origin = `${coords.latitude},${coords.longitude}`;
+      async (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+
         try {
-          const res = await axios.get(`${import.meta.env.VITE_API_URL}/campus-map/navigate`, {
-            params: {
-              origin,
-              endId: selectedMarker.id,
-              type: 'building',
-            }
-          });
-          const path = decode(res.data.data.overview_polyline.points).map(([lat, lng]) => ({ lat, lng }));
-          setPathCoordinates(path);
+          const res = await api.get(
+            `/api/campus-map/navigate?origin=${userLat},${userLng}&endId=${selectedMarker.id}&type=building`
+          );
+
+          const encodedPolyline = res.data.data.overview_polyline.points;
+          const decodedPath = decode(encodedPolyline).map(([lat, lng]) => ({ lat, lng }));
+          setPathCoordinates(decodedPath);
 
           const leg = res.data.data.legs[0];
+
           routeStartRef.current = new window.google.maps.marker.AdvancedMarkerElement({
             map: mapInstance,
             position: leg.start_location,
             title: 'You',
-            content: createLabel('A', '#4CAF50'),
+            content: createLabel('A', '#4CAF50')
           });
 
           routeEndRef.current = new window.google.maps.marker.AdvancedMarkerElement({
             map: mapInstance,
             position: leg.end_location,
             title: selectedMarker.name,
-            content: createLabel('B', '#FF5252'),
+            content: createLabel('B', '#FF5252')
           });
 
           const bounds = new window.google.maps.LatLngBounds();
-          path.forEach(coord => bounds.extend(coord));
+          decodedPath.forEach(coord => bounds.extend(coord));
           mapInstance?.fitBounds(bounds);
         } catch (err) {
-          alert('Failed to fetch route.');
+          console.error('Navigation error:', err.message);
+          alert('Failed to fetch route. Please try again.');
         }
       },
       (error) => {
-        console.error('Geolocation error:', error.message);
-        alert('Allow location access.');
+        console.error('Location access denied:', error.message);
+        alert('Please allow location access to use navigation.');
       }
     );
   };
@@ -159,8 +180,10 @@ const CampusMap = () => {
     setSelectedMarker(marker);
     setPathCoordinates([]);
     clearRouteMarkers();
-    mapInstance?.panTo({ lat: marker.lat, lng: marker.lng });
-    mapInstance?.setZoom(18);
+    if (mapInstance) {
+      mapInstance.panTo({ lat: marker.lat, lng: marker.lng });
+      mapInstance.setZoom(18);
+    }
   };
 
   const handleClose = () => {
@@ -172,13 +195,16 @@ const CampusMap = () => {
   return (
     <div style={{ display: 'flex' }}>
       <MapSidebar buildings={markers} onSelect={handleSidebarSelect} />
-      <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY} libraries={MAP_LIBRARIES}>
+      <LoadScript
+        googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+        libraries={MAP_LIBRARIES} // 'marker' included
+      >
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={center}
           zoom={17}
           options={{ mapId: MAP_ID }}
-          onLoad={setMapInstance}
+          onLoad={map => setMapInstance(map)}
         >
           {pathCoordinates.length > 0 && (
             <Polyline path={pathCoordinates} options={polylineOptions} />
