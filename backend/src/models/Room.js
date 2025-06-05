@@ -34,24 +34,13 @@ class Room {
     return result.insertId;
   }
 
-  // Update room
-  static async update(id, data) {
-    const { name, building_id, capacity, type, status, description, floor, map_coordinates } = data;
-    await db.execute(
-      `UPDATE rooms 
-       SET name = ?, building_id = ?, capacity = ?, type = ?, status = ?, description = ?, floor = ?, map_coordinates = ? 
-       WHERE id = ?`,
-      [name, building_id, capacity, type, status, description, floor, JSON.stringify(map_coordinates), id]
-    );
-    return await Room.findById(id);
-  }
-
   // Delete room
   static async delete(id) {
     const [result] = await db.execute('DELETE FROM rooms WHERE id = ?', [id]);
     return result.affectedRows > 0;
   }
 
+   // Update room
   static async update(id, data) {
     const fields = [];
     const values = [];
