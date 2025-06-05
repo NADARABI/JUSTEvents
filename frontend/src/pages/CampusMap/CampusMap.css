@@ -1,6 +1,4 @@
-/* ===================================
-    Custom Marker Styling
-=================================== */
+/* Marker */
 .marker {
   cursor: pointer;
   display: flex;
@@ -8,9 +6,7 @@
   align-items: center;
 }
 
-/* ===================================
-    Info Window (Floating box)
-=================================== */
+/* Info Window */
 .info-window {
   z-index: 1000;
   background-color: #ffffff;
@@ -31,9 +27,7 @@
   color: #222;
 }
 
-/* ===================================
-    Buttons inside InfoWindow
-=================================== */
+/* Buttons */
 .info-window button {
   margin-top: 6px;
   margin-right: 6px;
@@ -61,9 +55,7 @@
   background-color: #999;
 }
 
-/* ===================================
-    Fade Animation
-=================================== */
+/* Fade Animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
