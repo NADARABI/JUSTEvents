@@ -1,21 +1,14 @@
-// src/components/CampusMap/MapSidebar.jsx
 import React, { useState } from 'react';
 import './MapSidebar.css';
 
-const MapSidebar = ({ buildings, onSelect }) => {
-  const [selectedId, setSelectedId] = useState(null);
+const MapSidebar = ({ buildings, onSelect, selectedId, rooms = [] }) => {
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e) => {
-    const query = e.target.value.toLowerCase();
-    const items = document.querySelectorAll('.building-item');
-    items.forEach((item) => {
-      const match = item.innerText.toLowerCase().includes(query);
-      item.style.display = match ? 'flex' : 'none';
-    });
+    setSearchQuery(e.target.value);
   };
 
   const handleClick = (building) => {
-    setSelectedId(building.id);
     onSelect(building);
   };
 
@@ -23,17 +16,29 @@ const MapSidebar = ({ buildings, onSelect }) => {
     a.name.localeCompare(b.name)
   );
 
+  const filteredBuildings = sortedBuildings.filter((b) =>
+    b.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const selectedBuildingName = buildings.find(b => b.id === selectedId)?.name;
+
   return (
     <div className="map-sidebar">
-      <h3>Campus Buildings</h3>
+      <h3>
+        Campus Buildings
+        <span className="building-count"> ({filteredBuildings.length})</span>
+      </h3>
+
       <input
         type="text"
         className="map-search"
         placeholder="Search..."
         onChange={handleSearch}
+        value={searchQuery}
       />
+
       <ul className="building-list">
-        {sortedBuildings.map((b) => (
+        {filteredBuildings.map((b) => (
           <li
             key={b.id}
             className={`building-item ${selectedId === b.id ? 'active' : ''}`}
@@ -44,6 +49,27 @@ const MapSidebar = ({ buildings, onSelect }) => {
           </li>
         ))}
       </ul>
+
+      {filteredBuildings.length === 0 && (
+        <div className="no-results">No buildings found.</div>
+      )}
+
+      {selectedId && (
+        <div className="room-section">
+          <h4>Rooms in {selectedBuildingName}</h4>
+          {rooms.length > 0 ? (
+            <ul className="room-list">
+              {rooms.map((room) => (
+                <li key={room.id} className="room-item">
+                  <strong>{room.name}</strong> – {room.type} ({room.capacity} ppl)
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="no-rooms">No rooms mapped for this building.</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

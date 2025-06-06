@@ -14,17 +14,18 @@
   margin-bottom: 16px;
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: #2c3e50;
 }
 
 /* Search Box */
 .map-search {
   width: 100%;
-  padding: 6px 10px;
-  margin-bottom: 12px;
+  padding: 8px 10px;
+  margin-bottom: 14px;
   font-size: 14px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  background-color: #fff;
 }
 
 /* Building List */
@@ -36,23 +37,77 @@
 
 /* Each Building Item */
 .building-item {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 8px;
+  padding: 10px;
+  margin-bottom: 6px;
   cursor: pointer;
   font-size: 14px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  border-radius: 6px;
+  color: #333;
+  background-color: transparent;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .building-item:hover {
-  background-color: #e1f5e5;
+  background-color: #e8f5e9;
 }
 
-/* Highlight selected */
 .building-item.active {
   background-color: #c8e6c9;
   font-weight: 600;
   color: #2e7d32;
+  border-left: 4px solid #4CAF50;
+}
+
+/* No Results Feedback */
+.no-results {
+  font-size: 13px;
+  color: #777;
+  margin-top: 12px;
+  padding-left: 4px;
+}
+
+.building-count {
+  font-size: 14px;
+  font-weight: normal;
+  color: #555;
+  margin-left: 8px;
+}
+.room-section {
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 12px;
+}
+
+.room-section h4 {
+  font-size: 15px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.room-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.room-item {
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  color: #444;
+}
+/* Add this for no-room feedback */
+.no-rooms {
+  font-size: 13px;
+  color: #888;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* subtle hover effect to rooms */
+.room-item:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  padding-left: 6px;
+  transition: background-color 0.2s ease;
 }

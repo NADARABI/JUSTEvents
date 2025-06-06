@@ -17,8 +17,8 @@
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   padding: 14px 12px;
-  width: 200px;
-  text-align: center;
+  width: 220px;
+  text-align: left;
   font-family: 'Segoe UI', 'Roboto', sans-serif;
   font-size: 14px;
   animation: fadeIn 0.2s ease-in-out;
@@ -34,14 +34,19 @@
 /* ===================================
     Buttons inside InfoWindow
 =================================== */
+.info-window-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .info-window button {
-  margin-top: 6px;
-  margin-right: 6px;
+  width: 100%;
   cursor: pointer;
   background-color: #4CAF50;
   color: white;
   border: none;
-  padding: 6px 14px;
+  padding: 7px 12px;
   border-radius: 4px;
   font-size: 13px;
   transition: background-color 0.2s ease, transform 0.15s ease;
