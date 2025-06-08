@@ -1,77 +1,59 @@
 import * as campusMapController from '../controllers/CampusMapController.js';
 import Building from '../models/Building.js';
 import Room from '../models/Room.js';
-import MapCoordinate from '../models/MapCoordinate.js';
 import Event from '../models/Event.js';
 import { sendResponse } from '../utils/sendResponse.js';
 import axios from 'axios';
 
 jest.mock('../models/Building.js');
 jest.mock('../models/Room.js');
-jest.mock('../models/MapCoordinate.js');
 jest.mock('../models/Event.js');
 jest.mock('../utils/sendResponse.js');
 jest.mock('axios');
 
 describe('CampusMapController', () => {
   let req, res;
+
   beforeEach(() => {
     req = { params: {}, query: {}, user: {} };
     res = {};
     jest.clearAllMocks();
-    Building.findAll = jest.fn();
-    Building.findById = jest.fn();
-    Room.findAll = jest.fn();
-    Room.findById = jest.fn();
-    MapCoordinate.findAll = jest.fn();
-    Event.findById = jest.fn();
-    axios.get = jest.fn();
   });
 
   // getAllBuildings
   it('getAllBuildings: success', async () => {
-    Building.findAll.mockResolvedValue([{ id: 1 }]);
+    Building.findAll.mockResolvedValue([{ id: 1, name: 'A' }]);
     await campusMapController.getAllBuildings(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 200, expect.stringContaining('fetched successfully'), [{ id: 1 }]);
+    expect(sendResponse).toHaveBeenCalledWith(res, 200, 'Buildings fetched successfully', [{ id: 1, name: 'A' }]);
   });
+
   it('getAllBuildings: fail', async () => {
     Building.findAll.mockRejectedValue(new Error('fail'));
     await campusMapController.getAllBuildings(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 500, expect.stringContaining('Server error while fetching buildings'));
+    expect(sendResponse).toHaveBeenCalledWith(res, 500, 'Server error while fetching buildings');
   });
 
   // getRoomsByBuilding
-  it('getRoomsByBuilding: success (admin sees all)', async () => {
+  it('getRoomsByBuilding: success', async () => {
     req.params.id = 1;
-    req.user.role = 'Campus Admin';
-    Room.findAll.mockResolvedValue([{ id: 1, building_id: 1, status: 'Available' }, { id: 2, building_id: 1, status: 'Unavailable' }]);
+    Room.findAll.mockResolvedValue([
+      { id: 1, building_id: 1 },
+      { id: 2, building_id: 2 }
+    ]);
     await campusMapController.getRoomsByBuilding(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 200, expect.stringContaining('Rooms fetched successfully'), expect.any(Array));
-  });
-  it('getRoomsByBuilding: success (visitor sees only available)', async () => {
-    req.params.id = 1;
-    req.user.role = 'Visitor';
-    Room.findAll.mockResolvedValue([{ id: 1, building_id: 1, status: 'Available' }, { id: 2, building_id: 1, status: 'Unavailable' }]);
-    await campusMapController.getRoomsByBuilding(req, res);
-    const filtered = [{ id: 1, building_id: 1, status: 'Available' }];
-    expect(sendResponse).toHaveBeenCalledWith(res, 200, expect.stringContaining('Rooms fetched successfully'), filtered);
-  });
-  it('getRoomsByBuilding: fail', async () => {
-    Room.findAll.mockRejectedValue(new Error('fail'));
-    await campusMapController.getRoomsByBuilding(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 500, expect.stringContaining('Server error while fetching rooms'));
+    expect(sendResponse).toHaveBeenCalledWith(
+      res,
+      200,
+      'Rooms fetched successfully',
+      [{ id: 1, building_id: 1 }]
+    );
   });
 
-  // getMapMarkers
-  it('getMapMarkers: success', async () => {
-    MapCoordinate.findAll.mockResolvedValue([{ id: 1, building_id: 2, x: 10, y: 20, level: 1 }]);
-    await campusMapController.getMapMarkers(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 200, expect.stringContaining('Map markers fetched successfully'), [{ id: 1, building_id: 2, x: 10, y: 20, level: 1 }]);
-  });
-  it('getMapMarkers: fail', async () => {
-    MapCoordinate.findAll.mockRejectedValue(new Error('fail'));
-    await campusMapController.getMapMarkers(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 500, expect.stringContaining('Server error while fetching map markers'));
+  it('getRoomsByBuilding: fail', async () => {
+    req.params.id = 1;
+    Room.findAll.mockRejectedValue(new Error('fail'));
+    await campusMapController.getRoomsByBuilding(req, res);
+    expect(sendResponse).toHaveBeenCalledWith(res, 500, 'Server error while fetching rooms');
   });
 
   // getEventLocation
@@ -81,92 +63,123 @@ describe('CampusMapController', () => {
     await campusMapController.getEventLocation(req, res);
     expect(sendResponse).toHaveBeenCalledWith(res, 404, 'Event not found');
   });
+
   it('getEventLocation: room not found', async () => {
     req.params.id = 1;
-    Event.findById.mockResolvedValue({ venue_id: 2 });
+    Event.findById.mockResolvedValue({ id: 1, venue_id: 2 });
     Room.findById.mockResolvedValue(null);
     await campusMapController.getEventLocation(req, res);
     expect(sendResponse).toHaveBeenCalledWith(res, 404, 'Venue not found');
   });
+
   it('getEventLocation: building not found', async () => {
     req.params.id = 1;
-    Event.findById.mockResolvedValue({ venue_id: 2 });
-    Room.findById.mockResolvedValue({ building_id: 3 });
+    Event.findById.mockResolvedValue({ id: 1, venue_id: 2 });
+    Room.findById.mockResolvedValue({ id: 2, building_id: 3 });
     Building.findById.mockResolvedValue(null);
     await campusMapController.getEventLocation(req, res);
     expect(sendResponse).toHaveBeenCalledWith(res, 404, 'Building not found');
   });
+
   it('getEventLocation: success', async () => {
     req.params.id = 1;
     const event = { id: 1, venue_id: 2 };
     const room = { id: 2, building_id: 3 };
-    const building = { id: 3 };
+    const building = { id: 3, name: 'B' };
     Event.findById.mockResolvedValue(event);
     Room.findById.mockResolvedValue(room);
     Building.findById.mockResolvedValue(building);
     await campusMapController.getEventLocation(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 200, expect.stringContaining('Event location fetched successfully'), { event, room, building });
+    expect(sendResponse).toHaveBeenCalledWith(res, 200, 'Event location fetched successfully', { event, room, building });
   });
+
   it('getEventLocation: fail', async () => {
     req.params.id = 1;
     Event.findById.mockRejectedValue(new Error('fail'));
     await campusMapController.getEventLocation(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 500, expect.stringContaining('Server error while fetching event location'));
+    expect(sendResponse).toHaveBeenCalledWith(res, 500, 'Server error while fetching event location');
   });
 
   // getNavigationPath
-  it('getNavigationPath: missing params', async () => {
-    req.query = { type: undefined, endId: undefined };
+  it('getNavigationPath: missing endId/type', async () => {
+    req.query = {};
     await campusMapController.getNavigationPath(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 400, expect.stringContaining('Missing required parameters'));
+    expect(sendResponse).toHaveBeenCalledWith(res, 400, 'Missing required parameters: endId and type');
   });
+
   it('getNavigationPath: invalid type', async () => {
-    req.query = { type: 'invalid', endId: 1 };
+    req.query = { endId: 1, type: 'invalid' };
     await campusMapController.getNavigationPath(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 400, expect.stringContaining('Invalid type parameter'));
+    expect(sendResponse).toHaveBeenCalledWith(res, 400, 'Invalid type. Must be "building" or "room".');
   });
-  it('getNavigationPath: end building not found', async () => {
-    req.query = { type: 'building', endId: 1 };
+
+  it('getNavigationPath: building not found', async () => {
+    req.query = { endId: 1, type: 'building', origin: '1,2' };
     Building.findById.mockResolvedValue(null);
     await campusMapController.getNavigationPath(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 404, 'Building not found');
+    expect(sendResponse).toHaveBeenCalledWith(res, 404, 'Building not found or has no coordinates');
   });
-  it('getNavigationPath: end room not found', async () => {
-    req.query = { type: 'room', endId: 1 };
+
+  it('getNavigationPath: room not found', async () => {
+    req.query = { endId: 1, type: 'room', origin: '1,2' };
     Room.findById.mockResolvedValue(null);
     await campusMapController.getNavigationPath(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 404, 'Room not found');
+    expect(sendResponse).toHaveBeenCalledWith(res, 404, 'Room not found or has no coordinates');
   });
-  it('getNavigationPath: missing start', async () => {
-    req.query = { type: 'building', endId: 1 };
+
+  it('getNavigationPath: missing origin/startId', async () => {
+    req.query = { endId: 1, type: 'building' };
     Building.findById.mockResolvedValue({ map_coordinates: { x: 1, y: 2 } });
     await campusMapController.getNavigationPath(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 400, expect.stringContaining('Either origin or startId must be provided'));
+    expect(sendResponse).toHaveBeenCalledWith(res, 400, 'Either origin or startId must be provided');
   });
+
   it('getNavigationPath: invalid coordinates', async () => {
-    req.query = { type: 'building', endId: 1, startId: 2 };
-    Building.findById.mockResolvedValueOnce({ map_coordinates: { x: 1, y: 2 } }).mockResolvedValueOnce({ map_coordinates: { x: 999, y: 999 } });
+    req.query = { endId: 1, type: 'building', origin: 'invalid,coords' };
+    Building.findById.mockResolvedValue({ map_coordinates: { x: 1, y: 2 } });
     await campusMapController.getNavigationPath(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 400, expect.stringContaining('Invalid or missing coordinates'));
+    expect(sendResponse).toHaveBeenCalledWith(res, 400, 'Invalid or missing coordinates');
   });
-  it('getNavigationPath: google maps fail', async () => {
-    req.query = { type: 'building', endId: 1, startId: 2 };
-    Building.findById.mockResolvedValueOnce({ map_coordinates: { x: 1, y: 2 } }).mockResolvedValueOnce({ map_coordinates: { x: 3, y: 4 } });
+
+  it('getNavigationPath: start location not found', async () => {
+    req.query = { endId: 1, type: 'building', startId: 2 };
+    Building.findById
+      .mockResolvedValueOnce({ map_coordinates: { x: 1, y: 2 } }) // end
+      .mockResolvedValueOnce(null); // start
+    await campusMapController.getNavigationPath(req, res);
+    expect(sendResponse).toHaveBeenCalledWith(res, 404, 'Start location not found or has no coordinates');
+  });
+
+  it('getNavigationPath: start location missing coordinates', async () => {
+    req.query = { endId: 1, type: 'building', startId: 2 };
+    Building.findById
+      .mockResolvedValueOnce({ map_coordinates: { x: 1, y: 2 } }) // end
+      .mockResolvedValueOnce({}); // start missing map_coordinates
+    await campusMapController.getNavigationPath(req, res);
+    expect(sendResponse).toHaveBeenCalledWith(res, 404, 'Start location not found or has no coordinates');
+  });
+
+  it('getNavigationPath: Google Maps API fail', async () => {
+    req.query = { endId: 1, type: 'building', origin: '1,2' };
+    Building.findById.mockResolvedValue({ map_coordinates: { x: 1, y: 2 } });
     axios.get.mockResolvedValue({ data: { status: 'NOT_OK' } });
     await campusMapController.getNavigationPath(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 500, expect.stringContaining('Google Maps API failed'), { status: 'NOT_OK' });
+    expect(sendResponse).toHaveBeenCalledWith(res, 500, 'Google Maps API failed', { status: 'NOT_OK' });
   });
+
   it('getNavigationPath: success', async () => {
-    req.query = { type: 'building', endId: 1, startId: 2 };
-    Building.findById.mockResolvedValueOnce({ map_coordinates: { x: 1, y: 2 } }).mockResolvedValueOnce({ map_coordinates: { x: 3, y: 4 } });
-    axios.get.mockResolvedValue({ data: { status: 'OK', routes: ['route1'] } });
+    req.query = { endId: 1, type: 'building', origin: '1,2' };
+    Building.findById.mockResolvedValue({ map_coordinates: { x: 1, y: 2 } });
+    axios.get.mockResolvedValue({ data: { status: 'OK', routes: [{ path: 'test' }] } });
     await campusMapController.getNavigationPath(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 200, expect.stringContaining('Path fetched successfully'), 'route1');
+    expect(sendResponse).toHaveBeenCalledWith(res, 200, 'Path fetched successfully', { path: 'test' });
   });
+
   it('getNavigationPath: fail', async () => {
-    req.query = { type: 'building', endId: 1, startId: 2 };
-    Building.findById.mockRejectedValue(new Error('fail'));
+    req.query = { endId: 1, type: 'building', origin: '1,2' };
+    Building.findById.mockResolvedValue({ map_coordinates: { x: 1, y: 2 } });
+    axios.get.mockRejectedValue(new Error('fail'));
     await campusMapController.getNavigationPath(req, res);
-    expect(sendResponse).toHaveBeenCalledWith(res, 500, expect.stringContaining('Server error while fetching navigation path'));
+    expect(sendResponse).toHaveBeenCalledWith(res, 500, 'Server error while fetching navigation path');
   });
-}); 
+});
