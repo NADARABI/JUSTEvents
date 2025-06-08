@@ -111,9 +111,10 @@ router.get(
   }
 );
 
-<<<<<<< HEAD
 
-// Protected Route Example (System Admin Only)
+
+
+ // Protected Route Example (System Admin Only)
 router.get(
   '/admin',
   authMiddleware,
@@ -123,8 +124,8 @@ router.get(
   }
 );
 
-=======
->>>>>>> a75d0bcf407b53ff0281e16f92e631c9bd665c3c
+
+
 // Request Role (For Pending Users)
 router.post(
   '/request-role',

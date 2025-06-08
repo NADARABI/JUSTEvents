@@ -32,4 +32,4 @@ describe('db.js', () => {
     expect(conn).toHaveProperty('release');
     expect(typeof conn.release).toBe('function');
   });
-});
+}); 
