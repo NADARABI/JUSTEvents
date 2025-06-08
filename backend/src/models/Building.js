@@ -53,6 +53,16 @@ class Building {
     const [result] = await db.execute('DELETE FROM buildings WHERE id = ?', [id]);
     return result.affectedRows > 0;
   }
+  
+  static async findAllWithRoomCount() {
+  const [rows] = await db.execute(`
+    SELECT b.id, b.name, b.latitude, b.longitude, COUNT(r.id) AS roomCount
+    FROM buildings b
+    LEFT JOIN rooms r ON b.id = r.building_id
+    GROUP BY b.id
+  `);
+  return rows;
+}
 }
 
 export default Building;

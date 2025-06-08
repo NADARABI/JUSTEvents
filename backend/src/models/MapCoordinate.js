@@ -1,3 +1,5 @@
+// NOTE: This model is reserved for future indoor mapping or canvas overlays.
+// Currently unused in the Google Maps-based campus map.
 import db from '../utils/db.js';
 
 class MapCoordinate {

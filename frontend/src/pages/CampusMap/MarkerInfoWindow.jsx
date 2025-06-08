@@ -1,25 +1,44 @@
-import React from 'react';
-import { InfoWindow } from '@react-google-maps/api';
+import React, { useState } from 'react';
+import { OverlayView } from '@react-google-maps/api';
+import BuildingDetailsModal from '../../components/maps/BuildingDetailsModal';
 
-const MarkerInfoWindow = ({ marker, onClose, onNavigate }) => {
-  const handleViewDetails = () => {
-    alert(`Details for ${marker.name} will appear here.`);
+const MarkerInfoWindow = ({ marker, onNavigate, onClose }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  const handleOpenInGoogleMaps = () => {
+    const { lat, lng } = marker;
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`,
+      '_blank'
+    );
   };
 
   return (
-    <InfoWindow
-      position={{ lat: marker.lat, lng: marker.lng }}
-      onCloseClick={onClose}
-    >
-      <div className="info-window">
-        <h4>{marker.name}</h4>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
-          <button onClick={onNavigate}>Navigate Here</button>
-          <button onClick={handleViewDetails}>View Details</button>
-          <button onClick={onClose}>Close</button>
+    <>
+      <OverlayView
+        position={{ lat: marker.lat, lng: marker.lng }}
+        mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+      >
+        <div className="info-window">
+          <h4>{marker.name}</h4>
+          <div className="info-window-buttons">
+            <button onClick={onNavigate}>Show Path</button>
+            <button onClick={handleOpenInGoogleMaps}>Open in Google Maps</button>
+            <button onClick={() => setShowModal(true)}>View Details</button>
+            <button onClick={onClose} style={{ backgroundColor: '#999' }}>
+              Close
+            </button>
+          </div>
         </div>
-      </div>
-    </InfoWindow>
+      </OverlayView>
+
+      {showModal && (
+        <BuildingDetailsModal
+          building={marker}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+    </>
   );
 };
 
