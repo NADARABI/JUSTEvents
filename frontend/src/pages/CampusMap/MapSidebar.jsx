@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 
 const getRoomIcon = (type) => {
-  const normalized = type.toLowerCase();
+  const normalized = type?.toLowerCase();
   switch (normalized) {
     case 'lecture hall':
     case 'classroom':
@@ -32,17 +32,18 @@ const MapSidebar = ({
   onNavigate,
   activeRoomId,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [buildingSearch, setBuildingSearch] = useState('');
+  const [roomStatusFilter, setRoomStatusFilter] = useState('all');
+  const [roomSearch, setRoomSearch] = useState('');
 
-  const handleSearch = (e) => setSearchQuery(e.target.value);
+  const handleBuildingSearch = (e) => setBuildingSearch(e.target.value);
 
   const sortedBuildings = [...buildings].sort((a, b) =>
     a.name.localeCompare(b.name)
   );
 
   const filteredBuildings = sortedBuildings.filter((b) =>
-    b.name.toLowerCase().includes(searchQuery.toLowerCase())
+    b.name.toLowerCase().includes(buildingSearch.toLowerCase())
   );
 
   const selectedBuilding = buildings.find((b) => b.id === selectedId);
@@ -57,9 +58,9 @@ const MapSidebar = ({
       <input
         type="text"
         className="map-search"
-        placeholder="Search..."
-        value={searchQuery}
-        onChange={handleSearch}
+        placeholder="Search buildings..."
+        value={buildingSearch}
+        onChange={handleBuildingSearch}
       />
 
       <ul className="building-list">
@@ -83,13 +84,13 @@ const MapSidebar = ({
         <div className="room-section">
           <h4>Rooms in {selectedBuilding.name}</h4>
 
-          {/* Room Status Filter Dropdown */}
+          {/* Room Status Filter */}
           <div className="room-filter-group">
             <label htmlFor="room-status-filter">Filter by Status:</label>
             <select
               id="room-status-filter"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              value={roomStatusFilter}
+              onChange={(e) => setRoomStatusFilter(e.target.value)}
               className="room-filter-dropdown"
             >
               <option value="all">All</option>
@@ -98,14 +99,26 @@ const MapSidebar = ({
             </select>
           </div>
 
+          {/* Room Name Search */}
+          <input
+            type="text"
+            className="room-search"
+            placeholder="Search rooms..."
+            value={roomSearch}
+            onChange={(e) => setRoomSearch(e.target.value)}
+          />
+
           {rooms.length > 0 ? (
             <ul className="room-list">
               {rooms
                 .filter((room) => {
-                  if (filterStatus === 'available') return room.status === 'Available';
-                  if (filterStatus === 'unavailable') return room.status !== 'Available';
+                  if (roomStatusFilter === 'available') return room.status === 'Available';
+                  if (roomStatusFilter === 'unavailable') return room.status !== 'Available';
                   return true;
                 })
+                .filter((room) =>
+                  room.name.toLowerCase().includes(roomSearch.toLowerCase())
+                )
                 .map((room) => {
                   const isAvailable = room.status === 'Available';
                   const isActive = activeRoomId === room.id;
@@ -120,11 +133,11 @@ const MapSidebar = ({
                     >
                       <div
                         className="room-info"
-                        onClick={() => onRoomClick && onRoomClick(room)}
+                        onClick={() => onRoomClick?.(room)}
                       >
                         <div className="room-header">
-                          <span className="room-icon">{getRoomIcon(room.type)}</span>
                           <strong>
+                            {getRoomIcon(room.type)}
                             {room.name} – {room.type} ({room.capacity} ppl)
                           </strong>
                         </div>
@@ -136,7 +149,7 @@ const MapSidebar = ({
                       <div className="room-actions">
                         <button
                           className="navigate-btn"
-                          onClick={() => onNavigate && onNavigate(room.id, 'room')}
+                          onClick={() => onNavigate?.(room.id, 'room')}
                         >
                           <FaMapMarkerAlt /> Show Path
                         </button>
