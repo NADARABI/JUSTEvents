@@ -1,5 +1,21 @@
 import React, { useState } from 'react';
 import './MapSidebar.css';
+import { FaFlask, FaChalkboardTeacher, FaDoorOpen, FaBookReader, FaQuestionCircle } from 'react-icons/fa';
+
+const getRoomIcon = (type) => {
+  switch (type.toLowerCase()) {
+    case 'lab':
+      return <FaFlask className="room-icon" />;
+    case 'classroom':
+      return <FaChalkboardTeacher className="room-icon" />;
+    case 'meeting room':
+      return <FaDoorOpen className="room-icon" />;
+    case 'study room':
+      return <FaBookReader className="room-icon" />;
+    default:
+      return <FaQuestionCircle className="room-icon" />;
+  }
+};
 
 const MapSidebar = ({
   buildings,
@@ -73,7 +89,7 @@ const MapSidebar = ({
                     onClick={() => onRoomClick && onRoomClick(room)}
                     title={`Zoom to ${room.name}`}
                   >
-                    <strong>{room.name}</strong> – {room.type} ({room.capacity} ppl)
+                    <strong>{room.name}</strong> – {getRoomIcon(room.type)} {room.type} ({room.capacity} ppl)
                   </li>
                 );
               })}

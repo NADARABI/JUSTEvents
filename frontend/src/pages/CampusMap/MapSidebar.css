@@ -125,3 +125,9 @@
   font-style: italic;
   margin-top: 8px;
 }
+
+.room-icon {
+  margin-right: 6px;
+  vertical-align: middle;
+  color: #555;
+}

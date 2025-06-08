@@ -144,3 +144,9 @@
   flex: 1;
   height: 100%;
 }
+.modal-icon {
+  margin-right: 8px;
+  color: #4CAF50;
+  font-size: 18px;
+  vertical-align: middle;
+}

@@ -6,6 +6,22 @@ import './CampusMap.css';
 import MarkerInfoWindow from './MarkerInfoWindow';
 import MapSidebar from './MapSidebar';
 import Footer from '../../components/common/Footer';
+import { FaChalkboardTeacher, FaBookReader, FaLaptopHouse, FaDoorClosed } from 'react-icons/fa';
+
+const getRoomIcon = (type) => {
+  const normalized = type.toLowerCase();
+  switch (normalized) {
+    case 'lecture hall':
+    case 'classroom':
+      return <FaChalkboardTeacher className="modal-icon" />;
+    case 'study room':
+      return <FaBookReader className="modal-icon" />;
+    case 'lab':
+      return <FaLaptopHouse className="modal-icon" />;
+    default:
+      return <FaDoorClosed className="modal-icon" />;
+  }
+};
 
 const center = { lat: 32.496, lng: 35.991 };
 const MAP_ID = process.env.REACT_APP_MAP_ID;
@@ -303,7 +319,7 @@ const CampusMap = () => {
         <div className="room-modal-overlay" onClick={() => setSelectedRoom(null)}>
           <div className="room-modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="room-modal-close" onClick={() => setSelectedRoom(null)}>×</button>
-            <h3 className="room-modal-title">{selectedRoom.name}</h3>
+            <h3 className="room-modal-title">{getRoomIcon(selectedRoom.type)} {selectedRoom.name}</h3>
             <p><strong>Type:</strong> {selectedRoom.type}</p>
             <p><strong>Capacity:</strong> {selectedRoom.capacity} people</p>
             {selectedRoom.description && (
