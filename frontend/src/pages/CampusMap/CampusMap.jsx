@@ -199,7 +199,9 @@ const CampusMap = () => {
   const handleResetView = () => {
     window.location.reload();
   };
-
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen(prev => !prev);
+  
   useEffect(() => {
     if (!mapInstance || markers.length === 0) return;
 
@@ -291,6 +293,10 @@ const CampusMap = () => {
   return (
     <>
       <div className="campus-map-container">
+        <button className="toggle-sidebar-btn" onClick={toggleSidebar}>
+          ☰
+        </button>
+
         <MapSidebar
           buildings={markers}
           selectedId={selectedMarker?.id}
@@ -299,6 +305,7 @@ const CampusMap = () => {
           onRoomClick={handleRoomClick}
           activeRoomId={activeRoomId}
           onNavigate={handleNavigate}
+          isOpen={sidebarOpen}
         />
         <LoadScript
           googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}

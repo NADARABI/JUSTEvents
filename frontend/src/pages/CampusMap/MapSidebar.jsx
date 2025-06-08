@@ -31,6 +31,7 @@ const MapSidebar = ({
   onRoomClick,
   onNavigate,
   activeRoomId,
+  isOpen,
 }) => {
   const [buildingSearch, setBuildingSearch] = useState('');
   const [roomStatusFilter, setRoomStatusFilter] = useState('all');
@@ -49,7 +50,8 @@ const MapSidebar = ({
   const selectedBuilding = buildings.find((b) => b.id === selectedId);
 
   return (
-    <div className="map-sidebar">
+    <div className={`map-sidebar ${isOpen ? 'open' : 'closed'}`}>
+
       <h3>
         Campus Buildings
         <span className="building-count"> ({filteredBuildings.length})</span>
