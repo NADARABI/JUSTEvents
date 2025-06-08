@@ -196,7 +196,10 @@ const CampusMap = () => {
     roomMarkersRef.current.forEach(m => (m.map = null));
     roomMarkersRef.current = [];
   };
-
+  const handleResetView = () => {
+    window.location.reload();
+  };
+  
   useEffect(() => {
     if (!mapInstance || markers.length === 0) return;
 
@@ -237,11 +240,11 @@ const CampusMap = () => {
         rooms.forEach(room => {
           const isActive = room.id === activeRoomId;
           const roomColor = isActive
-          ? '#3F51B5' // Highlight selected room with Indigo
-          : room.status === 'Available'
-          ? '#4CAF50'  // Green
-          : '#FF5252'; // Red
-        const content = createLabel('R', roomColor, isActive);
+            ? '#3F51B5'
+            : room.status === 'Available'
+            ? '#4CAF50'
+            : '#FF5252';
+          const content = createLabel('R', roomColor, isActive);
 
           const roomMarker = new window.google.maps.marker.AdvancedMarkerElement({
             map: mapInstance,
@@ -280,56 +283,59 @@ const CampusMap = () => {
 
   return (
     <>
-    <div className="campus-map-container">
-      <MapSidebar
-        buildings={markers}
-        selectedId={selectedMarker?.id}
-        onSelect={handleSidebarSelect}
-        rooms={roomMap[selectedMarker?.id] || []}
-        onRoomClick={handleRoomClick}
-        activeRoomId={activeRoomId}
-      />
-      <LoadScript
-        googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
-        libraries={MAP_LIBRARIES}
-      >
-        <div className="map-wrapper">
-          <GoogleMap
-            mapContainerStyle={{ width: '100%', height: '100%' }}
-            center={center}
-            zoom={17}
-            options={{ mapId: MAP_ID }}
-            onLoad={map => setMapInstance(map)}
-          >
-            {pathCoordinates.length > 0 && (
-              <Polyline path={pathCoordinates} options={polylineOptions} />
-            )}
-            {selectedMarker && mapInstance && (
-              <MarkerInfoWindow
-                marker={selectedMarker}
-                onClose={handleClose}
-                onNavigate={() => handleNavigate(selectedMarker.id, 'building')}
-              />
-            )}
-          </GoogleMap>
-        </div>
-      </LoadScript>
-
-      {selectedRoom && (
-        <div className="room-modal-overlay" onClick={() => setSelectedRoom(null)}>
-          <div className="room-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="room-modal-close" onClick={() => setSelectedRoom(null)}>×</button>
-            <h3 className="room-modal-title">{getRoomIcon(selectedRoom.type)} {selectedRoom.name}</h3>
-            <p><strong>Type:</strong> {selectedRoom.type}</p>
-            <p><strong>Capacity:</strong> {selectedRoom.capacity} people</p>
-            {selectedRoom.description && (
-              <p><strong>Description:</strong> {selectedRoom.description}</p>
-            )}
+      <div className="campus-map-container">
+        <MapSidebar
+          buildings={markers}
+          selectedId={selectedMarker?.id}
+          onSelect={handleSidebarSelect}
+          rooms={roomMap[selectedMarker?.id] || []}
+          onRoomClick={handleRoomClick}
+          activeRoomId={activeRoomId}
+        />
+        <LoadScript
+          googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+          libraries={MAP_LIBRARIES}
+        >
+          <div className="map-wrapper">
+            <GoogleMap
+              mapContainerStyle={{ width: '100%', height: '100%' }}
+              center={center}
+              zoom={17}
+              options={{ mapId: MAP_ID }}
+              onLoad={map => setMapInstance(map)}
+            >
+              {pathCoordinates.length > 0 && (
+                <Polyline path={pathCoordinates} options={polylineOptions} />
+              )}
+              {selectedMarker && mapInstance && (
+                <MarkerInfoWindow
+                  marker={selectedMarker}
+                  onClose={handleClose}
+                  onNavigate={() => handleNavigate(selectedMarker.id, 'building')}
+                />
+              )}
+            </GoogleMap>
           </div>
-        </div>
-      )}
-    </div>
-    <Footer />
+        </LoadScript>
+
+        {selectedRoom && (
+          <div className="room-modal-overlay" onClick={() => setSelectedRoom(null)}>
+            <div className="room-modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="room-modal-close" onClick={() => setSelectedRoom(null)}>×</button>
+              <h3 className="room-modal-title">{getRoomIcon(selectedRoom.type)} {selectedRoom.name}</h3>
+              <p><strong>Type:</strong> {selectedRoom.type}</p>
+              <p><strong>Capacity:</strong> {selectedRoom.capacity} people</p>
+              {selectedRoom.description && (
+                <p><strong>Description:</strong> {selectedRoom.description}</p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <button className="reset-view-btn" onClick={handleResetView}>
+        Reset View
+      </button>
+      <Footer />
     </>
   );
 };
