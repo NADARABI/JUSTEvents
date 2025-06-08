@@ -185,7 +185,7 @@ const CampusMap = () => {
     clearRouteMarkers();
     mapInstance?.panTo({ lat: room.map_coordinates.x, lng: room.map_coordinates.y });
     mapInstance?.setZoom(19);
-    handleNavigate(room.id, 'room');
+    //handleNavigate(room.id, 'room');
   };
 
   const handleClose = () => {
@@ -263,7 +263,7 @@ const CampusMap = () => {
 
           
           roomMarker.addListener('gmp-click', () => {
-            
+
             setActiveRoomId(room.id);
             mapInstance?.panTo({
               lat: room.map_coordinates.x,
