@@ -31,6 +31,7 @@ const NavBar = () => {
 
       <nav className="navbar-right">
         <NavLink to="/events" className="nav-link">Browse Events</NavLink>
+        <NavLink to="/campus-map" className="nav-link">Campus Map</NavLink>
 
         {!isLoggedIn ? (
           <>
