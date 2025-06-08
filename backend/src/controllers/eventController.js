@@ -95,7 +95,7 @@ export const editEvent = async (req, res) => {
 };
 
 
-// Delete event
+// Delete event 
 export const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -108,6 +108,10 @@ export const deleteEvent = async (req, res) => {
     const rsvps = await EventRsvp.getByEvent(id);
     const rsvpUserIds = rsvps.map(r => r.user_id);
 
+    // delete related RSVPs
+    await Event.deleteRSVPs(id);
+
+    // delete the event 
     await Event.delete(id);
 
     // Notify all RSVP'd users
@@ -164,7 +168,8 @@ export const rsvpEvent = async (req, res) => {
 
     // Add RSVP
     const success = await EventRsvp.add(user_id, event_id);
-    if (!success) return sendResponse(res, 409, 'Already RSVPed');
+    if (!success) 
+      return sendResponse(res, 409, 'Already RSVPed to this event');
 
     // Notify organizer
     if (event?.organizer_id && event.organizer_id !== user_id) {
@@ -217,9 +222,10 @@ export const cancelRsvp = async (req, res) => {
     sendResponse(res, 200, 'RSVP cancelled successfully');
   } catch (err) {
     console.error('cancelRsvp:', err);
-    sendResponse(res, 500, 'Failed to cancel RSVP');
+    sendResponse(res, 500, 'Server error during canceling RSVP');
   }
 };
+
 
 // Get RSVPs list for an event
 export const getRsvps = async (req, res) => {
