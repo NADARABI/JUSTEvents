@@ -10,7 +10,8 @@ import {
   getRsvps,
   getStats,
   getMyEvents,
-  checkMyRsvp
+  checkMyRsvp,
+  getMyRsvps
 } from '../controllers/eventController.js';
 
 import authMiddleware from '../middlewares/authMiddleware.js';
@@ -52,4 +53,6 @@ router.get('/events/:id/rsvps', authMiddleware, authorizeRole(['Organizer']), ge
 router.post('/events/:id/rsvp', authMiddleware, authorizeRole(['Student', 'Visitor']), rsvpEvent);
 router.delete('/events/:id/rsvp', authMiddleware, authorizeRole(['Student', 'Visitor']), cancelRsvp);
 router.get('/events/:id/my-rsvp', authMiddleware, authorizeRole(['Student', 'Visitor']), checkMyRsvp);
+router.get('/rsvps/me', authMiddleware, authorizeRole(['Student', 'Visitor']), getMyRsvps);
+
 export default router;

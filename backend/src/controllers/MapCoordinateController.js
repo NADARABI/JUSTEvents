@@ -1,3 +1,7 @@
+// This controller is not used in the current Google Maps-based campus map.
+// It's reserved for future use with 2D indoor mapping (x, y, level) via SVG or canvas overlays.
+// Leave it as-is for now. All live map functionality uses CampusMapController instead.
+
 // src/controllers/MapCoordinateController.js
 import MapCoordinate from '../models/MapCoordinate.js';
 import { sendResponse } from '../utils/sendResponse.js';

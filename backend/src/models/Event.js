@@ -171,6 +171,26 @@ class Event {
       ORDER BY date ASC, time ASC
     `, [startDate, endDate]);
     return rows;
+<<<<<<< HEAD
+=======
+  }
+  
+  static async checkConflict(date, time, venue_id, excludeId = null) {
+    let query = `SELECT * FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
+    let params = [date, time, venue_id];
+  
+    if (excludeId) {
+      query += ` AND id != ?`;
+      params.push(excludeId);
+    }
+  
+    const [rows] = await db.execute(query, params);
+    return rows.length > 0;
+}
+
+  static async deleteRSVPs(eventId) {
+    await db.execute(`DELETE FROM event_rsvps WHERE event_id = ?`, [eventId]);
+>>>>>>> ba4fbdeaa8db97ec82290e169484a0669d32f781
   }
 }
 

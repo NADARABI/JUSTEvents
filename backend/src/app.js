@@ -46,8 +46,8 @@ app.use('/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/buildings', buildingRoutes);
-console.log('/auth routes are active');
 app.use('/api/campus-map', campusMapRoutes);
+console.log('/auth routes are active');
 
 // Protected API Routes
 app.use('/api', eventRoutes);

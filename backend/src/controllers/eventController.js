@@ -258,7 +258,14 @@ export const getMyEvents = async (req, res) => {
 
     // Fetch events created by this organizer
     const [events] = await db.execute(
-      `SELECT * FROM events WHERE organizer_id = ? ORDER BY date DESC`, 
+      `SELECT 
+         e.*, 
+         a.decision_reason 
+       FROM events e
+       LEFT JOIN approvals a 
+         ON a.entity_type = 'Event' AND a.entity_id = e.id
+       WHERE e.organizer_id = ?
+       ORDER BY e.date DESC`, 
       [organizer_id]
     );
 
@@ -268,6 +275,7 @@ export const getMyEvents = async (req, res) => {
     sendResponse(res, 500, 'Server error while fetching events');
   }
 };
+
 export const checkMyRsvp = async (req, res) => {
   try {
     const { id: event_id } = req.params;
@@ -283,5 +291,25 @@ export const checkMyRsvp = async (req, res) => {
   } catch (err) {
     console.error('checkMyRsvp error:', err.message);
     sendResponse(res, 500, 'Failed to check RSVP status');
+  }
+};
+
+export const getMyRsvps = async (req, res) => {
+  try {
+    const user_id = req.user.id;
+
+    const [rows] = await db.execute(
+      `SELECT e.id, e.title, e.description, e.category, e.date, e.time, e.image_url, r.name AS room_name
+       FROM event_rsvps er
+       JOIN events e ON er.event_id = e.id
+       JOIN rooms r ON e.venue_id = r.id
+       WHERE er.user_id = ? AND er.status = 'Going'`,
+      [user_id]
+    );
+
+    sendResponse(res, 200, 'RSVPed events retrieved successfully', rows);
+  } catch (err) {
+    console.error('getMyRsvps error:', err.message);
+    sendResponse(res, 500, 'Failed to retrieve RSVPed events');
   }
 };

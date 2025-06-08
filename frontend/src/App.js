@@ -32,6 +32,7 @@ import CampusMap from './pages/CampusMap/CampusMap';
 
 import MyEventsPage from './pages/Organizer/MyEventsPage';
 import OrganizerDashboardPage from './pages/Organizer/OrganizerDashboardPage';
+import ViewRsvpsPage from './pages/Organizer/ViewRsvpsPage';
 
 import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
@@ -49,6 +50,7 @@ import BookingDetails from './pages/Booking/BookingDetails';
 import RoomCalendarView from './pages/Calendar/RoomCalendarView';
 
 import NotificationsPage from './pages/notifications/NotificationsPage';
+import MyRsvpsPage from './pages/MyRsvpsPage';
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -84,12 +86,14 @@ function AppRoutes() {
         <Route path="/saved" element={<PrivateRoute><SavedEventsPage /></PrivateRoute>} />
         <Route path="/feedback" element={<PrivateRoute roles={['Student', 'Organizer']}><></></PrivateRoute>} />
         <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
+        <Route path="/rsvps/me" element={<PrivateRoute roles={['Student', 'Visitor']}><MyRsvpsPage /></PrivateRoute>}/>
 
         {/* Organizer */}
         <Route path="/events/create" element={<PrivateRoute roles="Organizer"><CreateEventPage /></PrivateRoute>} />
         <Route path="/events/edit/:id" element={<PrivateRoute roles="Organizer"><EditEventPage /></PrivateRoute>} />
         <Route path="/organizer/my-events" element={<PrivateRoute roles="Organizer"><MyEventsPage /></PrivateRoute>} />
         <Route path="/organizer/dashboard" element={<PrivateRoute roles="Organizer"><OrganizerDashboardPage /></PrivateRoute>} />
+        <Route path="/events/:id/rsvps" element={<PrivateRoute roles="Organizer"><ViewRsvpsPage /></PrivateRoute>}/>
 
         {/* Campus Admin */}
         <Route path="/campus-admin/room-requests" element={<PrivateRoute roles="Campus Admin"><PendingBookingsPage /></PrivateRoute>} />
@@ -111,6 +115,7 @@ function AppRoutes() {
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </>
   );

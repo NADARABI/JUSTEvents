@@ -1,6 +1,5 @@
 import Building from '../models/Building.js';
 import Room from '../models/Room.js';
-import MapCoordinate from '../models/MapCoordinate.js';
 import Event from '../models/Event.js';
 import { sendResponse } from '../utils/sendResponse.js';
 import axios from 'axios';
@@ -8,7 +7,7 @@ import axios from 'axios';
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 /**
- * Get all buildings with their coordinates
+ * Get all campus buildings (with optional coordinates)
  */
 export const getAllBuildings = async (req, res) => {
   try {
@@ -21,23 +20,14 @@ export const getAllBuildings = async (req, res) => {
 };
 
 /**
- * Get all rooms for a specific building
+ * Get all rooms in a specific building
  */
 export const getRoomsByBuilding = async (req, res) => {
   try {
     const { id } = req.params;
+
     const rooms = await Room.findAll();
-
-    // Filter by building
-    let filtered = rooms.filter(r => r.building_id == id);
-
-    // Get user role from token (if any)
-    const role = req.user?.role || 'Visitor';
-
-    // Only Admins and Organizers can see unavailable rooms
-    if (!['System Admin', 'Campus Admin', 'Organizer'].includes(role)) {
-      filtered = filtered.filter(r => r.status === 'Available');
-    }
+    const filtered = rooms.filter((r) => r.building_id == id);
 
     sendResponse(res, 200, 'Rooms fetched successfully', filtered);
   } catch (error) {
@@ -46,29 +36,8 @@ export const getRoomsByBuilding = async (req, res) => {
   }
 };
 
-
 /**
- * Get all map markers (used for building visualization)
- */
-export const getMapMarkers = async (req, res) => {
-  try {
-    const coordinates = await MapCoordinate.findAll();
-    const markers = coordinates.map(coord => ({
-      id: coord.id,
-      building_id: coord.building_id,
-      x: coord.x,
-      y: coord.y,
-      level: coord.level,
-    }));
-    sendResponse(res, 200, 'Map markers fetched successfully', markers);
-  } catch (error) {
-    console.error('getMapMarkers:', error.message);
-    sendResponse(res, 500, 'Server error while fetching map markers');
-  }
-};
-
-/**
- * Get event location (building + room)
+ * Get building + room info for a specific event
  */
 export const getEventLocation = async (req, res) => {
   try {
@@ -90,64 +59,77 @@ export const getEventLocation = async (req, res) => {
 };
 
 /**
- * Get navigation path from start → end using Google Maps API
- * type = "room" or "building"
+ * Get walking route from origin/startId to endId (room/building)
+ * Query: origin=lat,lng or startId, endId, type
  */
 export const getNavigationPath = async (req, res) => {
   try {
     const { origin, startId, endId, type } = req.query;
-
     if (!endId || !type) {
       return sendResponse(res, 400, 'Missing required parameters: endId and type');
     }
 
     let startCoordinates, endCoordinates;
 
-    // ✅ 1. Get End Coordinates
+    // Step 1: Get End Coordinates
     if (type === 'building') {
-      const end = await Building.findById(endId);
-      if (!end) return sendResponse(res, 404, 'Building not found');
-      endCoordinates = end.map_coordinates;
+      const building = await Building.findById(endId);
+      if (!building || !building.map_coordinates) {
+        return sendResponse(res, 404, 'Building not found or has no coordinates');
+      }
+      endCoordinates = {
+        lat: parseFloat(building.map_coordinates.x),
+        lng: parseFloat(building.map_coordinates.y),
+      };
     } else if (type === 'room') {
-      const end = await Room.findById(endId);
-      if (!end) return sendResponse(res, 404, 'Room not found');
-      endCoordinates = end.map_coordinates;
+      const room = await Room.findById(endId);
+      if (!room || !room.map_coordinates) {
+        return sendResponse(res, 404, 'Room not found or has no coordinates');
+      }
+      endCoordinates = {
+        lat: parseFloat(room.map_coordinates.x),
+        lng: parseFloat(room.map_coordinates.y),
+      };
     } else {
-      return sendResponse(res, 400, 'Invalid type parameter. Must be "building" or "room".');
+      return sendResponse(res, 400, 'Invalid type. Must be "building" or "room".');
     }
 
-    // ✅ 2. Determine Start Coordinates
+    // Step 2: Get Start Coordinates
     if (origin) {
-      // Parse origin from query string (format: lat,lng)
-      const [x, y] = origin.split(',').map(Number);
-      startCoordinates = { x, y };
+      const [lat, lng] = origin.split(',').map(Number);
+      startCoordinates = { lat, lng };
     } else if (startId) {
-      const start = type === 'building'
-        ? await Building.findById(startId)
-        : await Room.findById(startId);
-
-      if (!start) return sendResponse(res, 404, 'Start location not found');
-      startCoordinates = start.map_coordinates;
+      const start =
+        type === 'building'
+          ? await Building.findById(startId)
+          : await Room.findById(startId);
+      if (!start || !start.map_coordinates) {
+        return sendResponse(res, 404, 'Start location not found or has no coordinates');
+      }
+      startCoordinates = {
+        lat: parseFloat(start.map_coordinates.x),
+        lng: parseFloat(start.map_coordinates.y),
+      };
     } else {
       return sendResponse(res, 400, 'Either origin or startId must be provided');
     }
 
-    // ✅ 3. Validate Coordinates
+    // Step 3: Validate Coordinates
     const isValidCoord = (coord) =>
       coord &&
-      typeof coord.x === 'number' &&
-      typeof coord.y === 'number' &&
-      coord.x >= -90 && coord.x <= 90 &&
-      coord.y >= -180 && coord.y <= 180;
+      typeof coord.lat === 'number' &&
+      typeof coord.lng === 'number' &&
+      coord.lat >= -90 && coord.lat <= 90 &&
+      coord.lng >= -180 && coord.lng <= 180;
 
     if (!isValidCoord(startCoordinates) || !isValidCoord(endCoordinates)) {
       return sendResponse(res, 400, 'Invalid or missing coordinates');
     }
 
-    // ✅ 4. Call Google Maps API
-    const originStr = `${startCoordinates.x},${startCoordinates.y}`;
-    const destinationStr = `${endCoordinates.x},${endCoordinates.y}`;
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destinationStr}&mode=walking&key=${GOOGLE_MAPS_API_KEY}`;
+    // Step 4: Fetch directions from Google API
+    const originStr = `${startCoordinates.lat},${startCoordinates.lng}`;
+    const destStr = `${endCoordinates.lat},${endCoordinates.lng}`;
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destStr}&mode=walking&key=${GOOGLE_MAPS_API_KEY}`;
 
     const response = await axios.get(url);
     const directions = response.data;
@@ -157,7 +139,6 @@ export const getNavigationPath = async (req, res) => {
     }
 
     sendResponse(res, 200, 'Path fetched successfully', directions.routes[0]);
-
   } catch (error) {
     console.error('getNavigationPath:', error.message);
     sendResponse(res, 500, 'Server error while fetching navigation path');

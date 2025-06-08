@@ -111,6 +111,7 @@ router.get(
   }
 );
 
+<<<<<<< HEAD
 
 
 
@@ -126,6 +127,8 @@ router.get(
 
 
 
+=======
+>>>>>>> ba4fbdeaa8db97ec82290e169484a0669d32f781
 // Request Role (For Pending Users)
 router.post(
   '/request-role',

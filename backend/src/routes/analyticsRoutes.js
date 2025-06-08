@@ -54,6 +54,4 @@ router.get('/bookings/trends', authorizeRole(['System Admin', 'Campus Admin']), 
 router.get('/bookings/by-building', authorizeRole(['System Admin', 'Campus Admin']), getBookingsByBuilding);
 router.get('/bookings/cancel-rate', authorizeRole(['System Admin', 'Campus Admin']), getBookingCancelRate);
 
-
-
 export default router;

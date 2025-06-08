@@ -3,7 +3,7 @@ import Event from '../models/Event.js';
 import { createNotification } from '../utils/notificationHelper.js';
 import { sendResponse } from '../utils/sendResponse.js';
 
-// ✅ GET /admin/pending-events
+// GET /admin/pending-events
 export const getPendingEvents = async (req, res) => {
   try {
     const approvals = await Approval.getPending('Event');

@@ -24,7 +24,9 @@ api.interceptors.request.use((config) => {
     config.url === '/analytics/popular-events-public' ||
     config.url === '/analytics/summary-public' ||
     config.url === '/feedback/recent-public' ||
-    (config.method === 'get' && /^\/events(\/\d+)?$/.test(config.url));
+    (config.method === 'get' && /^\/events(\/\d+)?$/.test(config.url)) ||
+    config.url === '/api/buildings' ||                             
+    config.url.startsWith('/api/campus-map/navigate');            
 
   if (token && !isPublic) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -84,6 +86,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
 
 export default api;

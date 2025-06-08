@@ -4,7 +4,6 @@
   padding: 40px 20px;
 }
 
-/* Back Button */
 .back-btn {
   background: none;
   border: none;
@@ -22,7 +21,6 @@
   color: #4f959d;
 }
 
-/* Heading */
 .my-events-heading {
   color: #062743;
   font-size: 32px;
@@ -31,7 +29,6 @@
   text-align: center;
 }
 
-/* Filters */
 .filter-buttons {
   display: flex;
   justify-content: center;
@@ -54,7 +51,6 @@
   color: white;
 }
 
-/* Card List */
 .event-card-list {
   display: grid;
   gap: 20px;
@@ -71,10 +67,22 @@
   box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.1);
 }
 
-.event-image img {
+.event-img {
   width: 150px;
   height: 150px;
   object-fit: cover;
+}
+
+.event-placeholder {
+  width: 150px;
+  height: 150px;
+  background-color: #e6e6e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #777;
+  font-size: 14px;
+  font-style: italic;
 }
 
 .event-details {
@@ -86,6 +94,7 @@
   display: flex;
   gap: 8px;
   margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 .action-btn {
@@ -93,6 +102,8 @@
   border-radius: 5px;
   cursor: pointer;
   color: white;
+  font-size: 14px;
+  text-decoration: none;
 }
 
 .edit-btn {
@@ -103,7 +114,10 @@
   background-color: #D9534F;
 }
 
-/* Status Colors */
+.view-btn {
+  background-color: #4F959D;
+}
+
 .status-approved {
   color: #4F959D;
 }
@@ -116,7 +130,6 @@
   color: #D9534F;
 }
 
-/* Messages */
 .no-events-message,
 .loading-message {
   text-align: center;

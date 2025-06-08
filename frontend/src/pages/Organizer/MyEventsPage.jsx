@@ -1,4 +1,4 @@
-// src/pages/EventManagement/MyEventsPage.jsx
+// src/pages/Organizer/MyEventsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import api from '../../services/api';
@@ -6,13 +6,17 @@ import { toast } from 'react-toastify';
 import { deleteEvent } from '../../services/eventService';
 import NavBar from '../../components/common/NavBar';
 import Footer from '../../components/common/Footer';
+import RejectionReasonModal from '../../components/Events/RejectionReasonModal';
+import EventCard from '../../components/Events/EventCard';
 import './MyEventsPage.css';
 
 const MyEventsPage = () => {
-  const location = useLocation(); // ✅ React Router hook
+  const location = useLocation();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('All');
+  const [showModal, setShowModal] = useState(false);
+  const [modalReason, setModalReason] = useState('');
 
   useEffect(() => {
     const fetchMyEvents = async () => {
@@ -39,7 +43,7 @@ const MyEventsPage = () => {
     };
 
     fetchMyEvents();
-  }, [location.key]); // ✅ re-fetch when navigating back
+  }, [location.key]);
 
   const handleDelete = async (eventId) => {
     const confirm = window.confirm("Are you sure you want to delete this event?");
@@ -52,19 +56,6 @@ const MyEventsPage = () => {
     } catch (err) {
       console.error("Delete error", err.message);
       toast.error("Failed to delete event");
-    }
-  };
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case 'Approved':
-        return 'status-approved';
-      case 'Pending':
-        return 'status-pending';
-      case 'Rejected':
-        return 'status-rejected';
-      default:
-        return '';
     }
   };
 
@@ -84,7 +75,6 @@ const MyEventsPage = () => {
         </button>
         <h1 className="my-events-heading">My Events</h1>
 
-        {/* Filter Buttons */}
         <div className="filter-buttons">
           {['All', 'Approved', 'Pending', 'Rejected'].map((status) => (
             <button
@@ -104,26 +94,14 @@ const MyEventsPage = () => {
         ) : (
           <div className="event-card-list">
             {events
-              .filter((event) =>
-                filterStatus === 'All' ? true : event.status === filterStatus
-              )
-              .map((event) => (
-                <div key={event.id} className="event-card">
-                  <div className="event-image">
-                    <img
-                      src={event.image_url ? `/images/${event.image_url}` : '/placeholder.png'}
-                      alt={event.title}
-                    />
-                  </div>
-                  <div className="event-details">
-                    <h2>{event.title}</h2>
-                    <p className="event-date-time">{event.date} at {event.time}</p>
-                    <p className={`event-status ${getStatusClass(event.status)}`}>{event.status}</p>
-                    <div className="event-actions">
-                      <Link
-                        to={`/events/edit/${event.id}`}
-                        className="action-btn edit-btn"
-                      >
+              .filter((event) => filterStatus === 'All' || event.status === filterStatus)
+              .map((event, index) => (
+                <EventCard
+                  key={`${event.id}-${index}`}
+                  event={event}
+                  actions={
+                    <>
+                      <Link to={`/events/edit/${event.id}`} className="action-btn edit-btn">
                         Edit
                       </Link>
                       <button
@@ -132,13 +110,36 @@ const MyEventsPage = () => {
                       >
                         Delete
                       </button>
-                    </div>
-                  </div>
-                </div>
+                      {event.status === 'Approved' && (
+                        <Link to={`/events/${event.id}/rsvps`} className="action-btn view-btn">
+                          View RSVPs
+                        </Link>
+                      )}
+                      {event.status === 'Rejected' && (
+                        <button
+                          onClick={() => {
+                            setModalReason(event.decision_reason);
+                            setShowModal(true);
+                          }}
+                          className="action-btn view-btn"
+                        >
+                          View Reason
+                        </button>
+                      )}
+                    </>
+                  }
+                />
               ))}
           </div>
         )}
       </div>
+
+      <RejectionReasonModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        reason={modalReason}
+      />
+
       <Footer />
     </>
   );
