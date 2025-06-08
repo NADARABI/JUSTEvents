@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
 import './MapSidebar.css';
-import { FaFlask, FaChalkboardTeacher, FaDoorOpen, FaBookReader, FaQuestionCircle } from 'react-icons/fa';
+import {
+  FaChalkboardTeacher,
+  FaBookReader,
+  FaLaptopHouse,
+  FaDoorClosed,
+  FaMapMarkerAlt,
+} from 'react-icons/fa';
 
 const getRoomIcon = (type) => {
-  switch (type.toLowerCase()) {
-    case 'lab':
-      return <FaFlask className="room-icon" />;
+  const normalized = type.toLowerCase();
+  switch (normalized) {
+    case 'lecture hall':
     case 'classroom':
       return <FaChalkboardTeacher className="room-icon" />;
-    case 'meeting room':
-      return <FaDoorOpen className="room-icon" />;
     case 'study room':
       return <FaBookReader className="room-icon" />;
+    case 'lab':
+      return <FaLaptopHouse className="room-icon" />;
     default:
-      return <FaQuestionCircle className="room-icon" />;
+      return <FaDoorClosed className="room-icon" />;
   }
 };
 
@@ -23,6 +29,7 @@ const MapSidebar = ({
   selectedId,
   rooms = [],
   onRoomClick,
+  onNavigate,
   activeRoomId,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -86,10 +93,27 @@ const MapSidebar = ({
                     className={`room-item 
                       ${isAvailable ? 'room-available' : 'room-unavailable'} 
                       ${isActive ? 'active-room' : ''}`}
-                    onClick={() => onRoomClick && onRoomClick(room)}
                     title={`Zoom to ${room.name}`}
                   >
-                    <strong>{room.name}</strong> – {getRoomIcon(room.type)} {room.type} ({room.capacity} ppl)
+                    <div
+                      className="room-info"
+                      onClick={() => onRoomClick && onRoomClick(room)}
+                    >
+                      <div className="room-header">
+                        <span className="room-icon">{getRoomIcon(room.type)}</span>
+                        <strong>{room.name}</strong> – {room.type} ({room.capacity} ppl)
+                      </div>
+                      {room.description && (
+                        <p className="room-desc">{room.description}</p>
+                      )}
+                    </div>
+
+                    <button
+                      className="navigate-btn"
+                      onClick={() => onNavigate && onNavigate(room.id, 'room')}
+                    >
+                      <FaMapMarkerAlt /> Show Path
+                    </button>
                   </li>
                 );
               })}

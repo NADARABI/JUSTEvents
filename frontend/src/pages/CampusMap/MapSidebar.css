@@ -131,3 +131,43 @@
   vertical-align: middle;
   color: #555;
 }
+
+.room-info {
+  margin-bottom: 6px;
+}
+
+.room-header {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.room-desc {
+  font-size: 13px;
+  color: #444;
+  margin: 4px 0 6px 22px;
+  line-height: 1.4;
+  padding-right: 8px;
+}
+
+.navigate-btn {
+  background-color: #3F51B5;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  margin-left: 22px;
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.navigate-btn:hover {
+  background-color: #2c3c9a;
+}

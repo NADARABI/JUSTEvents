@@ -6,22 +6,22 @@ import './CampusMap.css';
 import MarkerInfoWindow from './MarkerInfoWindow';
 import MapSidebar from './MapSidebar';
 import Footer from '../../components/common/Footer';
-import { FaChalkboardTeacher, FaBookReader, FaLaptopHouse, FaDoorClosed } from 'react-icons/fa';
+//import { FaChalkboardTeacher, FaBookReader, FaLaptopHouse, FaDoorClosed } from 'react-icons/fa';
 
-const getRoomIcon = (type) => {
-  const normalized = type.toLowerCase();
-  switch (normalized) {
-    case 'lecture hall':
-    case 'classroom':
-      return <FaChalkboardTeacher className="modal-icon" />;
-    case 'study room':
-      return <FaBookReader className="modal-icon" />;
-    case 'lab':
-      return <FaLaptopHouse className="modal-icon" />;
-    default:
-      return <FaDoorClosed className="modal-icon" />;
-  }
-};
+// const getRoomIcon = (type) => {
+//   const normalized = type.toLowerCase();
+//   switch (normalized) {
+//     case 'lecture hall':
+//     case 'classroom':
+//       return <FaChalkboardTeacher className="modal-icon" />;
+//     case 'study room':
+//       return <FaBookReader className="modal-icon" />;
+//     case 'lab':
+//       return <FaLaptopHouse className="modal-icon" />;
+//     default:
+//       return <FaDoorClosed className="modal-icon" />;
+//   }
+// };
 
 const center = { lat: 32.496, lng: 35.991 };
 const MAP_ID = process.env.REACT_APP_MAP_ID;
@@ -71,7 +71,7 @@ const CampusMap = () => {
   const [pathCoordinates, setPathCoordinates] = useState([]);
   const [mapInstance, setMapInstance] = useState(null);
   const [roomMap, setRoomMap] = useState({});
-  const [selectedRoom, setSelectedRoom] = useState(null);
+  //const [selectedRoom, setSelectedRoom] = useState(null);
   const [activeRoomId, setActiveRoomId] = useState(null);
 
   const markerElementsRef = useRef([]);
@@ -179,7 +179,7 @@ const CampusMap = () => {
 
   const handleRoomClick = (room) => {
     if (!room?.map_coordinates) return;
-    setSelectedRoom(room);
+    //setSelectedRoom(room);
     setActiveRoomId(room.id);
     setPathCoordinates([]);
     clearRouteMarkers();
@@ -199,7 +199,7 @@ const CampusMap = () => {
   const handleResetView = () => {
     window.location.reload();
   };
-  
+
   useEffect(() => {
     if (!mapInstance || markers.length === 0) return;
 
@@ -261,16 +261,23 @@ const CampusMap = () => {
             roomMarker.element.style.animation = 'markerBounce 0.4s infinite alternate';
           }
 
+          
           roomMarker.addListener('gmp-click', () => {
-            setSelectedRoom(room);
+            
             setActiveRoomId(room.id);
-            handleNavigate(room.id, 'room');
-          });
-
-          roomMarkersRef.current.push(roomMarker);
-        });
-      }
-
+            mapInstance?.panTo({
+              lat: room.map_coordinates.x,
+              lng: room.map_coordinates.y,
+            });
+            mapInstance?.setZoom(19);
+            setPathCoordinates([]); // clears previous paths if needed
+            clearRouteMarkers();    // clears A/B markers
+          }
+        );
+        roomMarkersRef.current.push(roomMarker);
+        
+      });
+    }
       return true;
     };
 
@@ -291,6 +298,7 @@ const CampusMap = () => {
           rooms={roomMap[selectedMarker?.id] || []}
           onRoomClick={handleRoomClick}
           activeRoomId={activeRoomId}
+          onNavigate={handleNavigate}
         />
         <LoadScript
           googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
@@ -318,19 +326,6 @@ const CampusMap = () => {
           </div>
         </LoadScript>
 
-        {selectedRoom && (
-          <div className="room-modal-overlay" onClick={() => setSelectedRoom(null)}>
-            <div className="room-modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="room-modal-close" onClick={() => setSelectedRoom(null)}>×</button>
-              <h3 className="room-modal-title">{getRoomIcon(selectedRoom.type)} {selectedRoom.name}</h3>
-              <p><strong>Type:</strong> {selectedRoom.type}</p>
-              <p><strong>Capacity:</strong> {selectedRoom.capacity} people</p>
-              {selectedRoom.description && (
-                <p><strong>Description:</strong> {selectedRoom.description}</p>
-              )}
-            </div>
-          </div>
-        )}
       </div>
       <button className="reset-view-btn" onClick={handleResetView}>
         Reset View
