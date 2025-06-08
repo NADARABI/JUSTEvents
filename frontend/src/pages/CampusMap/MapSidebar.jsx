@@ -101,23 +101,34 @@ const MapSidebar = ({
                     >
                       <div className="room-header">
                         <span className="room-icon">{getRoomIcon(room.type)}</span>
-                        <strong>{room.name}</strong> – {room.type} ({room.capacity} ppl)
+                        <strong>{room.name} – {room.type} ({room.capacity} ppl)</strong> 
                       </div>
                       {room.description && (
                         <p className="room-desc">{room.description}</p>
                       )}
                     </div>
 
-                    <button
-                      className="navigate-btn"
-                      onClick={() => onNavigate && onNavigate(room.id, 'room')}
-                    >
-                      <FaMapMarkerAlt /> Show Path
-                    </button>
+                    <div className="room-actions">
+                      <button className="navigate-btn" onClick={() => onNavigate && onNavigate(room.id, 'room')}>
+                        <FaMapMarkerAlt /> Show Path
+                      </button>
+                      <button className="navigate-btn" onClick={(e) => {
+                        e.stopPropagation();
+                        const { x, y } = room.map_coordinates || {};
+                        if (x && y) {
+                          const url = `https://www.google.com/maps/dir/?api=1&destination=${x},${y}&travelmode=walking`;
+                          window.open(url, '_blank');
+                        }
+                      }}>
+                        📍 Google Maps
+                      </button>
+                    </div>
                   </li>
                 );
-              })}
-            </ul>
+              }
+            )
+          }
+        </ul>
           ) : (
             <div className="no-rooms">No rooms mapped for this building.</div>
           )}

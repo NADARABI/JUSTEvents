@@ -159,8 +159,6 @@
   padding: 4px 8px;
   border: none;
   border-radius: 4px;
-  margin-left: 22px;
-  margin-top: 4px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -170,4 +168,11 @@
 
 .navigate-btn:hover {
   background-color: #2c3c9a;
+}
+.room-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 22px;
+  margin-top: 4px;
 }
