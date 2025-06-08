@@ -1,7 +1,6 @@
-// src/components/Landing/DualCTASection.jsx
 import React from 'react';
 import './dualCTASection.css';
-import { PlusCircle, CalendarClock } from 'lucide-react';
+import { PlusCircle, CalendarClock, MapPinned } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 
@@ -9,12 +8,10 @@ const DualCTASection = () => {
   const navigate = useNavigate();
   const { isLoggedIn, role } = useUser();
 
-  const handleNavigate = (path) => {
-    navigate(path);
-  };
-
   const isOrganizer = role === 'Organizer';
   const isBookingAllowed = ['student', 'visitor', 'organizer'].includes(role?.toLowerCase());
+
+  const handleNavigate = (path) => navigate(path);
 
   return (
     <section className="dual-cta-section">
@@ -22,7 +19,13 @@ const DualCTASection = () => {
       <p className="cta-subtitle">
         Create engaging events, reserve campus rooms, and empower your student journey – all in one place.
       </p>
+
       <div className="cta-button-group">
+        {/* Always show Campus Map */}
+        <button onClick={() => handleNavigate('/campus-map')}>
+          <MapPinned size={18} /> Explore Campus Map
+        </button>
+
         {!isLoggedIn && (
           <>
             <button onClick={() => handleNavigate('/login')}>
