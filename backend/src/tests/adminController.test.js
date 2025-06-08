@@ -1,48 +1,83 @@
-import { getPendingUsers } from '../controllers/adminController.js';
+import * as adminController from '../controllers/adminController.js';
 import User from '../models/User.js';
+import { sendResponse } from '../utils/sendResponse.js';
 
 jest.mock('../models/User.js');
+jest.mock('../utils/sendResponse.js');
 
-describe('getPendingUsers', () => {
+describe('adminController', () => {
   let req, res;
-
   beforeEach(() => {
-    req = {};
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
+    req = { params: { id: '1' } };
+    res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    jest.clearAllMocks();
   });
 
-  it('should return pending users successfully', async () => {
-    const fakeUsers = [
-      { id: 1, name: 'User1', role: 'Pending' },
-      { id: 2, name: 'User2', role: 'Pending' },
-    ];
-    User.getPendingUsers.mockResolvedValue(fakeUsers);
-
-    // Mock sendResponse
-    const sendResponse = jest.fn();
-    jest.doMock('../utils/sendResponse.js', () => ({ sendResponse }));
-
-    // إعادة استيراد الدالة بعد الموك
-    const { getPendingUsers: testedGetPendingUsers } = await import('../controllers/adminController.js');
-    await testedGetPendingUsers(req, res);
-
-    expect(User.getPendingUsers).toHaveBeenCalled();
-    // تحقق من أن sendResponse تم استدعاؤه مع القيم الصحيحة
-    // لا يمكن التحقق من res.json مباشرة لأن sendResponse مغلف
+  describe('getPendingUsers', () => {
+    it('should fetch pending users successfully', async () => {
+      User.getPendingUsers.mockResolvedValue([{ id: 1 }]);
+      await adminController.getPendingUsers(req, res);
+      expect(sendResponse).toHaveBeenCalledWith(res, 200, 'Pending users fetched successfully', [{ id: 1 }]);
+    });
+    it('should handle errors', async () => {
+      User.getPendingUsers.mockRejectedValue(new Error('fail'));
+      await adminController.getPendingUsers(req, res);
+      expect(sendResponse).toHaveBeenCalledWith(res, 500, 'Failed to fetch pending users');
+    });
   });
 
-  it('should handle errors and return 500', async () => {
-    User.getPendingUsers.mockRejectedValue(new Error('DB error'));
+  describe('approveUser', () => {
+    it('should approve user successfully', async () => {
+      User.findById.mockResolvedValue({ id: 1, role: 'Pending', requested_role: 'Organizer' });
+      User.updateRole.mockResolvedValue();
+      await adminController.approveUser(req, res);
+      expect(User.updateRole).toHaveBeenCalledWith('1', 'Organizer');
+      expect(sendResponse).toHaveBeenCalledWith(res, 200, 'User approved as Organizer');
+    });
+    it('should return 404 if user not found', async () => {
+      User.findById.mockResolvedValue(null);
+      await adminController.approveUser(req, res);
+      expect(sendResponse).toHaveBeenCalledWith(res, 404, 'User not found');
+    });
+    it('should return 400 if user is not pending', async () => {
+      User.findById.mockResolvedValue({ id: 1, role: 'Visitor', requested_role: 'Organizer' });
+      await adminController.approveUser(req, res);
+      expect(sendResponse).toHaveBeenCalledWith(res, 400, 'User is not pending approval');
+    });
+    it('should return 400 if user has no requested role', async () => {
+      User.findById.mockResolvedValue({ id: 1, role: 'Pending', requested_role: null });
+      await adminController.approveUser(req, res);
+      expect(sendResponse).toHaveBeenCalledWith(res, 400, 'User has no requested role');
+    });
+    it('should handle errors', async () => {
+      User.findById.mockRejectedValue(new Error('fail'));
+      await adminController.approveUser(req, res);
+      expect(sendResponse).toHaveBeenCalledWith(res, 500, 'Failed to approve user');
+    });
+  });
 
-    const sendResponse = jest.fn();
-    jest.doMock('../utils/sendResponse.js', () => ({ sendResponse }));
-    const { getPendingUsers: testedGetPendingUsers } = await import('../controllers/adminController.js');
-    await testedGetPendingUsers(req, res);
-
-    expect(User.getPendingUsers).toHaveBeenCalled();
-    // تحقق من أن sendResponse تم استدعاؤه مع كود 500
+  describe('rejectUser', () => {
+    it('should reject user successfully', async () => {
+      User.findById.mockResolvedValue({ id: 1, role: 'Pending' });
+      User.updateRole.mockResolvedValue();
+      await adminController.rejectUser(req, res);
+      expect(User.updateRole).toHaveBeenCalledWith('1', 'Visitor');
+      expect(sendResponse).toHaveBeenCalledWith(res, 200, 'User rejected and set as Visitor');
+    });
+    it('should return 404 if user not found', async () => {
+      User.findById.mockResolvedValue(null);
+      await adminController.rejectUser(req, res);
+      expect(sendResponse).toHaveBeenCalledWith(res, 404, 'User not found');
+    });
+    it('should return 400 if user is not pending', async () => {
+      User.findById.mockResolvedValue({ id: 1, role: 'Visitor' });
+      await adminController.rejectUser(req, res);
+      expect(sendResponse).toHaveBeenCalledWith(res, 400, 'User is not pending approval');
+    });
+    it('should handle errors', async () => {
+      User.findById.mockRejectedValue(new Error('fail'));
+      await adminController.rejectUser(req, res);
+      expect(sendResponse).toHaveBeenCalledWith(res, 500, 'Failed to reject user');
+    });
   });
 }); 
