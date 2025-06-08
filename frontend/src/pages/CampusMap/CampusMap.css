@@ -133,3 +133,14 @@
 .room-modal-close:hover {
   color: #000;
 }
+
+.campus-map-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+.map-wrapper {
+  flex: 1;
+  height: 100%;
+}

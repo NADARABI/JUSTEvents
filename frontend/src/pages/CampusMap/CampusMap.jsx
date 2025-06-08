@@ -5,8 +5,8 @@ import api from '../../services/api';
 import './CampusMap.css';
 import MarkerInfoWindow from './MarkerInfoWindow';
 import MapSidebar from './MapSidebar';
+import Footer from '../../components/common/Footer';
 
-const mapContainerStyle = { height: '80vh', width: '100%' };
 const center = { lat: 32.496, lng: 35.991 };
 const MAP_ID = process.env.REACT_APP_MAP_ID;
 const MAP_LIBRARIES = ['marker'];
@@ -55,7 +55,8 @@ const CampusMap = () => {
   const [pathCoordinates, setPathCoordinates] = useState([]);
   const [mapInstance, setMapInstance] = useState(null);
   const [roomMap, setRoomMap] = useState({});
-  const [selectedRoom, setSelectedRoom] = useState(null); // new modal state
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [activeRoomId, setActiveRoomId] = useState(null);
 
   const markerElementsRef = useRef([]);
   const roomMarkersRef = useRef([]);
@@ -104,9 +105,9 @@ const CampusMap = () => {
     }
   }, [roomMap]);
 
-  const handleNavigate = useCallback(() => {
-    if (!selectedMarker || !navigator.geolocation) {
-      alert('Geolocation not supported or no marker selected.');
+  const handleNavigate = useCallback((endId, type) => {
+    if (!navigator.geolocation) {
+      alert('Geolocation not supported.');
       return;
     }
 
@@ -114,7 +115,7 @@ const CampusMap = () => {
       async (position) => {
         const origin = `${position.coords.latitude},${position.coords.longitude}`;
         try {
-          const res = await api.get(`/api/campus-map/navigate?origin=${origin}&endId=${selectedMarker.id}&type=building`);
+          const res = await api.get(`/api/campus-map/navigate?origin=${origin}&endId=${endId}&type=${type}`);
           const encodedPolyline = res.data.data.overview_polyline.points;
           const decodedPath = decode(encodedPolyline).map(([lat, lng]) => ({ lat, lng }));
           setPathCoordinates(decodedPath);
@@ -148,20 +149,33 @@ const CampusMap = () => {
         alert('Please allow location access to use navigation.');
       }
     );
-  }, [selectedMarker, mapInstance]);
+  }, [mapInstance]);
 
   const handleSidebarSelect = useCallback((marker) => {
     setSelectedMarker(marker);
     setPathCoordinates([]);
     clearRouteMarkers();
+    setActiveRoomId(null);
     mapInstance?.panTo({ lat: marker.lat, lng: marker.lng });
     mapInstance?.setZoom(18);
     fetchRoomsIfNeeded(marker.id);
   }, [mapInstance, fetchRoomsIfNeeded]);
 
+  const handleRoomClick = (room) => {
+    if (!room?.map_coordinates) return;
+    setSelectedRoom(room);
+    setActiveRoomId(room.id);
+    setPathCoordinates([]);
+    clearRouteMarkers();
+    mapInstance?.panTo({ lat: room.map_coordinates.x, lng: room.map_coordinates.y });
+    mapInstance?.setZoom(19);
+    handleNavigate(room.id, 'room');
+  };
+
   const handleClose = () => {
     setSelectedMarker(null);
     setPathCoordinates([]);
+    setActiveRoomId(null);
     clearRouteMarkers();
     roomMarkersRef.current.forEach(m => (m.map = null));
     roomMarkersRef.current = [];
@@ -173,11 +187,9 @@ const CampusMap = () => {
     const loadMarkers = () => {
       if (!window.google?.maps?.marker?.AdvancedMarkerElement) return false;
 
-      // Clear previous building markers
       markerElementsRef.current.forEach(m => (m.map = null));
       markerElementsRef.current = [];
 
-      // Clear room markers
       roomMarkersRef.current.forEach(m => (m.map = null));
       roomMarkersRef.current = [];
 
@@ -198,20 +210,17 @@ const CampusMap = () => {
         }
 
         advancedMarker.addListener('gmp-click', () => {
-          setSelectedMarker(marker);
-          setPathCoordinates([]);
-          clearRouteMarkers();
-          fetchRoomsIfNeeded(marker.id);
+          handleSidebarSelect(marker);
         });
 
         markerElementsRef.current.push(advancedMarker);
       });
 
-      // Render room markers if selected
       if (selectedMarker && roomMap[selectedMarker.id]) {
         const rooms = roomMap[selectedMarker.id].filter(r => r.map_coordinates);
         rooms.forEach(room => {
-          const content = createLabel('R', '#2196F3');
+          const isActive = room.id === activeRoomId;
+          const content = createLabel('R', '#2196F3', isActive);
 
           const roomMarker = new window.google.maps.marker.AdvancedMarkerElement({
             map: mapInstance,
@@ -221,11 +230,17 @@ const CampusMap = () => {
             },
             title: room.name,
             content,
-            zIndex: 500,
+            zIndex: isActive ? 999 : 500,
           });
 
+          if (isActive) {
+            roomMarker.element.style.animation = 'markerBounce 0.4s infinite alternate';
+          }
+
           roomMarker.addListener('gmp-click', () => {
-            setSelectedRoom(room); // Trigger modal
+            setSelectedRoom(room);
+            setActiveRoomId(room.id);
+            handleNavigate(room.id, 'room');
           });
 
           roomMarkersRef.current.push(roomMarker);
@@ -240,39 +255,45 @@ const CampusMap = () => {
     }, 500);
 
     return () => clearInterval(interval);
-  }, [mapInstance, markers, selectedMarker, fetchRoomsIfNeeded, roomMap]);
+  }, [mapInstance, markers, selectedMarker, fetchRoomsIfNeeded, roomMap, activeRoomId, handleSidebarSelect, handleNavigate]);
 
   return (
-    <div style={{ display: 'flex' }}>
+    <>
+    <div className="campus-map-container">
       <MapSidebar
         buildings={markers}
         selectedId={selectedMarker?.id}
         onSelect={handleSidebarSelect}
         rooms={roomMap[selectedMarker?.id] || []}
+        onRoomClick={handleRoomClick}
+        activeRoomId={activeRoomId}
       />
       <LoadScript
         googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
         libraries={MAP_LIBRARIES}
       >
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          center={center}
-          zoom={17}
-          options={{ mapId: MAP_ID }}
-          onLoad={map => setMapInstance(map)}
-        >
-          {pathCoordinates.length > 0 && (
-            <Polyline path={pathCoordinates} options={polylineOptions} />
-          )}
-          {selectedMarker && mapInstance && (
-            <MarkerInfoWindow
-              marker={selectedMarker}
-              onClose={handleClose}
-              onNavigate={handleNavigate}
-            />
-          )}
-        </GoogleMap>
+        <div className="map-wrapper">
+          <GoogleMap
+            mapContainerStyle={{ width: '100%', height: '100%' }}
+            center={center}
+            zoom={17}
+            options={{ mapId: MAP_ID }}
+            onLoad={map => setMapInstance(map)}
+          >
+            {pathCoordinates.length > 0 && (
+              <Polyline path={pathCoordinates} options={polylineOptions} />
+            )}
+            {selectedMarker && mapInstance && (
+              <MarkerInfoWindow
+                marker={selectedMarker}
+                onClose={handleClose}
+                onNavigate={() => handleNavigate(selectedMarker.id, 'building')}
+              />
+            )}
+          </GoogleMap>
+        </div>
       </LoadScript>
+
       {selectedRoom && (
         <div className="room-modal-overlay" onClick={() => setSelectedRoom(null)}>
           <div className="room-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -282,11 +303,13 @@ const CampusMap = () => {
             <p><strong>Capacity:</strong> {selectedRoom.capacity} people</p>
             {selectedRoom.description && (
               <p><strong>Description:</strong> {selectedRoom.description}</p>
-              )
-              }
+            )}
           </div>
-        </div>)}
+        </div>
+      )}
     </div>
+    <Footer />
+    </>
   );
 };
 

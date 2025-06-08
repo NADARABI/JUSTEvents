@@ -111,3 +111,10 @@
   padding-left: 6px;
   transition: background-color 0.2s ease;
 }
+
+.room-item.active-room {
+  background-color: #e3f2fd;
+  font-weight: bold;
+  border-left: 4px solid #2196F3;
+  color: #1565c0;
+}

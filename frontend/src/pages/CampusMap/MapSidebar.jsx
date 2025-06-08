@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import './MapSidebar.css';
 
-const MapSidebar = ({ buildings, onSelect, selectedId, rooms = [] }) => {
+const MapSidebar = ({
+  buildings,
+  onSelect,
+  selectedId,
+  rooms = [],
+  onRoomClick,
+  activeRoomId,
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e) => setSearchQuery(e.target.value);
-
-  const handleClick = (building) => onSelect(building);
 
   const sortedBuildings = [...buildings].sort((a, b) =>
     a.name.localeCompare(b.name)
@@ -16,7 +21,7 @@ const MapSidebar = ({ buildings, onSelect, selectedId, rooms = [] }) => {
     b.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const selectedBuilding = buildings.find(b => b.id === selectedId);
+  const selectedBuilding = buildings.find((b) => b.id === selectedId);
 
   return (
     <div className="map-sidebar">
@@ -38,7 +43,7 @@ const MapSidebar = ({ buildings, onSelect, selectedId, rooms = [] }) => {
           <li
             key={b.id}
             className={`building-item ${selectedId === b.id ? 'active' : ''}`}
-            onClick={() => handleClick(b)}
+            onClick={() => onSelect(b)}
             title={`Go to ${b.name}`}
           >
             {b.name}
@@ -56,7 +61,14 @@ const MapSidebar = ({ buildings, onSelect, selectedId, rooms = [] }) => {
           {rooms.length > 0 ? (
             <ul className="room-list">
               {rooms.map((room) => (
-                <li key={room.id} className="room-item">
+                <li
+                  key={room.id}
+                  className={`room-item ${
+                    activeRoomId === room.id ? 'active-room' : ''
+                  }`}
+                  onClick={() => onRoomClick && onRoomClick(room)}
+                  title={`Zoom to ${room.name}`}
+                >
                   <strong>{room.name}</strong> – {room.type} ({room.capacity} ppl)
                 </li>
               ))}
