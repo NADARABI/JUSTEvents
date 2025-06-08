@@ -42,7 +42,7 @@ function createLabel(text, bgColor, isActive = false) {
   div.setAttribute('aria-hidden', 'true');
 
   if (isActive) {
-    div.style.boxShadow = '0 0 12px rgba(255, 82, 82, 0.8)';
+    div.style.boxShadow = '0 0 12px rgba(82, 102, 255, 0.8)';
   }
 
   div.textContent = text;
@@ -195,7 +195,7 @@ const CampusMap = () => {
 
       markers.forEach(marker => {
         const isActive = marker.id === selectedMarker?.id;
-        const content = createLabel(marker.name.charAt(0), isActive ? '#FF5252' : '#4CAF50', isActive);
+        const content = createLabel(marker.name.charAt(0), isActive ? '#3F51B5' : '#4CAF50', isActive);
 
         const advancedMarker = new window.google.maps.marker.AdvancedMarkerElement({
           map: mapInstance,
@@ -220,7 +220,12 @@ const CampusMap = () => {
         const rooms = roomMap[selectedMarker.id].filter(r => r.map_coordinates);
         rooms.forEach(room => {
           const isActive = room.id === activeRoomId;
-          const content = createLabel('R', '#2196F3', isActive);
+          const roomColor = isActive
+          ? '#3F51B5' // Highlight selected room with Indigo
+          : room.status === 'Available'
+          ? '#4CAF50'  // Green
+          : '#FF5252'; // Red
+        const content = createLabel('R', roomColor, isActive);
 
           const roomMarker = new window.google.maps.marker.AdvancedMarkerElement({
             map: mapInstance,

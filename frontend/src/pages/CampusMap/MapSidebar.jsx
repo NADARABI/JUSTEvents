@@ -60,18 +60,23 @@ const MapSidebar = ({
           <h4>Rooms in {selectedBuilding.name}</h4>
           {rooms.length > 0 ? (
             <ul className="room-list">
-              {rooms.map((room) => (
-                <li
-                  key={room.id}
-                  className={`room-item ${
-                    activeRoomId === room.id ? 'active-room' : ''
-                  }`}
-                  onClick={() => onRoomClick && onRoomClick(room)}
-                  title={`Zoom to ${room.name}`}
-                >
-                  <strong>{room.name}</strong> – {room.type} ({room.capacity} ppl)
-                </li>
-              ))}
+              {rooms.map((room) => {
+                const isAvailable = room.status === 'Available';
+                const isActive = activeRoomId === room.id;
+
+                return (
+                  <li
+                    key={room.id}
+                    className={`room-item 
+                      ${isAvailable ? 'room-available' : 'room-unavailable'} 
+                      ${isActive ? 'active-room' : ''}`}
+                    onClick={() => onRoomClick && onRoomClick(room)}
+                    title={`Zoom to ${room.name}`}
+                  >
+                    <strong>{room.name}</strong> – {room.type} ({room.capacity} ppl)
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <div className="no-rooms">No rooms mapped for this building.</div>

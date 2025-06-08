@@ -25,15 +25,9 @@ export const getAllBuildings = async (req, res) => {
 export const getRoomsByBuilding = async (req, res) => {
   try {
     const { id } = req.params;
+
     const rooms = await Room.findAll();
-    const role = req.user?.role || 'Visitor';
-
-    let filtered = rooms.filter((r) => r.building_id == id);
-
-    // Restrict visibility based on role
-    if (!['System Admin', 'Campus Admin', 'Organizer'].includes(role)) {
-      filtered = filtered.filter((r) => r.status === 'Available');
-    }
+    const filtered = rooms.filter((r) => r.building_id == id);
 
     sendResponse(res, 200, 'Rooms fetched successfully', filtered);
   } catch (error) {
