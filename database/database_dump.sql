@@ -70,7 +70,7 @@ CREATE TABLE `buildings` (
 
 LOCK TABLES `buildings` WRITE;
 /*!40000 ALTER TABLE `buildings` DISABLE KEYS */;
-INSERT INTO `buildings` VALUES (1,'Engineering Complex','North Campus','{\"x\": 32.4951, \"y\": 35.9912}',32.49657000,35.98654200),(2,'Library Block','Central Campus','{\"x\": 32.4955, \"y\": 35.9918}',32.49623000,35.98769000),(3,'Medical Sciences Building','East Wing','{\"x\": 32.4960, \"y\": 35.9925}',32.49708000,35.98464000),(5,'Engineering Building',NULL,NULL,32.49760000,35.98690000),(6,'IT Building',NULL,NULL,32.49572000,35.98528000),(7,'Science Block',NULL,NULL,32.49686000,35.98581000),(8,'Library',NULL,NULL,32.49638000,35.98721000);
+INSERT INTO `buildings` VALUES (1,'Engineering Complex','North Campus','{\"x\": 32.4948, \"y\": 35.9909}',NULL,NULL),(2,'Library Building','Central Campus','{\"x\": 32.4956, \"y\": 35.9918}',NULL,NULL),(3,'Medical Sciences','East Campus','{\"x\": 32.4961, \"y\": 35.9924}',NULL,NULL);
 /*!40000 ALTER TABLE `buildings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -101,7 +101,6 @@ CREATE TABLE `event_rsvps` (
 
 LOCK TABLES `event_rsvps` WRITE;
 /*!40000 ALTER TABLE `event_rsvps` DISABLE KEYS */;
-INSERT INTO `event_rsvps` VALUES (1,1,1,'Going','2025-05-15 23:01:44'),(2,2,2,'Going','2025-05-15 23:01:44'),(3,3,3,'Going','2025-05-15 23:01:44'),(4,1,3,'Going','2025-05-15 23:01:44'),(7,87,1,'Not Going','2025-05-16 21:11:22'),(8,87,3,'Not Going','2025-05-17 17:08:04'),(9,87,9,'Going','2025-05-30 18:30:36'),(10,85,3,'Not Going','2025-06-01 11:20:19'),(13,87,13,'Going','2025-06-02 06:57:19'),(14,85,13,'Going','2025-06-02 06:57:39');
 /*!40000 ALTER TABLE `event_rsvps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -137,7 +136,6 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
-INSERT INTO `events` VALUES (1,'AI & Healthcare','Exploring how AI is transforming medical practices.','Academic','2025-06-01','10:00:00',6,1,'Pending',NULL),(2,'Hackathon 2025','48-hour coding competition for all majors.','Academic','2025-06-05','09:00:00',6,2,'Pending',NULL),(3,'Book Club Meetup','Discussing the novel of the month.','Social','2025-06-10','14:00:00',7,3,'Approved',NULL),(9,'AI Symposium','A deep dive into AI tools','General','2025-06-01','10:00:00',5,1,'Expired',NULL),(10,'Expired Event 1','Old approved event 1','General','2024-06-01','09:00:00',5,1,'Expired',NULL),(11,'Expired Event 2','Old approved event 2','General','2024-05-15','14:00:00',5,1,'Expired',NULL),(13,'Test Event -1 ','Test RSVPs for Approved Event','General','2025-06-03','10:00:00',38,2,'Approved',NULL),(14,'Test Event -2','Test Rejection Reason','General','2025-06-17','11:00:00',38,2,'Rejected',NULL);
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -172,7 +170,6 @@ CREATE TABLE `feedback` (
 
 LOCK TABLES `feedback` WRITE;
 /*!40000 ALTER TABLE `feedback` DISABLE KEYS */;
-INSERT INTO `feedback` VALUES (1,1,1,'Very insightful talk on AI in medicine!',5,'2025-05-15 23:02:27','2025-05-16 17:06:18',0),(2,2,2,'Loved the hackathon energy!',4,'2025-05-15 23:02:27','2025-05-16 17:06:18',0),(3,3,3,'Great discussion in the book club!',5,'2025-05-15 23:02:27','2025-05-16 17:06:18',0),(4,3,1,'Enjoyed sharing thoughts with others.',4,'2025-05-15 23:02:27','2025-05-16 17:06:18',0),(7,1,75,'lovee it ',3,'2025-05-16 14:38:28','2025-05-16 17:06:18',0),(9,1,38,'Perfeeect!!!!!!!',5,'2025-05-16 17:20:07','2025-05-16 17:50:23',1),(10,3,88,'peerfect',5,'2025-05-27 08:42:28','2025-05-27 08:42:28',0);
 /*!40000 ALTER TABLE `feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -201,7 +198,6 @@ CREATE TABLE `map_coordinates` (
 
 LOCK TABLES `map_coordinates` WRITE;
 /*!40000 ALTER TABLE `map_coordinates` DISABLE KEYS */;
-INSERT INTO `map_coordinates` VALUES (1,1,32.4951,35.9912,0),(2,1,32.4952,35.9913,1),(3,1,32.4953,35.9914,2);
 /*!40000 ALTER TABLE `map_coordinates` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -294,7 +290,6 @@ CREATE TABLE `room_bookings` (
 
 LOCK TABLES `room_bookings` WRITE;
 /*!40000 ALTER TABLE `room_bookings` DISABLE KEYS */;
-INSERT INTO `room_bookings` VALUES (1,1,1,'Study group for Algorithms','2025-06-02 14:00:00','2025-06-02 16:00:00','Pending','2025-05-16 02:01:23','2025-05-17 01:18:05'),(2,2,2,'Hackathon prep session','2025-06-04 10:00:00','2025-06-04 12:00:00','Rejected','2025-05-16 02:01:23','2025-05-26 14:04:06'),(3,3,3,'Book discussion planning','2025-06-08 13:00:00','2025-06-08 14:30:00','Approved','2025-05-16 02:01:23','2025-05-24 01:11:58'),(5,2,1,'Group Study','2025-05-01 10:00:00','2025-05-01 12:00:00','Approved','2025-05-01 00:00:00','2025-05-17 01:50:32'),(6,2,1,'Presentation Practice','2025-05-02 09:00:00','2025-05-02 10:00:00','Rejected','2025-05-02 00:00:00','2025-05-17 01:50:32'),(7,3,2,'Club Meeting','2025-05-10 14:00:00','2025-05-10 16:00:00','Approved','2025-05-10 00:00:00','2025-05-17 01:50:32'),(8,3,3,'Project Discussion','2025-05-12 11:00:00','2025-05-12 13:00:00','Pending','2025-05-17 01:50:32','2025-05-17 01:50:32'),(9,4,4,'Workshop','2025-05-13 10:00:00','2025-05-13 13:00:00','Approved','2025-05-17 01:50:32','2025-05-17 01:50:32'),(10,4,4,'Presentation','2025-05-14 14:00:00','2025-05-14 15:00:00','Rejected','2025-05-17 01:50:32','2025-05-17 01:50:32'),(13,87,1,'Research Group Meeting','2025-05-26 10:00:00','2025-05-26 12:00:00','Approved','2025-05-26 15:22:08','2025-05-26 15:22:08'),(14,88,2,'Workshop Preparation','2025-05-27 14:00:00','2025-05-27 16:30:00','Approved','2025-05-26 15:22:08','2025-05-26 15:22:08'),(15,87,3,'Startup Pitch Practice','2025-05-28 09:00:00','2025-05-28 11:00:00','Pending','2025-05-26 15:22:08','2025-05-26 15:22:08'),(16,88,4,'Club Committee Meeting','2025-05-29 15:00:00','2025-05-29 17:00:00','Pending','2025-05-26 15:22:08','2025-05-26 15:22:08'),(19,87,1,'Personal Study Session','2025-05-25 13:00:00','2025-05-25 14:30:00','Rejected','2025-05-26 15:24:12','2025-05-26 15:24:12'),(20,88,2,'Unregistered Event','2025-05-24 11:00:00','2025-05-24 12:30:00','Rejected','2025-05-26 15:24:12','2025-05-26 15:24:12'),(22,87,1,'Project Discussion','2025-05-28 10:48:00','2025-05-28 11:48:00','Pending','2025-05-27 22:48:46','2025-05-27 22:48:46'),(23,85,1,'hhhh','2025-06-01 16:26:00','2025-06-01 18:25:00','Approved','2025-06-01 14:25:24','2025-06-01 14:25:56'),(24,85,3,'lmelkmv','2025-06-01 16:26:00','2025-06-01 17:29:00','Rejected','2025-06-01 14:27:01','2025-06-01 14:27:49'),(25,87,1,'Project discussion ','2025-06-10 12:29:00','2025-06-28 12:29:00','Pending','2025-06-02 12:29:30','2025-06-02 12:29:30');
 /*!40000 ALTER TABLE `room_bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -320,7 +315,7 @@ CREATE TABLE `rooms` (
   PRIMARY KEY (`id`),
   KEY `fk_room_building` (`building_id`),
   CONSTRAINT `fk_room_building` FOREIGN KEY (`building_id`) REFERENCES `buildings` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -329,7 +324,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'Study Room 101',6,'Study Room','Available','Quiet study space with whiteboard',1,1,'{\"x\": 32.4951, \"y\": 35.9913}',NULL,NULL),(2,'Lab A204',25,'Lab','Available','Equipped with 25 PCs',1,2,'{\"x\": 32.4952, \"y\": 35.9915}',NULL,NULL),(3,'Library Seminar Room',20,'Meeting Room','Available','Used for workshops and seminars',2,1,'{\"x\": 32.4956, \"y\": 35.9919}',NULL,NULL),(4,'Auditorium B',100,'Classroom','Available','Large event space for guest lectures',3,0,'{\"x\": 32.4961, \"y\": 35.9926}',NULL,NULL),(8,'Eng101 - Lecture Hall 1',100,'Classroom','Available',NULL,1,1,NULL,NULL,NULL),(9,'EngLab1 - Thermo Lab',30,'Lab','Available',NULL,5,2,NULL,NULL,NULL),(10,'IT301 - Programming Lab',40,'Lab','Available',NULL,6,3,NULL,NULL,NULL),(11,'Lib1 - Study Zone A',20,'Study Room','Available',NULL,2,1,NULL,NULL,NULL),(12,'Med102 - Anatomy Hall',80,'Classroom','Available',NULL,3,1,NULL,NULL,NULL),(13,'Sci202 - Physics Lab',35,'Lab','Available',NULL,7,2,NULL,NULL,NULL),(14,'Lib204 - Reading Room',25,'Study Room','Available',NULL,8,2,NULL,NULL,NULL);
+INSERT INTO `rooms` VALUES (20,'Eng101 - Thermo Lab',30,'Lab','Unavailable','Thermodynamics Lab with equipment',1,1,'{\"x\": 32.4949, \"y\": 35.991}',NULL,NULL),(21,'Eng201 - Circuit Lab',35,'Lab','Available','Electronics & circuits lab',1,2,'{\"x\": 32.495, \"y\": 35.9911}',NULL,NULL),(22,'Eng301 - Design Studio',40,'Classroom','Available','CAD and product design studio',1,3,'{\"x\": 32.4952, \"y\": 35.9912}',NULL,NULL),(23,'Library Seminar Room',20,'Meeting Room','Available','Workshops & seminars',2,2,'{\"x\": 32.4957, \"y\": 35.9919}',NULL,NULL),(24,'Reading Room A',25,'Study Room','Available','Silent reading space',2,1,'{\"x\": 32.4958, \"y\": 35.9917}',NULL,NULL),(25,'Research Room B',15,'Meeting Room','Unavailable','Small research group sessions',2,2,'{\"x\": 32.4959, \"y\": 35.9916}',NULL,NULL),(26,'Anatomy Hall',80,'Classroom','Available','Anatomy sessions',3,1,'{\"x\": 32.4962, \"y\": 35.9925}',NULL,NULL),(27,'BioChem Lab',30,'Lab','Available','Biochemistry practicals',3,2,'{\"x\": 32.4963, \"y\": 35.9923}',NULL,NULL),(28,'Med301 - Lecture Hall',80,'Classroom','Unavailable','Medical lectures and guest speakers',3,3,'{\"x\": 32.4964, \"y\": 35.9926}',NULL,NULL);
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -359,7 +354,6 @@ CREATE TABLE `saved_events` (
 
 LOCK TABLES `saved_events` WRITE;
 /*!40000 ALTER TABLE `saved_events` DISABLE KEYS */;
-INSERT INTO `saved_events` VALUES (1,1,2,'2025-05-15 23:02:47'),(2,2,1,'2025-05-15 23:02:47'),(3,3,3,'2025-05-15 23:02:47'),(7,38,1,'2025-05-16 13:49:03'),(9,75,2,'2025-05-17 16:16:53'),(10,75,1,'2025-05-24 22:30:57'),(13,87,9,'2025-06-01 19:32:39'),(14,87,3,'2025-06-01 19:32:47');
 /*!40000 ALTER TABLE `saved_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -409,4 +403,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-06  2:06:45
+-- Dump completed on 2025-06-08 21:30:06
