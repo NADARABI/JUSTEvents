@@ -4,13 +4,9 @@ import './MapSidebar.css';
 const MapSidebar = ({ buildings, onSelect, selectedId, rooms = [] }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-  };
+  const handleSearch = (e) => setSearchQuery(e.target.value);
 
-  const handleClick = (building) => {
-    onSelect(building);
-  };
+  const handleClick = (building) => onSelect(building);
 
   const sortedBuildings = [...buildings].sort((a, b) =>
     a.name.localeCompare(b.name)
@@ -20,7 +16,7 @@ const MapSidebar = ({ buildings, onSelect, selectedId, rooms = [] }) => {
     b.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const selectedBuildingName = buildings.find(b => b.id === selectedId)?.name;
+  const selectedBuilding = buildings.find(b => b.id === selectedId);
 
   return (
     <div className="map-sidebar">
@@ -33,8 +29,8 @@ const MapSidebar = ({ buildings, onSelect, selectedId, rooms = [] }) => {
         type="text"
         className="map-search"
         placeholder="Search..."
-        onChange={handleSearch}
         value={searchQuery}
+        onChange={handleSearch}
       />
 
       <ul className="building-list">
@@ -54,9 +50,9 @@ const MapSidebar = ({ buildings, onSelect, selectedId, rooms = [] }) => {
         <div className="no-results">No buildings found.</div>
       )}
 
-      {selectedId && (
+      {selectedBuilding && (
         <div className="room-section">
-          <h4>Rooms in {selectedBuildingName}</h4>
+          <h4>Rooms in {selectedBuilding.name}</h4>
           {rooms.length > 0 ? (
             <ul className="room-list">
               {rooms.map((room) => (

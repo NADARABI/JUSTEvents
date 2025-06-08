@@ -84,3 +84,52 @@
   0% { transform: translateY(0); }
   100% { transform: translateY(-6px); }
 }
+
+
+.room-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.25s ease;
+}
+
+.room-modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 360px;
+  max-width: 90%;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.room-modal-title {
+  font-size: 20px;
+  margin-bottom: 16px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.room-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #888;
+  cursor: pointer;
+}
+
+.room-modal-close:hover {
+  color: #000;
+}

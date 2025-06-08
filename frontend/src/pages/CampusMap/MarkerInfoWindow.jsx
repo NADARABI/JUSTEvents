@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { OverlayView } from '@react-google-maps/api';
-import BuildingDetailsModal from '../../components/maps/BuildingDetailsModal'; 
+import BuildingDetailsModal from '../../components/maps/BuildingDetailsModal';
 
 const MarkerInfoWindow = ({ marker, onNavigate, onClose }) => {
   const [showModal, setShowModal] = useState(false);
@@ -25,7 +25,9 @@ const MarkerInfoWindow = ({ marker, onNavigate, onClose }) => {
             <button onClick={onNavigate}>Show Path</button>
             <button onClick={handleOpenInGoogleMaps}>Open in Google Maps</button>
             <button onClick={() => setShowModal(true)}>View Details</button>
-            <button onClick={onClose} style={{ backgroundColor: '#999' }}>Close</button>
+            <button onClick={onClose} style={{ backgroundColor: '#999' }}>
+              Close
+            </button>
           </div>
         </div>
       </OverlayView>

@@ -273,18 +273,19 @@ const CampusMap = () => {
           )}
         </GoogleMap>
       </LoadScript>
-
       {selectedRoom && (
-        <div className="room-modal">
-          <div className="modal-content">
-            <h4>{selectedRoom.name}</h4>
+        <div className="room-modal-overlay" onClick={() => setSelectedRoom(null)}>
+          <div className="room-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="room-modal-close" onClick={() => setSelectedRoom(null)}>×</button>
+            <h3 className="room-modal-title">{selectedRoom.name}</h3>
             <p><strong>Type:</strong> {selectedRoom.type}</p>
-            <p><strong>Capacity:</strong> {selectedRoom.capacity}</p>
-            {selectedRoom.description && <p><strong>Details:</strong> {selectedRoom.description}</p>}
-            <button onClick={() => setSelectedRoom(null)}>Close</button>
+            <p><strong>Capacity:</strong> {selectedRoom.capacity} people</p>
+            {selectedRoom.description && (
+              <p><strong>Description:</strong> {selectedRoom.description}</p>
+              )
+              }
           </div>
-        </div>
-      )}
+        </div>)}
     </div>
   );
 };
