@@ -10,8 +10,6 @@ import api from '../../services/api';
 import { saveEvent, unsaveEvent, getSavedEvents } from '../../services/savedEventsService';
 import { toast } from 'react-toastify';
 
-const DEFAULT_HERO_IMAGE = "/images/default-event.jpg";
-
 const EventDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -24,6 +22,7 @@ const EventDetailsPage = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [hasRSVPed, setHasRSVPed] = useState(false);
   const [rsvpLoading, setRsvpLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const token = localStorage.getItem('accessToken');
   const userRole = (localStorage.getItem('role') || '').toLowerCase();
@@ -126,7 +125,6 @@ const EventDetailsPage = () => {
         toast.success('RSVP successful!');
       }
 
-      // Re-fetch actual status from backend to stay accurate
       try {
         const { data } = await api.get(`/api/events/${id}/my-rsvp`);
         setHasRSVPed(data.data.hasRSVPed);
@@ -149,11 +147,18 @@ const EventDetailsPage = () => {
   return (
     <>
       <div className="event-hero-full">
-        <img
-          src={event.image_url ? `/images/${event.image_url}` : DEFAULT_HERO_IMAGE}
-          alt={event.title}
-          className="event-hero-image-full"
-        />
+        {!event.image_url || imageError ? (
+          <div className="event-image-placeholder">
+            <span>No Image Available</span>
+          </div>
+        ) : (
+          <img
+            src={`/uploads/${event.image_url}`}
+            alt={event.title}
+            className="event-hero-image-full"
+            onError={() => setImageError(true)}
+          />
+        )}
         <div className="event-hero-overlay-full">
           <h1 className="event-title-full">{event.title}</h1>
           <p className="event-category-full">{event.category}</p>
