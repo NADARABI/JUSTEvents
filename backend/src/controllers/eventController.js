@@ -46,11 +46,21 @@ export const createEvent = async (req, res) => {
 export const editEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+
+    // Manually extract fields from FormData
+    const updates = {
+      ...(req.body.title && { title: req.body.title }),
+      ...(req.body.description && { description: req.body.description }),
+      ...(req.body.date && { date: req.body.date }),
+      ...(req.body.time && { time: req.body.time }),
+      ...(req.body.venue_id && { venue_id: req.body.venue_id }),
+      ...(req.file?.filename && { image_url: req.file.filename }),
+    };
 
     const existing = await Event.findById(id);
     if (!existing) return sendResponse(res, 404, 'Event not found');
-    if (existing.organizer_id !== req.user.id) return sendResponse(res, 403, 'Unauthorized');
+    if (existing.organizer_id !== req.user.id)
+      return sendResponse(res, 403, 'Unauthorized');
 
     const dateToCheck = updates.date || existing.date;
     const timeToCheck = updates.time || existing.time;
@@ -60,13 +70,15 @@ export const editEvent = async (req, res) => {
       return sendResponse(res, 409, 'Venue already booked at this date and time');
     }
 
+    
+    console.log("Update payload:", updates);
+
     await Event.update(id, updates);
     sendResponse(res, 200, 'Event updated successfully');
 
     const rsvps = await EventRsvp.getByEvent(id);
-    const rsvpUserIds = rsvps.map(r => r.user_id);
+    const rsvpUserIds = rsvps.map((r) => r.user_id);
 
-    // Send notifications to all RSVP'd users
     for (const userId of rsvpUserIds) {
       if (userId !== req.user.id) {
         await createNotification(
@@ -81,6 +93,7 @@ export const editEvent = async (req, res) => {
     sendResponse(res, 500, 'Server error while editing event');
   }
 };
+
 
 // Delete event
 export const deleteEvent = async (req, res) => {
@@ -137,7 +150,6 @@ export const getEventById = async (req, res) => {
   }
 };
 
-// RSVP to an event
 // RSVP to an event
 export const rsvpEvent = async (req, res) => {
   try {
@@ -221,6 +233,7 @@ export const getRsvps = async (req, res) => {
   }
 };
 
+
 // Get Event Statistics
 export const getStats = async (req, res) => {
   try {
@@ -230,5 +243,67 @@ export const getStats = async (req, res) => {
   } catch (err) {
     console.error('getStats:', err);
     sendResponse(res, 500, 'Failed to fetch stats');
+  }
+};
+
+export const getMyEvents = async (req, res) => {
+  try {
+    const organizer_id = req.user.id;
+
+    // Fetch events created by this organizer
+    const [events] = await db.execute(
+      `SELECT 
+         e.*, 
+         a.decision_reason 
+       FROM events e
+       LEFT JOIN approvals a 
+         ON a.entity_type = 'Event' AND a.entity_id = e.id
+       WHERE e.organizer_id = ?
+       ORDER BY e.date DESC`, 
+      [organizer_id]
+    );
+
+    sendResponse(res, 200, 'Events fetched successfully', events);
+  } catch (err) {
+    console.error('getMyEvents:', err.message);
+    sendResponse(res, 500, 'Server error while fetching events');
+  }
+};
+
+export const checkMyRsvp = async (req, res) => {
+  try {
+    const { id: event_id } = req.params;
+    const user_id = req.user.id;
+
+    const [rows] = await db.execute(
+      `SELECT id FROM event_rsvps WHERE event_id = ? AND user_id = ? AND status = 'Going'`,
+      [event_id, user_id]
+    );
+
+    const hasRSVPed = rows.length > 0;
+    sendResponse(res, 200, 'RSVP status checked', { hasRSVPed });
+  } catch (err) {
+    console.error('checkMyRsvp error:', err.message);
+    sendResponse(res, 500, 'Failed to check RSVP status');
+  }
+};
+
+export const getMyRsvps = async (req, res) => {
+  try {
+    const user_id = req.user.id;
+
+    const [rows] = await db.execute(
+      `SELECT e.id, e.title, e.description, e.category, e.date, e.time, e.image_url, r.name AS room_name
+       FROM event_rsvps er
+       JOIN events e ON er.event_id = e.id
+       JOIN rooms r ON e.venue_id = r.id
+       WHERE er.user_id = ? AND er.status = 'Going'`,
+      [user_id]
+    );
+
+    sendResponse(res, 200, 'RSVPed events retrieved successfully', rows);
+  } catch (err) {
+    console.error('getMyRsvps error:', err.message);
+    sendResponse(res, 500, 'Failed to retrieve RSVPed events');
   }
 };

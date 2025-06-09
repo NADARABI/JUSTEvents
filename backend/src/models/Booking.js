@@ -25,13 +25,15 @@ const Booking = {
   async getByUser(user_id) {
     try {
       const [rows] = await db.execute(
-        `SELECT b.*, r.name AS room_name, r.building
-         FROM room_bookings b
-         JOIN rooms r ON b.room_id = r.id
-         WHERE b.user_id = ?
-         ORDER BY b.start_time DESC`,
+        `SELECT b.*, r.name AS room_name, bl.name AS building
+        FROM room_bookings b
+        JOIN rooms r ON b.room_id = r.id
+        JOIN buildings bl ON r.building_id = bl.id
+        WHERE b.user_id = ?
+        ORDER BY b.start_time DESC`,
         [user_id]
       );
+
       return rows;
     } catch (error) {
       console.error('Booking.getByUser error:', error.message);
@@ -68,21 +70,33 @@ const Booking = {
    */
   async getPending() {
     try {
-      const [rows] = await db.execute(
-        `SELECT b.*, r.name AS room_name, r.building, u.name AS user_name
-         FROM room_bookings b
-         JOIN rooms r ON b.room_id = r.id
-         JOIN users u ON b.user_id = u.id
-         WHERE b.status = 'Pending'
-         ORDER BY b.start_time ASC`
-      );
-      return rows;
-    } catch (error) {
-      console.error('Booking.getPending error:', error.message);
-      throw new Error('Failed to fetch pending bookings');
-    }
-  },
-
+      console.log('[DEBUG] Fetching pending bookings...');
+      const [rows] = await db.execute(`
+        SELECT 
+        b.id,
+        b.user_id,
+        b.room_id,
+        b.purpose,
+        b.start_time,
+        b.end_time,
+        b.status,
+        u.name AS user_name,
+        r.name AS room_name,
+        bl.name AS building
+        FROM room_bookings b
+        JOIN users u ON b.user_id = u.id
+        JOIN rooms r ON b.room_id = r.id
+        JOIN buildings bl ON r.building_id = bl.id
+        WHERE b.status = 'Pending'
+        ORDER BY b.start_time ASC
+        `);
+        console.log('[DEBUG] Pending bookings:', rows);
+        return rows;
+      } catch (error) {
+        console.error('Booking.getPending error:', error.message);
+        throw new Error('Failed to fetch pending bookings');
+      }
+    },
   /**
    * Update booking status (approve or reject)
    */
@@ -176,7 +190,28 @@ const Booking = {
       console.error('Booking.getBookingStats error:', error.message);
       throw new Error('Failed to retrieve booking stats');
     }
-  }
-};
+  },
 
+  /**
+ * Get a single booking by ID
+ */
+async getById(id) {
+  try {
+    const [rows] = await db.execute(
+      `SELECT b.*, r.name AS room_name, bl.name AS building, u.name AS user_name, u.email AS user_email
+       FROM room_bookings b
+       JOIN rooms r ON b.room_id = r.id
+       JOIN buildings bl ON r.building_id = bl.id
+       JOIN users u ON b.user_id = u.id
+       WHERE b.id = ?`,
+      [id]
+    );
+    return rows.length > 0 ? rows[0] : null;
+  } catch (error) {
+    console.error('Booking.getById error:', error.message);
+    throw new Error('Failed to fetch booking');
+  }
+}
+
+};
 export default Booking;

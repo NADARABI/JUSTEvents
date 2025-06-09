@@ -1,82 +1,123 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { requestRole } from '../../services/authService';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import './requestRole.css';
 
-import PrimaryButton from '../../components/common/PrimaryButton';
+const validRoles = ['Organizer', 'Campus Admin', 'Visitor'];
 
 const RequestRolePage = () => {
-  const [requestedRole, setRequestedRole] = useState('');
-  const [attachment, setAttachment] = useState(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+  const [selectedRole, setSelectedRole] = useState('');
+  const [attachmentFile, setAttachmentFile] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const roles = ['Organizer', 'Campus Admin', 'Visitor'];
+  // Fetch user info from localStorage
+  useEffect(() => {
+    console.log(" RequestRolePage Loaded");
 
-  const handleFileChange = (e) => {
-    setAttachment(e.target.files[0]);
+    const accessToken = localStorage.getItem('accessToken');
+    const role = localStorage.getItem('role');
+    const user = JSON.parse(localStorage.getItem('user') ?? '{}');
+
+    console.log(" Local Storage Data →", { accessToken, role, user });
+
+    if (!accessToken || !role || !user.name) {
+      toast.error("You are not authenticated. Redirecting...");
+      navigate('/login');
+      return;
+    }
+
+    if (role.trim().toLowerCase() !== 'pending') {
+      toast.info("You already have a role.");
+      navigate('/home');
+      return;
+    }
+
+    setUserData(user);
+  }, [navigate]);
+
+  const handleRoleChange = (e) => {
+    setSelectedRole(e.target.value);
   };
 
-  const handleSubmit = async () => {
-    if (!requestedRole) {
-      toast.error('Please select a role');
+  const handleFileChange = (e) => {
+    setAttachmentFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('accessToken');
+
+    if (!selectedRole || !validRoles.includes(selectedRole)) {
+      toast.warning("Please select a valid role.");
       return;
     }
 
     try {
-      setLoading(true);
-      await requestRole(requestedRole, attachment);
-      toast.success(`Role request for "${requestedRole}" submitted successfully!`);
-      navigate('/login');
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit role request');
+      setSubmitting(true);
+      const formData = new FormData();
+      formData.append('requested_role', selectedRole);
+      if (attachmentFile) {
+        formData.append('attachment', attachmentFile);
+      }
+
+      const response = await fetch('http://localhost:5000/auth/request-role', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message || "Role request submitted!");
+        navigate('/home');
+      } else {
+        toast.error(data.message || "Something went wrong.");
+      }
+    } catch (err) {
+      console.error("Role request error:", err);
+      toast.error("Failed to submit role request.");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
   return (
-    <>
-      <h2 className="mb-4">Request a Role</h2>
+    <div className="request-role-container">
+      <h2>Request Your Role</h2>
+      {userData ? (
+        <form onSubmit={handleSubmit} className="request-role-form">
+          <p>Welcome, <strong>{userData.name}</strong>. Please select your role below:</p>
 
-      <div className="mb-3 text-start">
-        <label className="form-label">Select your desired role</label>
-        <select
-          className="form-select"
-          value={requestedRole}
-          onChange={(e) => setRequestedRole(e.target.value)}
-        >
-          <option value="">Select a role</option>
-          {roles.map((role) => (
-            <option key={role} value={role}>
-              {role}
-            </option>
-          ))}
-        </select>
-      </div>
+          <label>
+            Select Role:
+            <select value={selectedRole} onChange={handleRoleChange} required>
+              <option value="">-- Choose Role --</option>
+              {validRoles.map((role) => (
+                <option key={role} value={role}>
+                  {role}
+                </option>
+              ))}
+            </select>
+          </label>
 
-      <div className="mb-3 text-start">
-        <label className="form-label">Optional Attachment (PDF, Image, etc.)</label>
-        <input
-          type="file"
-          className="form-control"
-          accept=".pdf,.jpg,.jpeg,.png"
-          onChange={handleFileChange}
-        />
-      </div>
+          <label>
+            Optional File (ID / Proof):
+            <input type="file" accept=".pdf,.jpg,.png" onChange={handleFileChange} />
+          </label>
 
-      <PrimaryButton
-        text="Submit Request"
-        onClick={handleSubmit}
-        isLoading={loading}
-      />
-
-      <div className="text-center mt-4">
-        <Link to="/login">Back to login</Link>
-      </div>
-
-      
-    </>
+          <button type="submit" disabled={submitting}>
+            {submitting ? 'Submitting...' : 'Submit Request'}
+          </button>
+        </form>
+      ) : (
+        <p>Loading user info...</p>
+      )}
+    </div>
   );
 };
 

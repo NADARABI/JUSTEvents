@@ -18,7 +18,7 @@ const RegisterPage = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const roles = ['Student', 'Organizer', 'Visitor', 'Campus Admin'];
+  const roles = ['Organizer', 'Visitor', 'Campus Admin'];
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -122,6 +122,9 @@ const RegisterPage = () => {
         <SSOButton provider="google" onClick={handleGoogleLogin} />
       </div>
 
+      <p className="text-muted mt-2 text-center" style={{ fontSize: '0.875rem' }}>
+        Students should sign up using Microsoft SSO only.
+      </p>
       <div className="text-center mt-4">
         Already have an account? <Link to="/login">Log in</Link>
       </div>

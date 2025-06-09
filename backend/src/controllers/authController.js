@@ -6,6 +6,7 @@ import User from '../models/User.js';
 import sendEmail from '../utils/sendEmail.js';
 import RefreshToken from '../models/RefreshToken.js';
 import { sendResponse } from '../utils/sendResponse.js';
+import db from '../utils/db.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'justevents-secret';
 
@@ -108,7 +109,7 @@ export const login = async (req, res) => {
     
     await RefreshToken.save(user.id, refreshToken);
 
-    sendResponse(res, 200, 'Login successful', { accessToken, refreshToken, role: user.role, name: user.name });
+    sendResponse(res, 200, 'Login successful', { accessToken, refreshToken, id: user.id, role: user.role, name: user.name });
   } catch (err) {
     console.error('Login error:', err);
     sendResponse(res, 500, 'Login failed');
@@ -226,19 +227,31 @@ export const refreshToken = async (req, res) => {
       return sendResponse(res, 403, 'Invalid refresh token');
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) {
         console.error('JWT verify error:', err.message);
         return sendResponse(res, 403, 'Refresh token expired or invalid');
       }
 
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return sendResponse(res, 404, 'User not found');
+      }
+
       const newAccessToken = jwt.sign(
-        { id: decoded.id, email: decoded.email },
+        {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          name: user.name,
+        },
         process.env.JWT_SECRET,
         { expiresIn: '15m' }
       );
 
-      sendResponse(res, 200, 'New access token generated successfully', { accessToken: newAccessToken });
+      sendResponse(res, 200, 'New access token generated successfully', {
+        accessToken: newAccessToken,
+      });
     });
   } catch (error) {
     console.error('Error in refreshToken:', error.message);
