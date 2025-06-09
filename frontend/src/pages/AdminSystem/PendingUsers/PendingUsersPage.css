@@ -1,6 +1,7 @@
 .pending-users-page {
   padding: 2rem;
-  min-height: 70vh;
+  /* min-height: 70vh; */
+  min-height: calc(100vh - 80px); /* Accounts for NavBar + Footer */
 }
 
 .pending-users-loading {
