@@ -70,7 +70,7 @@ passport.use(new MicrosoftStrategy({
     if (!user) {
       const justStudentRegex = /@([a-z]+\.)*just\.edu\.jo$/i;
       const role = justStudentRegex.test(email) ? 'Student' : 'Pending';
-      user = await User.create({
+      const userId = await User.create({
         name,
         email,
         password_hash: null,
@@ -81,7 +81,7 @@ passport.use(new MicrosoftStrategy({
         provider: 'Microsoft',
         attachment: null
       });
-      
+      user = await User.findById(userId);
     }
 
     done(null, user);

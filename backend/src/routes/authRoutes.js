@@ -111,6 +111,24 @@ router.get(
   }
 );
 
+<<<<<<< HEAD
+
+
+
+ // Protected Route Example (System Admin Only)
+router.get(
+  '/admin',
+  authMiddleware,
+  authorizeRole(['System Admin']),
+  (req, res) => {
+    res.json({ message: 'Welcome, Admin!' });
+  }
+);
+
+
+
+=======
+>>>>>>> ba4fbdeaa8db97ec82290e169484a0669d32f781
 // Request Role (For Pending Users)
 router.post(
   '/request-role',

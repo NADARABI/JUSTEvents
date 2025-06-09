@@ -2,22 +2,21 @@ import db from '../utils/db.js';
 
 class Event {
   // Check for event conflict
-static async checkConflict(date, time, venue_id, excludeId = null) {
-  let query = `SELECT id FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
-  const params = [date, time, venue_id];
+  static async checkConflict(date, time, venue_id, excludeId = null) {
+    let query = `SELECT id FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
+    const params = [date, time, venue_id];
 
-  if (excludeId) {
-    query += ` AND id != ?`; // Exclude self when editing
-    params.push(excludeId);
+    if (excludeId) {
+      query += ` AND id != ?`; // Exclude self when editing
+      params.push(excludeId);
+    }
+
+    const [rows] = await db.execute(query, params);
+    return rows.length > 0;
   }
-
-  const [rows] = await db.execute(query, params);
-  return rows.length > 0;
-}
 
   // Create new event
   static async create({ title, description, date, time, organizer_id, venue_id, image_url }) {
-
     if (image_url === undefined) image_url = null;
     const [result] = await db.execute(
       `INSERT INTO events (title, description, date, time, organizer_id, venue_id, status, image_url)
@@ -113,22 +112,21 @@ static async checkConflict(date, time, venue_id, excludeId = null) {
 
   // Update event by ID with fields
   static async update(id, fields) {
-  const keys = Object.keys(fields).filter(key => fields[key] !== undefined && fields[key] !== null);
-  if (keys.length === 0) {
-    return 0; // Nothing to update
+    const keys = Object.keys(fields).filter(key => fields[key] !== undefined && fields[key] !== null);
+    if (keys.length === 0) {
+      return 0; // Nothing to update
+    }
+
+    const setClause = keys.map(key => `${key} = ?`).join(', ');
+    const values = keys.map(key => fields[key]);
+    values.push(id); // for WHERE clause
+
+    const [result] = await db.execute(
+      `UPDATE events SET ${setClause} WHERE id = ?`,
+      values
+    );
+    return result.affectedRows;
   }
-
-  const setClause = keys.map(key => `${key} = ?`).join(', ');
-  const values = keys.map(key => fields[key]);
-  values.push(id); // for WHERE clause
-
-  const [result] = await db.execute(
-    `UPDATE events SET ${setClause} WHERE id = ?`,
-    values
-  );
-  return result.affectedRows;
-}
-
 
   // Delete event by ID
   static async delete(id) {
@@ -173,8 +171,26 @@ static async checkConflict(date, time, venue_id, excludeId = null) {
       ORDER BY date ASC, time ASC
     `, [startDate, endDate]);
     return rows;
-  }  
+
+  }
   
+  static async checkConflict(date, time, venue_id, excludeId = null) {
+    let query = `SELECT * FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
+    let params = [date, time, venue_id];
+  
+    if (excludeId) {
+      query += ` AND id != ?`;
+      params.push(excludeId);
+    }
+  
+    const [rows] = await db.execute(query, params);
+    return rows.length > 0;
+}
+
+  static async deleteRSVPs(eventId) {
+    await db.execute(`DELETE FROM event_rsvps WHERE event_id = ?`, [eventId]);
+
+  }
 }
 
 export default Event;
