@@ -1,4 +1,3 @@
-// src/pages/EventManagement/EventsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getAllEvents } from '../../services/eventService.js';
@@ -12,38 +11,40 @@ import './eventsPage.css';
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sort, setSort] = useState('latest');
-  const [upcomingActive, setUpcomingActive] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const searchQuery = new URLSearchParams(location.search).get('search');
-  const categoryQuery = new URLSearchParams(location.search).get('category') || 'All';
-  const isUpcoming = new URLSearchParams(location.search).get('upcoming') === 'true';
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get('search') || '';
+  const categoryQuery = searchParams.get('category') || 'All';
+  const isUpcoming = searchParams.get('upcoming') === 'true';
+  const sortQuery = searchParams.get('sort') || 'latest';
 
-  const capitalize = (str) =>
-    str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   const title = isUpcoming
-    ? 'Upcoming Events at JUST'
+    ? categoryQuery === 'All'
+      ? 'Upcoming Events at JUST'
+      : `Upcoming ${capitalize(categoryQuery)} Events at JUST`
     : categoryQuery === 'All'
-    ? 'Discover Events at JUST'
-    : `Explore ${capitalize(categoryQuery)} Events at JUST`;
+      ? 'Discover Events at JUST'
+      : `Explore ${capitalize(categoryQuery)} Events at JUST`;
 
   useEffect(() => {
-    setUpcomingActive(isUpcoming);
-
     const fetchEvents = async () => {
       try {
-        const categoryFilter = categoryQuery === 'All' ? '' : `&category=${categoryQuery}`;
-        const searchParam = searchQuery ? `&search=${searchQuery}` : '';
-        const upcomingParam = isUpcoming ? `&upcoming=true` : '';
+        setLoading(true);
 
-        const query = `?status=Approved${categoryFilter}&sort=${sort}${searchParam}${upcomingParam}`;
-        
-        console.log("Query sent:", query);
+        const filters = new URLSearchParams();
+        filters.append('status', 'Approved');
+        if (categoryQuery !== 'All') filters.append('category', categoryQuery);
+        if (searchQuery) filters.append('search', searchQuery);
+        if (isUpcoming) filters.append('upcoming', 'true');
+        filters.append('sort', sortQuery);
+
+        const query = `?${filters.toString()}`;
+        console.log('[Query Sent]:', query);
+
         const res = await getAllEvents(query);
-        console.log('Filtered events:', res.data);
         setEvents(res.data?.data || []);
       } catch (err) {
         console.error('Failed to fetch events:', err);
@@ -53,35 +54,43 @@ const EventsPage = () => {
       }
     };
     fetchEvents();
-  }, [categoryQuery, sort, searchQuery, isUpcoming]);
+  }, [searchQuery, categoryQuery, isUpcoming, sortQuery]);
 
   const handleSortChange = (e) => {
-    setSort(e.target.value);
+    const updated = new URLSearchParams(location.search);
+    updated.set('sort', e.target.value);
+    navigate(`/events?${updated.toString()}`);
   };
 
   const handleCategoryClick = (category) => {
-    const query = category === 'All' ? '' : `?category=${category}`;
-    navigate(`/events${query}`);
+    const updated = new URLSearchParams(location.search);
+    if (category === 'All') {
+      updated.delete('category');
+    } else {
+      updated.set('category', category);
+    }
+    navigate(`/events?${updated.toString()}`);
   };
 
   const toggleUpcoming = () => {
-    if (upcomingActive) {
-      navigate('/events');
+    const updated = new URLSearchParams(location.search);
+    if (isUpcoming) {
+      updated.delete('upcoming');
     } else {
-      navigate('/events?upcoming=true');
+      updated.set('upcoming', 'true');
     }
-    setUpcomingActive(!upcomingActive);
+    navigate(`/events?${updated.toString()}`);
   };
 
   return (
     <>
-      <NavBar /> {/* Added NavBar */}
+      <NavBar />
       <div className="events-page-container">
         <h1 className="events-title">{title}</h1>
 
         <div className="filter-bar">
           <SearchBar fromNav={false} />
-          <select value={sort} onChange={handleSortChange} className="filter-dropdown">
+          <select value={sortQuery} onChange={handleSortChange} className="filter-dropdown">
             <option value="latest">Latest</option>
             <option value="popular">Most Popular</option>
             <option value="rating">Highest Rated</option>
@@ -91,10 +100,10 @@ const EventsPage = () => {
         <CategoryFilterStrip onCategoryClick={handleCategoryClick} />
 
         <button 
-          className={`upcoming-events-button ${upcomingActive ? 'active' : ''}`}
+          className={`upcoming-events-button ${isUpcoming ? 'active' : ''}`}
           onClick={toggleUpcoming}
         >
-          {upcomingActive ? 'Show All Events' : 'View Upcoming Events'}
+          {isUpcoming ? 'Show All Events' : 'View Upcoming Events'}
         </button>
 
         {loading ? (
@@ -109,7 +118,6 @@ const EventsPage = () => {
           </div>
         )}
       </div>
-
       <Footer />
     </>
   );
