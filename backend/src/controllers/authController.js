@@ -104,7 +104,7 @@ export const login = async (req, res) => {
     const refreshToken = jwt.sign(
       { id: user.id, email: user.email },
       JWT_SECRET,
-      { expiresIn: '15s' } // 7 days
+      { expiresIn: '7d' } // 7 days
     );
     
     await RefreshToken.save(user.id, refreshToken);
@@ -227,19 +227,31 @@ export const refreshToken = async (req, res) => {
       return sendResponse(res, 403, 'Invalid refresh token');
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) {
         console.error('JWT verify error:', err.message);
         return sendResponse(res, 403, 'Refresh token expired or invalid');
       }
 
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return sendResponse(res, 404, 'User not found');
+      }
+
       const newAccessToken = jwt.sign(
-        { id: decoded.id, email: decoded.email },
+        {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          name: user.name,
+        },
         process.env.JWT_SECRET,
         { expiresIn: '15m' }
       );
 
-      sendResponse(res, 200, 'New access token generated successfully', { accessToken: newAccessToken });
+      sendResponse(res, 200, 'New access token generated successfully', {
+        accessToken: newAccessToken,
+      });
     });
   } catch (error) {
     console.error('Error in refreshToken:', error.message);

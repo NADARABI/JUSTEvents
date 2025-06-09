@@ -1,3 +1,4 @@
+// src/utils/axios.js
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -25,8 +26,8 @@ api.interceptors.request.use((config) => {
     config.url === '/analytics/summary-public' ||
     config.url === '/feedback/recent-public' ||
     (config.method === 'get' && /^\/events(\/\d+)?$/.test(config.url)) ||
-    config.url === '/api/buildings' ||                             
-    config.url.startsWith('/api/campus-map/navigate');            
+    config.url === '/api/buildings' ||
+    config.url.startsWith('/api/campus-map/navigate');
 
   if (token && !isPublic) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -57,13 +58,22 @@ api.interceptors.response.use(
         });
 
         const newAccessToken = refreshResponse.data?.data?.accessToken;
+
         if (newAccessToken) {
+          // Save new token and retry original request
           localStorage.setItem('accessToken', newAccessToken);
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return api(originalRequest); // retry original request
+
+          // Safe header re-injection
+          originalRequest.headers = originalRequest.headers || {};
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+
+          // Sync UserContext (optional)
+          if (window.updateUserContext) window.updateUserContext();
+
+          return api(originalRequest); // Retry original request with new token
         }
 
-        throw new Error('No new token returned');
+        throw new Error('No new access token returned');
       } catch (refreshErr) {
         toast.dismiss();
         toast.error('Session expired. Please log in again.', { toastId: 'session-expired' });
