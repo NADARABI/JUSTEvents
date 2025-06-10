@@ -14,11 +14,35 @@ import { sendResponse } from '../utils/sendResponse.js';
 import RefreshToken from '../models/RefreshToken.js';
 import jwt from 'jsonwebtoken';
 
-jest.mock('../models/User.js');
+jest.mock('../utils/db', () => ({
+  getConnection: jest.fn().mockResolvedValue({
+    query: jest.fn().mockResolvedValue([{}]),
+    release: jest.fn(),
+  }),
+}));
+
+jest.mock('../models/User.js', () => ({
+  findByEmail: jest.fn(),
+  create: jest.fn(),
+  verifyEmail: jest.fn(),
+  updateVerificationCode: jest.fn(),
+  updateLastLogin: jest.fn(),
+  storeRoleRequest: jest.fn(),
+  findById: jest.fn(),
+  storeResetToken: jest.fn(),
+  findByResetToken: jest.fn(),
+  setResetPassword: jest.fn(),
+  clearResetToken: jest.fn(),
+}));
 jest.mock('../utils/sendEmail.js');
 jest.mock('../utils/sendResponse.js');
 jest.mock('../models/RefreshToken.js');
 jest.mock('jsonwebtoken');
+
+jest.mock('../utils/notificationHelper.js', () => ({
+  createNotification: jest.fn(),
+  getSystemAdminIds: jest.fn(),
+}));
 
 describe('authController', () => {
   let req, res;
@@ -26,6 +50,8 @@ describe('authController', () => {
     req = { body: {} };
     res = {};
     jest.clearAllMocks();
+    require('../utils/notificationHelper.js').createNotification.mockResolvedValue();
+    require('../utils/notificationHelper.js').getSystemAdminIds.mockResolvedValue([1, 2]);
   });
 
   describe('register', () => {
@@ -323,11 +349,7 @@ describe('authController', () => {
       RefreshToken.findByToken.mockResolvedValue(true);
       jwt.verify.mockImplementation((token, secret, cb) => cb(null, { id: 1, email: 'a@a.com' }));
       jwt.sign.mockReturnValue('newAccess');
-<<<<<<< HEAD
       User.findById.mockResolvedValue({ id: 1, email: 'a@a.com', role: 'Student', name: 'Test' });
-=======
-      User.findById = jest.fn().mockResolvedValue({ id: 1, email: 'a@a.com', role: 'Student', name: 'Test' });
->>>>>>> e732b1f66503dd641136318b51936f2e63bcd806
       await refreshTokenFn(req, res);
       expect(sendResponse).toHaveBeenCalledWith(res, 200, expect.stringContaining('New access token generated'), { accessToken: 'newAccess' });
     });
