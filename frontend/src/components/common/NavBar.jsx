@@ -80,6 +80,7 @@ const NavBar = () => {
 
             {role === 'System Admin' && (
               <>
+                <NavLink to="/admin/analytics" className="nav-link">Analytics</NavLink>
                 <NavLink to="/admin/dashboard" className="nav-link">Dashboard</NavLink>
                 <NavLink to="/admin/pending-users" className="nav-link">Pending Users</NavLink>
                 <NavLink to="/admin/pending-events" className="nav-link">Pending Events</NavLink>

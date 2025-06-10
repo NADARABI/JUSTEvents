@@ -31,7 +31,7 @@ const DashboardPage = () => {
       setTotalEvents(resEvents?.data?.data?.count || 0);
       setTotalRSVPs(resRSVPs?.data?.data?.count || 0);
       setTopUsers(resUsers?.data?.data || []);
-      setEventOfWeek(resEOW?.data?.data || null);
+      setEventOfWeek(resEOW || null);
     } catch (err) {
       console.error("Dashboard fetch error:", err);
       toast.error("Failed to load dashboard stats");

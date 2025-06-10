@@ -38,6 +38,8 @@ import DashboardPage from './pages/AdminSystem/Dashboard/DashboardPage';
 import PendingUsersPage from './pages/AdminSystem/PendingUsers/PendingUsersPage';
 import PendingEventsPage from './pages/AdminSystem/EventApprovals/PendingEventsPage';
 import NotificationsPageAdmin from './pages/AdminSystem/Notifications/NotificationsPage';
+import AnalyticsPage from './pages/AdminSystem/AnalyticsPage';
+
 
 import CampusRoomAnalyticsPage from './pages/campusAdmin/CampusRoomAnalyticsPage';
 import ManageBuildingsPage from './pages/campusAdmin/ManageBuildingsPage';
@@ -106,6 +108,7 @@ function AppRoutes() {
         <Route path="/admin/pending-events" element={<PrivateRoute roles={['System Admin']}><PendingEventsPage /></PrivateRoute>} />
         <Route path="/admin/dashboard" element={<PrivateRoute roles={['System Admin']}><DashboardPage /></PrivateRoute>} />
         <Route path="/admin/notifications" element={<PrivateRoute roles={['System Admin']}><NotificationsPageAdmin /></PrivateRoute>} />
+        <Route path="/admin/analytics" element={<AnalyticsPage />} />
 
         {/* Booking Routes */}
         <Route path="/bookings/me" element={<PrivateRoute roles={['Student', 'Organizer', 'Visitor']}><MyBookingsPage /></PrivateRoute>} />
