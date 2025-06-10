@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">88.4% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>61/61</span>
+                <span class='fraction'>61/69</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.84% </span>
+                <span class="strong">74.54% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>41/52</span>
+                <span class='fraction'>41/55</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>14/14</span>
+                <span class='fraction'>14/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">87.69% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>57/57</span>
+                <span class='fraction'>57/65</span>
             </div>
         
             
@@ -239,21 +239,40 @@
 <a name='L174'></a><a href='#L174'>174</a>
 <a name='L175'></a><a href='#L175'>175</a>
 <a name='L176'></a><a href='#L176'>176</a>
-<a name='L177'></a><a href='#L177'>177</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -415,21 +434,40 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import db from '../utils/db.js';
 &nbsp;
 class Event {
   // Check for event conflict
-  static async checkConflict(date, time, venue_id, excludeId = null) {
-    let query = `SELECT id FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
-    const params = [date, time, venue_id];
+<span class="fstat-no" title="function not covered" >  st</span>atic async checkConflict(date, time, venue_id, excludeId = <span class="branch-0 cbranch-no" title="branch not covered" >null)</span> {
+    let query = <span class="cstat-no" title="statement not covered" >`SELECT id FROM events WHERE date = ? AND time = ? AND venue_id = ?`;</span>
+    const params = <span class="cstat-no" title="statement not covered" >[date, time, venue_id];</span>
 &nbsp;
-    if (excludeId) {
-      query += ` AND id != ?`; // Exclude self when editing
-      params.push(excludeId);
+<span class="cstat-no" title="statement not covered" >    if (excludeId) {</span>
+<span class="cstat-no" title="statement not covered" >      query += ` AND id != ?`; </span>// Exclude self when editing
+<span class="cstat-no" title="statement not covered" >      params.push(excludeId);</span>
     }
 &nbsp;
-    const [rows] = await db.execute(query, params);
-    return rows.length &gt; 0;
+    const [rows] = <span class="cstat-no" title="statement not covered" >await db.execute(query, params);</span>
+<span class="cstat-no" title="statement not covered" >    return rows.length &gt; 0;</span>
   }
 &nbsp;
   // Create new event
@@ -588,6 +626,25 @@ class Event {
       ORDER BY date ASC, time ASC
     `, [startDate, endDate]);
     return rows;
+&nbsp;
+  }
+  
+  static async checkConflict(date, time, venue_id, excludeId = null) {
+    let query = `SELECT * FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
+    let params = [date, time, venue_id];
+  
+    if (excludeId) {
+      query += ` AND id != ?`;
+      params.push(excludeId);
+    }
+  
+    const [rows] = await db.execute(query, params);
+    return rows.length &gt; 0;
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >  st</span>atic async deleteRSVPs(eventId) {
+<span class="cstat-no" title="statement not covered" >    await db.execute(`DELETE FROM event_rsvps WHERE event_id = ?`, [eventId]);</span>
+&nbsp;
   }
 }
 &nbsp;
@@ -598,7 +655,7 @@ export default Event;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-08T18:15:22.629Z
+                at 2025-06-09T19:31:27.805Z
             </div>
         <script src="../prettify.js"></script>
         <script>

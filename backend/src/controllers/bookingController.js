@@ -2,6 +2,7 @@ import Booking from '../models/Booking.js';
 import { sendResponse } from '../utils/sendResponse.js';
 import db from '../utils/db.js';
 import { createNotification } from '../utils/notificationHelper.js'; 
+import { getSystemAdminIds } from '../utils/notificationHelper.js';
 
 // Create a new booking
 export const createBooking = async (req, res) => {
@@ -21,6 +22,21 @@ export const createBooking = async (req, res) => {
     const isDuplicate = await Booking.checkDuplicateBooking(user_id, room_id, start_time, end_time);
     if (isDuplicate) {
       return sendResponse(res, 409, 'You have already submitted a similar booking request');
+    }
+
+    const [[{ count }]] = await db.execute(`SELECT COUNT(*) AS count FROM room_bookings 
+      WHERE user_id = ? AND created_at >= NOW() - INTERVAL 1 HOUR`,
+      [user_id]
+    );
+    if (count >= 5) {
+      const adminIds = await getSystemAdminIds();
+      for (const adminId of adminIds) {
+        await createNotification(
+          adminId,
+          `User ${req.user.name || 'Unknown'} submitted ${count}  booking requests in the past hour.`,
+          'warning'
+        );
+      }
     }
 
     const bookingId = await Booking.create({ user_id, room_id, purpose, start_time, end_time });
