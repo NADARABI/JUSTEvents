@@ -4,9 +4,22 @@ import db from '../utils/db.js';
 import { createNotification } from '../utils/notificationHelper.js';
 import { sendResponse } from '../utils/sendResponse.js';
 
-jest.mock('../models/Booking.js');
-jest.mock('../utils/db.js');
-jest.mock('../utils/notificationHelper.js');
+jest.mock('../models/Booking.js', () => ({
+  create: jest.fn().mockResolvedValue(123),
+  findConflictingBooking: jest.fn().mockResolvedValue(false),
+  checkDuplicateBooking: jest.fn().mockResolvedValue(false),
+  getPending: jest.fn(),
+  getById: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+}));
+jest.mock('../utils/db', () => ({
+  execute: jest.fn(),
+}));
+jest.mock('../utils/notificationHelper.js', () => ({
+  createNotification: jest.fn(),
+  getSystemAdminIds: jest.fn(),
+}));
 jest.mock('../utils/sendResponse.js');
 
 describe('bookingController', () => {
@@ -24,8 +37,14 @@ describe('bookingController', () => {
     Booking.updateStatus = jest.fn();
     Booking.getBookingStats = jest.fn();
     Booking.getById = jest.fn();
-    db.execute = jest.fn();
-    createNotification.mockResolvedValue();
+    require('../utils/db').execute.mockImplementation((query) => {
+      if (query.includes('COUNT(*)')) return Promise.resolve([[{ count: 0 }]]);
+      if (query.includes('FROM users WHERE role =')) return Promise.resolve([[]]);
+      if (query.includes('FROM rooms WHERE id =')) return Promise.resolve([[]]);
+      return Promise.resolve([[]]);
+    });
+    require('../utils/notificationHelper.js').createNotification.mockResolvedValue();
+    require('../utils/notificationHelper.js').getSystemAdminIds.mockResolvedValue([]);
   });
 
   // createBooking
@@ -48,13 +67,8 @@ describe('bookingController', () => {
     expect(sendResponse).toHaveBeenCalledWith(res, 409, expect.stringContaining('already submitted'));
   });
   it('createBooking: success', async () => {
-    req.body = { room_id: 1, purpose: 'Study', start_time: '2024-01-01', end_time: '2024-01-02' };
-    Booking.findConflictingBooking.mockResolvedValue(false);
-    Booking.checkDuplicateBooking.mockResolvedValue(false);
     Booking.create.mockResolvedValue(123);
-    db.execute
-      .mockResolvedValueOnce([[{ id: 2, name: 'Admin' }]])
-      .mockResolvedValueOnce([[{ name: 'Room 1' }]]);
+    req.body = { room_id: 1, purpose: 'Study', start_time: '2024-01-01', end_time: '2024-01-02' };
     createNotification.mockResolvedValue();
     await bookingController.createBooking(req, res);
     expect(sendResponse).toHaveBeenCalledWith(res, 201, expect.stringContaining('submitted successfully'), { bookingId: 123 });
