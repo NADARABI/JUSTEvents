@@ -62,7 +62,9 @@ const NotificationsPage = () => {
             <ul className="notification-list">
               {notifications.map((n) => (
                 <li key={n.id} className={n.is_read ? 'read' : 'unread'}>
-                  <p>{n.message}</p>
+                  <p style={{ whiteSpace: 'pre-line' }}>
+                  {n.message.replace(' submitted', '\nsubmitted')}
+                  </p>
                   <small>{new Date(n.created_at).toLocaleString()}</small>
                   {!n.is_read && (
                     <button onClick={() => handleMarkAsRead(n.id)}>Mark as Read</button>

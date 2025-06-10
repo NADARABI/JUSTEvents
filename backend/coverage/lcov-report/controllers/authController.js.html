@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">99.29% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>139/139</span>
+                <span class='fraction'>141/142</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.05% </span>
+                <span class="strong">95.71% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>66/68</span>
+                <span class='fraction'>67/70</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">99.21% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>124/124</span>
+                <span class='fraction'>126/127</span>
             </div>
         
             
@@ -311,7 +311,19 @@
 <a name='L246'></a><a href='#L246'>246</a>
 <a name='L247'></a><a href='#L247'>247</a>
 <a name='L248'></a><a href='#L248'>248</a>
-<a name='L249'></a><a href='#L249'>249</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -547,12 +559,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -665,7 +689,7 @@ export const login = async (req, res) =&gt; {
     const refreshToken = jwt.sign(
       { id: user.id, email: user.email },
       JWT_SECRET,
-      { expiresIn: '15s' } // 7 days
+      { expiresIn: '7d' } // 7 days
     );
     
     await RefreshToken.save(user.id, refreshToken);
@@ -788,19 +812,31 @@ export const refreshToken = async (req, res) =&gt; {
       return sendResponse(res, 403, 'Invalid refresh token');
     }
 &nbsp;
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) =&gt; {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) =&gt; {
       if (err) {
         console.error('JWT verify error:', err.message);
         return sendResponse(res, 403, 'Refresh token expired or invalid');
       }
 &nbsp;
+      const user = await User.findById(decoded.id);
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {
+<span class="cstat-no" title="statement not covered" >        return sendResponse(res, 404, 'User not found');</span>
+      }
+&nbsp;
       const newAccessToken = jwt.sign(
-        { id: decoded.id, email: decoded.email },
+        {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          name: user.name,
+        },
         process.env.JWT_SECRET,
         { expiresIn: '15m' }
       );
 &nbsp;
-      sendResponse(res, 200, 'New access token generated successfully', { accessToken: newAccessToken });
+      sendResponse(res, 200, 'New access token generated successfully', {
+        accessToken: newAccessToken,
+      });
     });
   } catch (error) {
     console.error('Error in refreshToken:', error.message);
@@ -814,7 +850,7 @@ export const refreshToken = async (req, res) =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-08T22:06:43.005Z
+                at 2025-06-09T19:31:27.805Z
             </div>
         <script src="../prettify.js"></script>
         <script>

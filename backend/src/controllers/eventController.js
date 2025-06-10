@@ -4,6 +4,7 @@ import Approval from '../models/Approval.js';
 import { sendResponse } from '../utils/sendResponse.js';
 import { createNotification } from '../utils/notificationHelper.js';
 import db from '../utils/db.js';
+import { getSystemAdminIds } from '../utils/notificationHelper.js';
 
 // Create new event
 export const createEvent = async (req, res) => {
@@ -34,7 +35,14 @@ export const createEvent = async (req, res) => {
     }
     const eventId = await Event.create({ title, description, date, time, organizer_id, venue_id, image_url });
     await Approval.create('Event', eventId);
-
+    const adminIds = await getSystemAdminIds();
+    for (const adminId of adminIds) {
+      await createNotification(
+        adminId,
+        `New event titled "${title}" is pending approval.`,
+        'info'
+      );
+    }
     sendResponse(res, 201, 'Event created and pending approval', { eventId });
   } catch (err) {
     console.error('createEvent:', err);

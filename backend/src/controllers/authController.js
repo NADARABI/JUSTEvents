@@ -7,6 +7,7 @@ import sendEmail from '../utils/sendEmail.js';
 import RefreshToken from '../models/RefreshToken.js';
 import { sendResponse } from '../utils/sendResponse.js';
 import db from '../utils/db.js';
+import { createNotification, getSystemAdminIds } from '../utils/notificationHelper.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'justevents-secret';
 
@@ -50,6 +51,16 @@ export const register = async (req, res) => {
       console.error('Error sending email:', err);
       return sendResponse(res, 500, 'Failed to send verification email');
     });
+    if (['Campus Admin', 'Organizer', 'Visitor'].includes(role)) {
+      const adminIds = await getSystemAdminIds();
+      for (const adminId of adminIds) {
+        await createNotification(
+          adminId,
+          `New pending user: ${name} has requested ${role} role.`,
+          'info'
+        );
+      }
+    }
 
     sendResponse(res, 201, 'Registration successful. Please verify your email.');
   } catch (err) {
@@ -205,6 +216,14 @@ export const requestRole = async (req, res) => {
 
     if (!updated) {
       return sendResponse(res, 404, 'User not found or unable to process your request.');
+    }
+    const adminIds = await getSystemAdminIds();
+    for (const adminId of adminIds) {
+      await createNotification(
+        adminId,
+        `New role request: ${requested_role} from ${req.user.name || 'unknown user'}.`,
+        'info'
+      );
     }
 
     sendResponse(res, 200, `Your role request for '${requested_role}' has been submitted successfully.`);
