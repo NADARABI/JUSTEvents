@@ -6,12 +6,31 @@ import db from '../utils/db.js';
 import { sendResponse } from '../utils/sendResponse.js';
 import { createNotification } from '../utils/notificationHelper.js';
 
-jest.mock('../models/Event.js');
+jest.mock('../models/Event.js', () => ({
+  create: jest.fn().mockResolvedValue(123),
+  checkConflict: jest.fn().mockResolvedValue(false),
+  getById: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+}));
+jest.mock('../models/Approval.js', () => ({
+  create: jest.fn().mockResolvedValue(),
+  getById: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+}));
 jest.mock('../models/EventRsvp.js');
-jest.mock('../models/Approval.js');
 jest.mock('../utils/db.js');
 jest.mock('../utils/sendResponse.js');
 jest.mock('../utils/notificationHelper.js');
+
+jest.mock('../utils/db', () => ({
+  execute: jest.fn(),
+}));
+jest.mock('../utils/notificationHelper.js', () => ({
+  createNotification: jest.fn(),
+  getSystemAdminIds: jest.fn(),
+}));
 
 describe('eventController', () => {
   let req, res;
@@ -33,6 +52,12 @@ describe('eventController', () => {
     Approval.create = jest.fn();
     db.execute = jest.fn();
     createNotification.mockResolvedValue();
+    require('../utils/db').execute.mockImplementation((query) => {
+      if (query.includes('SELECT id FROM rooms')) return Promise.resolve([[{ id: 1 }]]);
+      return Promise.resolve([[]]);
+    });
+    require('../utils/notificationHelper.js').createNotification.mockResolvedValue();
+    require('../utils/notificationHelper.js').getSystemAdminIds.mockResolvedValue([1, 2]);
   });
 
   // createEvent
@@ -61,11 +86,8 @@ describe('eventController', () => {
     expect(sendResponse).toHaveBeenCalledWith(res, 409, expect.stringContaining('Venue already booked'));
   });
   it('createEvent: success', async () => {
-    req.body = { title: 't', description: 'd', date: '2024-01-01', time: '10:00', venue_id: 1 };
-    db.execute.mockResolvedValue([[{ id: 1 }]]);
-    Event.checkConflict.mockResolvedValue(false);
     Event.create.mockResolvedValue(123);
-    Approval.create.mockResolvedValue();
+    req.body = { title: 't', description: 'd', date: '2024-01-01', time: '10:00', venue_id: 1 };
     await eventController.createEvent(req, res);
     expect(sendResponse).toHaveBeenCalledWith(res, 201, expect.stringContaining('pending approval'), { eventId: 123 });
   });
