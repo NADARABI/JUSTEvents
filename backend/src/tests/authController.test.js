@@ -323,6 +323,7 @@ describe('authController', () => {
       RefreshToken.findByToken.mockResolvedValue(true);
       jwt.verify.mockImplementation((token, secret, cb) => cb(null, { id: 1, email: 'a@a.com' }));
       jwt.sign.mockReturnValue('newAccess');
+      User.findById.mockResolvedValue({ id: 1, email: 'a@a.com', role: 'Student', name: 'Test' });
       await refreshTokenFn(req, res);
       expect(sendResponse).toHaveBeenCalledWith(res, 200, expect.stringContaining('New access token generated'), { accessToken: 'newAccess' });
     });

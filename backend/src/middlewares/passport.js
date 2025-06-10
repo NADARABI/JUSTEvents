@@ -1,4 +1,5 @@
 // src/middlewares/passport.js
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
