@@ -1,3 +1,9 @@
+import dotenv from 'dotenv';
+if (process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: '.env.test' });
+} else {
+  dotenv.config();
+}
 import express from 'express';
 import cors from 'cors';
 import passport from 'passport';
