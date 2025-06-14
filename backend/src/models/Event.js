@@ -1,9 +1,22 @@
 import db from '../utils/db.js';
 
 class Event {
+  // Check for event conflict
+  static async checkConflict(date, time, venue_id, excludeId = null) {
+    let query = `SELECT id FROM events WHERE date = ? AND time = ? AND venue_id = ?`;
+    const params = [date, time, venue_id];
+
+    if (excludeId) {
+      query += ` AND id != ?`; // Exclude self when editing
+      params.push(excludeId);
+    }
+
+    const [rows] = await db.execute(query, params);
+    return rows.length > 0;
+  }
+
   // Create new event
   static async create({ title, description, date, time, organizer_id, venue_id, image_url }) {
-
     if (image_url === undefined) image_url = null;
     const [result] = await db.execute(
       `INSERT INTO events (title, description, date, time, organizer_id, venue_id, status, image_url)
@@ -99,11 +112,14 @@ class Event {
 
   // Update event by ID with fields
   static async update(id, fields) {
-    const keys = Object.keys(fields);
-    const values = Object.values(fields);
+    const keys = Object.keys(fields).filter(key => fields[key] !== undefined && fields[key] !== null);
+    if (keys.length === 0) {
+      return 0; // Nothing to update
+    }
 
     const setClause = keys.map(key => `${key} = ?`).join(', ');
-    values.push(id); // push id for WHERE clause
+    const values = keys.map(key => fields[key]);
+    values.push(id); // for WHERE clause
 
     const [result] = await db.execute(
       `UPDATE events SET ${setClause} WHERE id = ?`,
@@ -151,9 +167,11 @@ class Event {
       SELECT id, title, date, time, category, status
       FROM events
       WHERE date BETWEEN ? AND ?
+        AND status = 'Approved'
       ORDER BY date ASC, time ASC
     `, [startDate, endDate]);
     return rows;
+
   }
   
   static async checkConflict(date, time, venue_id, excludeId = null) {
@@ -171,6 +189,7 @@ class Event {
 
   static async deleteRSVPs(eventId) {
     await db.execute(`DELETE FROM event_rsvps WHERE event_id = ?`, [eventId]);
+
   }
 }
 

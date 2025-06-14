@@ -1,32 +1,54 @@
 import db from '../utils/db.js';
 import Event from '../models/Event.js';
+import { sendResponse } from '../utils/sendResponse.js';
 
+//Event Analytics
 export const getTotalEvents = async (req, res) => {
-  const [[{ count }]] = await db.execute(`SELECT COUNT(*) AS count FROM events`);
-  res.json({ success: true, count });
+  try {
+    const [[{ count }]] = await db.execute(`SELECT COUNT(*) AS count FROM events`);
+    sendResponse(res, 200, 'Total number of events calculated', { count });
+  } catch (err) {
+    console.error('getTotalEvents error:', err.message);
+    sendResponse(res, 500, 'Failed to calculate total events');
+  }
 };
 
 export const getTotalRSVPs = async (req, res) => {
-  const [[{ count }]] = await db.execute(`SELECT COUNT(*) AS count FROM event_rsvps`);
-  res.json({ success: true, count });
+  try {
+    const [[{ count }]] = await db.execute(`SELECT COUNT(*) AS count FROM event_rsvps`);
+    sendResponse(res, 200, 'Total number of RSVPs calculated', { count });
+  } catch (err) {
+    console.error('getTotalRSVPs error:', err.message);
+    sendResponse(res, 500, 'Failed to calculate RSVP total');
+  }
 };
 
 export const getRSVPsForEvent = async (req, res) => {
-  const { id } = req.params;
-  const [[{ count }]] = await db.execute(`SELECT COUNT(*) AS count FROM event_rsvps WHERE event_id = ?`, [id]);
-  res.json({ success: true, count });
+  try {
+    const { id } = req.params;
+    const [[{ count }]] = await db.execute(`SELECT COUNT(*) AS count FROM event_rsvps WHERE event_id = ?`, [id]);
+    sendResponse(res, 200, 'RSVPs for event fetched', { count });
+  } catch (err) {
+    console.error('getRSVPsForEvent error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch RSVP count for event');
+  }
 };
 
 export const getTopEvents = async (req, res) => {
-  const [rows] = await db.execute(`
-    SELECT e.id, e.title, COUNT(r.id) AS rsvp_count
-    FROM events e
-    LEFT JOIN event_rsvps r ON e.id = r.event_id
-    GROUP BY e.id
-    ORDER BY rsvp_count DESC
-    LIMIT 3
-  `);
-  res.json({ success: true, data: rows });
+  try {
+    const [rows] = await db.execute(`
+      SELECT e.id, e.title, COUNT(r.id) AS rsvp_count
+      FROM events e
+      LEFT JOIN event_rsvps r ON e.id = r.event_id
+      GROUP BY e.id
+      ORDER BY rsvp_count DESC
+      LIMIT 3
+    `);
+    sendResponse(res, 200, 'Top RSVP’d events fetched', rows);
+  } catch (err) {
+    console.error('getTopEvents error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch top events');
+  }
 };
 
 export const getRsvpTrend = async (req, res) => {
@@ -37,10 +59,10 @@ export const getRsvpTrend = async (req, res) => {
       GROUP BY DATE(created_at)
       ORDER BY date ASC
     `);
-    res.json({ success: true, data: rows });
+    sendResponse(res, 200, 'RSVP trend data generated', rows);
   } catch (err) {
-    console.error('RSVP trend error:', err.message);
-    res.status(500).json({ success: false, message: 'Failed to fetch RSVP trend' });
+    console.error('getRsvpTrend error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch RSVP trend');
   }
 };
 
@@ -58,21 +80,20 @@ export const getCategoryStats = async (req, res) => {
       GROUP BY e.category
       ORDER BY total_events DESC
     `);
-
-    res.status(200).json({ success: true, data: rows });
+    sendResponse(res, 200, 'Event category statistics fetched', rows);
   } catch (err) {
-    console.error('Category stats error:', err.message);
-    res.status(500).json({ success: false, message: 'Failed to fetch category stats' });
+    console.error('getCategoryStats error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch category stats');
   }
 };
 
 export const getExpiryStats = async (req, res) => {
   try {
     const stats = await Event.getExpiryStats();
-    res.status(200).json({ success: true, data: stats });
-  } catch (error) {
-    console.error("getExpiryStats error:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch event expiry stats" });
+    sendResponse(res, 200, 'Event expiry status breakdown fetched', stats);
+  } catch (err) {
+    console.error('getExpiryStats error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch expiry statistics');
   }
 };
 
@@ -95,11 +116,10 @@ export const getTopEngagedUsers = async (req, res) => {
       ORDER BY engagement_score DESC
       LIMIT 3
     `);
-
-    res.status(200).json({ success: true, data: rows });
+    sendResponse(res, 200, 'Top engaged users fetched', rows);
   } catch (err) {
-    console.error('Top engaged users error:', err.message);
-    res.status(500).json({ success: false, message: 'Failed to fetch top engaged users' });
+    console.error('getTopEngagedUsers error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch engagement statistics');
   }
 };
 
@@ -120,24 +140,20 @@ export const getEventOfTheWeek = async (req, res) => {
       ORDER BY rsvp_count DESC, avg_rating DESC
       LIMIT 1
     `);
-
-    res.status(200).json({ success: true, data: rows[0] || null });
+    sendResponse(res, 200, 'Event of the week identified', rows[0] || null);
   } catch (err) {
-    console.error('Event of the week error:', err.message);
-    res.status(500).json({ success: false, message: 'Failed to fetch event of the week' });
+    console.error('getEventOfTheWeek error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch event of the week');
   }
 };
 
 export const autoCloseExpired = async (req, res) => {
   try {
     const affected = await Event.autoCloseExpiredEvents();
-    res.status(200).json({
-      success: true,
-      message: `${affected} events marked as expired`
-    });
+    sendResponse(res, 200, `${affected} events marked as expired`, { affected });
   } catch (err) {
-    console.error('Auto-close error:', err.message);
-    res.status(500).json({ success: false, message: 'Failed to close expired events' });
+    console.error('autoCloseExpired error:', err.message);
+    sendResponse(res, 500, 'Failed to close expired events');
   }
 };
 
@@ -146,23 +162,158 @@ export const getEventsInRange = async (req, res) => {
     const { range } = req.query;
     const today = new Date();
     let startDate = new Date(today);
-    let endDate = new Date(today);
+    let endDate;
 
     if (range === 'week') {
+      endDate = new Date(today);
       endDate.setDate(today.getDate() + 7);
     } else {
-      // default to 'month'
+      // Default to current month
+      startDate = new Date(today.getFullYear(), today.getMonth(), 1);
       endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     }
 
     const formattedStart = startDate.toISOString().split('T')[0];
     const formattedEnd = endDate.toISOString().split('T')[0];
 
+    console.log('Date range:', formattedStart, formattedEnd);
+
     const events = await Event.getEventsByDateRange(formattedStart, formattedEnd);
-    res.status(200).json({ success: true, data: events });
+    return sendResponse(res, 200, 'Events in selected range fetched', events);
   } catch (err) {
-    console.error('Calendar API error:', err.message);
-    res.status(500).json({ success: false, message: 'Failed to fetch events' });
+    console.error('getEventsInRange error:', err.message);
+    return sendResponse(res, 500, 'Failed to fetch events');
   }
 };
 
+// Room Booking analytics
+export const getTotalBookings = async (req, res) => {
+  try {
+    const [[{ count }]] = await db.execute(`SELECT COUNT(*) AS count FROM room_bookings`);
+    sendResponse(res, 200, 'Total room bookings calculated', { count });
+  } catch (err) {
+    console.error('getTotalBookings error:', err.message);
+    sendResponse(res, 500, 'Failed to calculate total bookings');
+  }
+};
+
+export const getMostUsedRooms = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        r.id, 
+        r.name AS room_name, 
+        bl.name AS building, 
+        COUNT(b.id) AS bookings
+      FROM rooms r
+      LEFT JOIN room_bookings b ON r.id = b.room_id
+      JOIN buildings bl ON r.building_id = bl.id
+      GROUP BY r.id
+      ORDER BY bookings DESC
+      LIMIT 5
+    `);
+    sendResponse(res, 200, 'Most used rooms fetched', rows);
+  } catch (err) {
+    console.error('getMostUsedRooms error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch most used rooms');
+  }
+};
+
+export const getBookingTrends = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT DATE(created_at) AS date, COUNT(*) AS count
+      FROM room_bookings
+      GROUP BY DATE(created_at)
+      ORDER BY date ASC
+    `);
+    sendResponse(res, 200, 'Booking trends fetched', rows);
+  } catch (err) {
+    console.error('getBookingTrends error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch booking trends');
+  }
+};
+
+export const getBookingsByBuilding = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT bl.name AS building, COUNT(*) AS bookings
+      FROM room_bookings b
+      JOIN rooms r ON b.room_id = r.id
+      JOIN buildings bl ON r.building_id = bl.id
+      GROUP BY bl.name
+      ORDER BY bookings DESC;
+    `);
+    sendResponse(res, 200, 'Bookings grouped by building fetched', rows);
+  } catch (err) {
+    console.error('getBookingsByBuilding error:', err.message);
+    sendResponse(res, 500, 'Failed to fetch bookings by building');
+  }
+};
+
+export const getBookingCancelRate = async (req, res) => {
+  try {
+    const [[{ total }]] = await db.execute(`SELECT COUNT(*) AS total FROM room_bookings`);
+    const [[{ cancelled }]] = await db.execute(`SELECT COUNT(*) AS cancelled FROM room_bookings WHERE status = 'Rejected'`);
+
+    const rate = total > 0 ? ((cancelled / total) * 100).toFixed(2) : 0;
+    sendResponse(res, 200, 'Booking cancellation rate calculated', { cancelled, total, cancel_rate: `${rate}%` });
+  } catch (err) {
+    console.error('getBookingCancelRate error:', err.message);
+    sendResponse(res, 500, 'Failed to calculate booking cancel rate');
+  }
+};
+
+// Public version of popular events
+export const getPopularEventsPublic = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        e.id,
+        e.title,
+        e.date,
+        e.image_url,
+        e.category,
+        e.description,
+        COUNT(r.id) AS rsvp_count
+      FROM events e
+      LEFT JOIN event_rsvps r ON e.id = r.event_id
+      WHERE e.status = 'Approved'
+      GROUP BY e.id
+      ORDER BY rsvp_count DESC
+      LIMIT 3
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching public popular events:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+//  Public version of summary stats
+export const getSummaryPublic = async (req, res) => {
+  try {
+    const [events] = await db.query(`
+      SELECT COUNT(*) AS totalEvents 
+      FROM events 
+      WHERE status = 'Approved'
+    `);
+    const [users] = await db.query(`
+      SELECT COUNT(*) AS totalUsers 
+      FROM users
+    `);
+    const [feedback] = await db.query(`
+      SELECT COUNT(*) AS totalFeedback 
+      FROM feedback
+    `);
+
+    res.json({
+      totalEvents: events[0].totalEvents,
+      totalUsers: users[0].totalUsers,
+      totalFeedback: feedback[0].totalFeedback,
+    });
+  } catch (err) {
+    console.error('Error fetching public summary:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

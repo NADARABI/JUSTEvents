@@ -1,3 +1,9 @@
+import dotenv from 'dotenv';
+if (process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: '.env.test' });
+} else {
+  dotenv.config();
+}
 import express from 'express';
 import cors from 'cors';
 import passport from 'passport';
@@ -12,6 +18,12 @@ import feedbackRoutes from './routes/feedbackRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import savedEventRoutes from './routes/savedEventRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import roomRoutes from './routes/roomRoutes.js';
+import buildingRoutes from './routes/buildingRoutes.js';
+import campusMapRoutes from './routes/campusMapRoutes.js';
+import adminMapRoutes from './routes/adminMapRoutes.js';
 
 import './middlewares/passport.js';
 
@@ -19,11 +31,12 @@ const app = express();
 
 // Core Middleware
 app.use(express.json());
-app.use(cors({
-  origin: 'http://localhost:3000', 
-  credentials: true
-}));
-
+app.use(cors(
+  {
+    origin: 'http://localhost:3000',
+    credentials: true
+  }
+));
 
 // Session (for Passport SSO)
 app.use(session({
@@ -36,6 +49,10 @@ app.use(passport.initialize());
 
 // PUBLIC Routes
 app.use('/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/rooms', roomRoutes);
+app.use('/api/buildings', buildingRoutes);
+app.use('/api/campus-map', campusMapRoutes);
 console.log('/auth routes are active');
 
 // Protected API Routes
@@ -47,6 +64,9 @@ app.use('/api', feedbackRoutes);
 app.use('/analytics', analyticsRoutes);
 app.use('/api', savedEventRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/booking', bookingRoutes);
+app.use('/api/admin/map', adminMapRoutes);
+
 
 // Root Health Check
 app.get('/', (req, res) => {
